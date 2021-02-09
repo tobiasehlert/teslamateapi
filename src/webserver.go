@@ -63,6 +63,19 @@ func main() {
 		})
 	})
 
+	// /globalsettings endpoint
+	r.GET("/globalsettings", func(c *gin.Context) {
+		// TeslaMateAPIGlobalSettings to get data
+		result, ValidResponse := TeslaMateAPIGlobalSettings()
+
+		c.Header("Content-Type", "application/json")
+		if ValidResponse {
+			c.String(http.StatusOK, result)
+		} else {
+			c.String(http.StatusNotFound, result)
+		}
+	})
+
 	// run this! :)
 	r.Run()
 }
