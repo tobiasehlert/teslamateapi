@@ -56,13 +56,6 @@ func main() {
 		}
 	})
 
-	// /ping endpoint
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-
 	// /globalsettings endpoint
 	r.GET("/globalsettings", func(c *gin.Context) {
 		// TeslaMateAPIGlobalSettings to get data
@@ -74,6 +67,13 @@ func main() {
 		} else {
 			c.String(http.StatusNotFound, result)
 		}
+	})
+
+	// /ping endpoint
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "pong",
+		})
 	})
 
 	// run this! :)
