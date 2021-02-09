@@ -13,11 +13,11 @@ TeslaMate RESTful API plugin to get data collected by self-hosted data logger Te
 
 *Information will be updated..*
 
-## Disclaimer
+## Security information
 
-There is not possibility to get your Tesla account tokens from this API and we'll keep it this way!
+There is **not** possibility to get your Tesla account tokens by this API and we'll keep it this way!
 
-The data that is published through this API is data like the cars, charges, drives, current status, updates and global settings.
+The data that is accessible is data like the cars, charges, drives, current status, updates and global settings.
 
 ## Credits
 
