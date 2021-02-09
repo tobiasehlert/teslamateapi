@@ -38,6 +38,24 @@ func main() {
 		}
 	})
 
+	// /cars/<CarID>/updates endpoint
+	r.GET("/cars/:CarID/updates", func(c *gin.Context) {
+		// getting CarID param from URL
+		CarID := convertStringToInteger(c.Param("CarID"))
+		// query options to modify query when collecting data
+		ResultPage := convertStringToInteger(c.DefaultQuery("page", "1"))
+		ResultShow := convertStringToInteger(c.DefaultQuery("show", "100"))
+		// TeslaMateAPICarsUpdates to get data
+		result, ValidResponse := TeslaMateAPICarsUpdates(CarID, ResultPage, ResultShow)
+
+		c.Header("Content-Type", "application/json")
+		if ValidResponse {
+			c.String(http.StatusOK, result)
+		} else {
+			c.String(http.StatusNotFound, result)
+		}
+	})
+
 	// /ping endpoint
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
