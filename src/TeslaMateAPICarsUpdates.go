@@ -14,7 +14,8 @@ func TeslaMateAPICarsUpdates(CarID int, ResultPage int, ResultShow int) (string,
 	// creating structs for /cars/<CarID>/updates
 	// Car struct - child of Data
 	type Car struct {
-		CarID int `json:"id"` // smallint
+		CarID int    `json:"id"`   // smallint
+		Name  string `json:"name"` // text
 	}
 	// Updates struct - child of Data
 	type Updates struct {
@@ -35,6 +36,7 @@ func TeslaMateAPICarsUpdates(CarID int, ResultPage int, ResultShow int) (string,
 
 	// creating required vars
 	var UpdatesData []Updates
+	var CarData Car
 	var ValidResponse bool // default is false
 
 	// calculate offset based on page (page 0 is not possible, since first page is minimum 1)
@@ -48,11 +50,13 @@ func TeslaMateAPICarsUpdates(CarID int, ResultPage int, ResultShow int) (string,
 	// getting data from database
 	query := `
 		SELECT
-			id,
+			updates.id,
+			name,
 			start_date,
 			end_date,
 			version
 		FROM updates
+		LEFT JOIN cars ON car_id = cars.id
 		WHERE car_id = $1
 		ORDER BY start_date DESC
 		LIMIT $2 OFFSET $3;`
@@ -75,6 +79,7 @@ func TeslaMateAPICarsUpdates(CarID int, ResultPage int, ResultShow int) (string,
 		// scanning row and putting values into the update
 		err = rows.Scan(
 			&update.ID,
+			&CarData.Name,
 			&update.StartDate,
 			&update.EndDate,
 			&update.Version,
@@ -87,6 +92,7 @@ func TeslaMateAPICarsUpdates(CarID int, ResultPage int, ResultShow int) (string,
 
 		// appending update to UpdatesData
 		UpdatesData = append(UpdatesData, update)
+		CarData.CarID = CarID
 		ValidResponse = true
 	}
 
@@ -100,9 +106,7 @@ func TeslaMateAPICarsUpdates(CarID int, ResultPage int, ResultShow int) (string,
 	// build the data-blob
 	jsonData := JSONData{
 		Data{
-			Car: Car{
-				CarID: CarID,
-			},
+			Car:     CarData,
 			Updates: UpdatesData,
 		},
 	}
