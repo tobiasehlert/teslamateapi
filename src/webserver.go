@@ -38,6 +38,45 @@ func main() {
 		}
 	})
 
+	// /cars/<CarID> endpoint
+	r.GET("/cars/:CarID", func(c *gin.Context) {
+		// getting CarID param from URL
+		CarID := convertStringToInteger(c.Param("CarID"))
+		// TeslaMateAPICars to get cars
+		ValidCarID := TeslaMateAPICarsID(CarID)
+
+		if ValidCarID {
+			// redirecting to /cars/<CarID>/status page..
+			c.Redirect(http.StatusSeeOther, fmt.Sprintf("/cars/%d/status", CarID))
+		} else {
+			// redirecting to /cars since we got nothing to show for only one car..
+			c.Redirect(http.StatusFound, "/cars")
+		}
+	})
+
+	// /cars/<CarID>/status endpoint
+	r.GET("/cars/:CarID/status", func(c *gin.Context) {
+		// getting mqtt flag
+		mqttdisabled := getEnvAsBool("DISABLE_MQTT", false)
+		if mqttdisabled {
+			c.JSON(http.StatusNotImplemented, gin.H{
+				"error": "mqtt disabled.. status not accessible!",
+			})
+		} else {
+			// getting CarID param from URL
+			CarID := convertStringToInteger(c.Param("CarID"))
+			// TeslaMateAPICarsStatus to get data
+			result, ValidResponse := TeslaMateAPICarsStatus(CarID)
+
+			c.Header("Content-Type", "application/json")
+			if ValidResponse {
+				c.String(http.StatusOK, result)
+			} else {
+				c.String(http.StatusNotFound, result)
+			}
+		}
+	})
+
 	// /cars/<CarID>/updates endpoint
 	r.GET("/cars/:CarID/updates", func(c *gin.Context) {
 		// getting CarID param from URL
