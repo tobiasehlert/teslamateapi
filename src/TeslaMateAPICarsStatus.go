@@ -182,7 +182,7 @@ func TeslaMateAPICarsStatus(CarID int) (string, bool) {
 	} else {
 		MQTTPort = getEnvAsInt("MQTT_PORT", 1883)
 	}
-	MQTTHost := getEnv("MQTT_HOST", "localhost")
+	MQTTHost := getEnv("MQTT_HOST", "mosquitto")
 	MQTTUser := getEnv("MQTT_USERNAME", "")
 	MQTTPass := getEnv("MQTT_PASSWORD", "")
 	// MQTTInvCert := getEnvAsBool("MQTT_TLS_ACCEPT_INVALID_CERTS", false)
