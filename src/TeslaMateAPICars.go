@@ -137,6 +137,10 @@ func TeslaMateAPICars() (string, bool) {
 			&car.TeslaMateStats.TotalUpdates,
 		)
 
+		// adjusting to timezone differences from UTC to be userspecific
+		car.TeslaMateDetails.InsertedAt = getTimeInTimeZone(car.TeslaMateDetails.InsertedAt)
+		car.TeslaMateDetails.UpdatedAt = getTimeInTimeZone(car.TeslaMateDetails.UpdatedAt)
+
 		// checking for errors after scanning
 		if err != nil {
 			log.Fatal(err)

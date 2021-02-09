@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -147,6 +148,32 @@ func initAPI() {
 
 	// showing database successfully connected
 	log.Println("successfully connected to postgres.")
+}
+
+func getTimeInTimeZone(datestring string) string {
+
+	// getting timezone from environment
+	UsersTimezone := getEnv("TM_TZ", "Europe/Berlin")
+
+	// format the dates are stored in postgres
+	TeslaMateDateFormat := "2006-01-02T15:04:05Z"
+
+	// parsing datestring into TeslaMateDateFormat
+	t, _ := time.Parse(TeslaMateDateFormat, datestring)
+
+	// logging UTC time to log
+	// log.Println("UTC: ", t.Format(time.RFC3339))
+
+	// loading timezone location
+	UserLocation, _ := time.LoadLocation(UsersTimezone)
+
+	// formatting in users location in RFC3339 format
+	ReturnDate := t.In(UserLocation).Format(time.RFC3339)
+
+	// logging Users location-converted time to log
+	// log.Println("Location at User: " + ReturnDate)
+
+	return ReturnDate
 }
 
 // getEnv func - read an environment or return a default value

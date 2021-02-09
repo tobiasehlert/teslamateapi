@@ -90,6 +90,10 @@ func TeslaMateAPICarsUpdates(CarID int, ResultPage int, ResultShow int) (string,
 			log.Fatal(err)
 		}
 
+		// adjusting to timezone differences from UTC to be userspecific
+		update.StartDate = getTimeInTimeZone(update.StartDate)
+		update.EndDate = getTimeInTimeZone(update.EndDate)
+
 		// appending update to UpdatesData
 		UpdatesData = append(UpdatesData, update)
 		CarData.CarID = CarID

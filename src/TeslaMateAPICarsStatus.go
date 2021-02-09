@@ -543,6 +543,10 @@ func TeslaMateAPICarsStatus(CarID int) (string, bool) {
 				MQTTInformationData.ClimateDetails.OutsideTemp = celsiusToFahrenheit(MQTTInformationData.ClimateDetails.OutsideTemp)
 			}
 
+			// adjusting to timezone differences from UTC to be userspecific
+			MQTTInformationData.StateSince = getTimeInTimeZone(MQTTInformationData.StateSince)
+			MQTTInformationData.ChargingDetails.ScheduledChargingStartTime = getTimeInTimeZone(MQTTInformationData.ChargingDetails.ScheduledChargingStartTime)
+
 			// setting response as valid
 			ValidResponse = true
 		}

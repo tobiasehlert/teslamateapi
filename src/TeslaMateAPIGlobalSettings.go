@@ -101,6 +101,10 @@ func TeslaMateAPIGlobalSettings() (string, bool) {
 			log.Fatal(err)
 		}
 
+		// adjusting to timezone differences from UTC to be userspecific
+		GlobalSetting.AccountInfo.InsertedAt = getTimeInTimeZone(GlobalSetting.AccountInfo.InsertedAt)
+		GlobalSetting.AccountInfo.UpdatedAt = getTimeInTimeZone(GlobalSetting.AccountInfo.UpdatedAt)
+
 		// setting response to valid
 		GlobalSettingData = GlobalSetting
 		ValidResponse = true
