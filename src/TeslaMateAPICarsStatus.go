@@ -316,8 +316,8 @@ func TeslaMateAPICarsStatus(CarID int) (string, bool) {
 	}
 	// Cars struct - child of Data
 	type Car struct {
-		ID   int    `json:"id"`   // smallint
-		Name string `json:"name"` // text
+		CarID   int    `json:"car_id"`   // smallint
+		CarName string `json:"car_name"` // text
 	}
 	// TeslaMateUnits struct - child of Data
 	type TeslaMateUnits struct {
@@ -366,8 +366,8 @@ func TeslaMateAPICarsStatus(CarID int) (string, bool) {
 
 		// scanning row and putting values into the car
 		err = rows.Scan(
-			&CarData.ID,
-			&CarData.Name,
+			&CarData.CarID,
+			&CarData.CarName,
 			&UnitsLength,
 			&UnitsTemperature,
 		)
@@ -377,7 +377,7 @@ func TeslaMateAPICarsStatus(CarID int) (string, bool) {
 			log.Fatal(err)
 		}
 
-		if CarID != 0 && CarID == CarData.ID || CarID == 0 {
+		if CarID != 0 && CarID == CarData.CarID || CarID == 0 {
 
 			// creating lots of subscribe to get values from every topic..
 			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/display_name", MQTTNameSpace, CarID), 0, nil)

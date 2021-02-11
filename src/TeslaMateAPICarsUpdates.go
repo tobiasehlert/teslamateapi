@@ -14,12 +14,12 @@ func TeslaMateAPICarsUpdates(CarID int, ResultPage int, ResultShow int) (string,
 	// creating structs for /cars/<CarID>/updates
 	// Car struct - child of Data
 	type Car struct {
-		CarID int    `json:"id"`   // smallint
-		Name  string `json:"name"` // text
+		CarID   int    `json:"car_id"`   // smallint
+		CarName string `json:"car_name"` // text
 	}
 	// Updates struct - child of Data
 	type Updates struct {
-		ID        int    `json:"updates_id"` // smallint
+		UpdateID  int    `json:"update_id"`  // smallint
 		StartDate string `json:"start_date"` // string
 		EndDate   string `json:"end_date"`   // string
 		Version   string `json:"version"`    // string
@@ -51,7 +51,7 @@ func TeslaMateAPICarsUpdates(CarID int, ResultPage int, ResultShow int) (string,
 	query := `
 		SELECT
 			updates.id,
-			name,
+			car.name,
 			start_date,
 			end_date,
 			version
@@ -78,8 +78,8 @@ func TeslaMateAPICarsUpdates(CarID int, ResultPage int, ResultShow int) (string,
 
 		// scanning row and putting values into the update
 		err = rows.Scan(
-			&update.ID,
-			&CarData.Name,
+			&update.UpdateID,
+			&CarData.CarName,
 			&update.StartDate,
 			&update.EndDate,
 			&update.Version,

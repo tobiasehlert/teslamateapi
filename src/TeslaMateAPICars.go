@@ -48,7 +48,7 @@ func TeslaMateAPICars() (string, bool) {
 	}
 	// Cars struct - child of Data
 	type Cars struct {
-		ID               int              `json:"id"`                // smallint
+		CarID            int              `json:"car_id"`            // smallint
 		Name             string           `json:"name"`              // text
 		CarDetails       CarDetails       `json:"car_details"`       // struct
 		CarExterior      CarExterior      `json:"car_exterior"`      // struct
@@ -114,7 +114,7 @@ func TeslaMateAPICars() (string, bool) {
 
 		// scanning row and putting values into the car
 		err = rows.Scan(
-			&car.ID,
+			&car.CarID,
 			&car.CarDetails.EID,
 			&car.CarDetails.VID,
 			&car.CarDetails.Model,

@@ -34,7 +34,7 @@ func TeslaMateAPIGlobalSettings() (string, bool) {
 	}
 	// GlobalSettings struct - child of Data
 	type GlobalSettings struct {
-		ID             int            `json:"id"`               // smallint
+		SettingID      int            `json:"setting_id"`       // smallint
 		AccountInfo    AccountInfo    `json:"account_info"`     // struct
 		TeslaMateUnits TeslaMateUnits `json:"teslamate_units"`  // struct
 		TeslaMateGUI   TeslaMateGUI   `json:"teslamate_webgui"` // struct
@@ -85,7 +85,7 @@ func TeslaMateAPIGlobalSettings() (string, bool) {
 
 		// scanning row and putting values into the GlobalSetting
 		err = rows.Scan(
-			&GlobalSetting.ID,
+			&GlobalSetting.SettingID,
 			&GlobalSetting.AccountInfo.InsertedAt,
 			&GlobalSetting.AccountInfo.UpdatedAt,
 			&GlobalSetting.TeslaMateUnits.UnitsLength,

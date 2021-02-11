@@ -11,7 +11,7 @@ func TeslaMateAPICarsID(CarID int) bool {
 
 	// creating structs for storing data
 	type Car struct {
-		ID int `json:"id"` // smallint
+		CarID int `json:"car_id"` // smallint
 	}
 
 	// creating required vars
@@ -42,7 +42,7 @@ func TeslaMateAPICarsID(CarID int) bool {
 
 		// scanning row and putting values into the car
 		err = rows.Scan(
-			&car.ID,
+			&car.CarID,
 		)
 
 		// checking for errors after scanning
@@ -50,7 +50,7 @@ func TeslaMateAPICarsID(CarID int) bool {
 			log.Fatal(err)
 		}
 
-		if CarID != 0 && CarID == car.ID {
+		if CarID != 0 && CarID == car.CarID {
 			// return true that CarID exists.. to do correct redirect to status page of particular car
 			ValidCarID = true
 		}
