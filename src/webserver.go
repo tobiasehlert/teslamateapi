@@ -249,9 +249,21 @@ func kilometersToMiles(km float64) float64 {
 	return (km * 0.62137119223733)
 }
 
+// kilometersToMilesNilSupport func
+func kilometersToMilesNilSupport(km NullFloat64) NullFloat64 {
+	km.Float64 = (km.Float64 * 0.62137119223733)
+	return (km)
+}
+
 // milesToKilometers func
 func milesToKilometers(mi float64) float64 {
 	return (mi * 1.609344)
+}
+
+// milesToKilometersNilSupport func
+func milesToKilometersNilSupport(mi NullFloat64) NullFloat64 {
+	mi.Float64 = (mi.Float64 * 1.609344)
+	return (mi)
 }
 
 // celsiusToFahrenheit func
@@ -259,7 +271,19 @@ func celsiusToFahrenheit(c float64) float64 {
 	return (c*9/5 + 32)
 }
 
+// celsiusToFahrenheitNilSupport func
+func celsiusToFahrenheitNilSupport(c NullFloat64) NullFloat64 {
+	c.Float64 = (c.Float64*9/5 + 32)
+	return (c)
+}
+
 // fahrenheitToCelsius func
 func fahrenheitToCelsius(f float64) float64 {
 	return ((f - 32) * 5 / 9)
+}
+
+// fahrenheitToCelsiusNilSupport func
+func fahrenheitToCelsiusNilSupport(f NullFloat64) NullFloat64 {
+	f.Float64 = ((f.Float64 - 32) * 5 / 9)
+	return (f)
 }
