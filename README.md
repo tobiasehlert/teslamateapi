@@ -8,7 +8,48 @@ TeslaMateApi is a RESTful API to get data collected by self-hosted data logger *
 
 ## How to use
 
-*Information will be updated..*
+You can either use it in a Docker container or go download the code and deploy it yourself on any server.
+
+If you are using TeslaMate as Docker with environment variables file (.env), then you can simply add this section to the `services:` section of the `docker-compose.yml` file:
+
+```
+services:
+  teslamateapi:
+    image: tobiasehlert/teslamateapi:latest
+    restart: always
+    environment:
+      - DATABASE_USER=${TM_DB_USER}
+      - DATABASE_PASS=${TM_DB_PASS}
+      - DATABASE_NAME=${TM_DB_NAME}
+      - DATABASE_HOST=database
+      - MQTT_HOST=mosquitto
+      - TZ=${TM_TZ}
+```
+
+### Environment variables
+
+Basically the same environment variables for the database, mqqt and timezone need to be set for TeslaMateApi as you have for TeslaMate.
+
+**Required** environment variables (even if there are some default values available)
+
+- **DATABASE_USER** string *(default: teslamate)*
+- **DATABASE_PASS** string *(default: secret)*
+- **DATABASE_NAME** string *(default: teslamate)*
+- **DATABASE_HOST** string *(default: database)*
+- **MQTT_HOST** string *(default: mosquitto)*
+- **TZ** string *(default: Europe/Berlin)*
+
+**Optional** environment variables
+
+- **DATABASE_PORT** integer *(default: 5432)*
+- **DATABASE_TIMEOUT** integer *(default: 60000)*
+- **DATABASE_SSL** boolean *(default: true)*
+- **DISABLE_MQTT** boolean *(default: false)*
+- **MQTT_TLS** boolean *(default: false)*
+- **MQTT_PORT** integer *(default: 1883 / default if TLS is true: 8883)*
+- **MQTT_USERNAME** string *(default: )*
+- **MQTT_PASSWORD** string *(default: )*
+- **MQTT_NAMESPACE** string *(default: )*
 
 ## API documentation
 
