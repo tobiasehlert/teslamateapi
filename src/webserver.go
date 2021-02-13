@@ -194,14 +194,22 @@ func initAPI() {
 
 	// declare error var for use insite initAPI
 	var err error
+	dbsslmode := "disable"
 
 	// creating connection string towards postgres
-	dbhost := getEnv("TM_DB_HOST", "database")
-	dbport := getEnvAsInt("TM_DB_PORT", 5432)
-	dbuser := getEnv("TM_DB_USER", "teslamate")
-	dbpass := getEnv("TM_DB_PASS", "secret")
-	dbname := getEnv("TM_DB_NAME", "teslamate")
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", dbhost, dbport, dbuser, dbpass, dbname)
+	dbhost := getEnv("DATABASE_HOST", "database")
+	dbport := getEnvAsInt("DATABASE_PORT", 5432)
+	dbuser := getEnv("DATABASE_USER", "teslamate")
+	dbpass := getEnv("DATABASE_PASS", "secret")
+	dbname := getEnv("DATABASE_NAME", "teslamate")
+	// dbpool := getEnvAsInt("DATABASE_POOL_SIZE", 10)
+	dbtimeout := (getEnvAsInt("DATABASE_TIMEOUT", 60000) / 1000)
+	dbssl := getEnvAsBool("DATABASE_SSL", false)
+	// dbipv6 := getEnvAsBool("DATABASE_IPV6", false)
+	if dbssl {
+		dbsslmode = "prefer"
+	}
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s connect_timeout=%d", dbhost, dbport, dbuser, dbpass, dbname, dbsslmode, dbtimeout)
 
 	// opening connection to postgres
 	db, err = sql.Open("postgres", psqlInfo)
@@ -222,7 +230,7 @@ func initAPI() {
 func getTimeInTimeZone(datestring string) string {
 
 	// getting timezone from environment
-	UsersTimezone := getEnv("TM_TZ", "Europe/Berlin")
+	UsersTimezone := getEnv("TZ", "Europe/Berlin")
 
 	// format the dates are stored in postgres
 	TeslaMateDateFormat := "2006-01-02T15:04:05Z"
