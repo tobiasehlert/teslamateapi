@@ -10,13 +10,15 @@ TeslaMateApi is a RESTful API to get data collected by self-hosted data logger *
 
 You can either use it in a Docker container or go download the code and deploy it yourself on any server.
 
-If you are using TeslaMate as Docker with environment variables file (.env), then you can simply add this section to the `services:` section of the `docker-compose.yml` file:
+If you are using TeslaMate as Docker (version with Traefik as webserver) with environment variables file (.env), then you can simply add this section to the `services:` section of the `docker-compose.yml` file:
 
 ```
 services:
   teslamateapi:
     image: tobiasehlert/teslamateapi:latest
     restart: always
+    depends_on:
+      - database
     environment:
       - DATABASE_USER=${TM_DB_USER}
       - DATABASE_PASS=${TM_DB_PASS}
@@ -24,7 +26,21 @@ services:
       - DATABASE_HOST=database
       - MQTT_HOST=mosquitto
       - TZ=${TM_TZ}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=4002"
+      - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.teslamate-auth.basicauth.realm=teslamateapi"
+      - "traefik.http.middlewares.teslamate-auth.basicauth.usersfile=/auth/.htpasswd"
+      - "traefik.http.routers.teslamateapi-insecure.rule=Host(`${FQDN_TM}`)"
+      - "traefik.http.routers.teslamateapi-insecure.middlewares=redirect"
+      - "traefik.http.routers.teslamateapi.rule=Path(`/api`) || PathPrefix(`/api/`)"
+      - "traefik.http.routers.teslamateapi.entrypoints=websecure"
+      - "traefik.http.routers.teslamateapi.middlewares=teslamate-auth"
+      - "traefik.http.routers.teslamateapi.tls.certresolver=tmhttpchallenge"
 ```
+
+In this case, the TeslaMateApi would be accessible at teslamate.example.com/api/
 
 ### Environment variables
 
@@ -71,6 +87,8 @@ More detailed documentation of every endpoint will come..
 There is **no** possibility to get access to your Tesla account tokens by this API and we'll keep it this way!
 
 The data that is accessible is data like the cars, charges, drives, current status, updates and global settings.
+
+Also, apply some authentication on your webserver in front of the container, so your data is not unprotected. The example above, we use the same .htpasswd file as used my TeslaMate.
 
 ## Credits
 
