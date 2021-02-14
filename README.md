@@ -28,7 +28,7 @@ services:
       - TZ=${TM_TZ}
     labels:
       - "traefik.enable=true"
-      - "traefik.port=4002"
+      - "traefik.port=8080"
       - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.teslamate-auth.basicauth.realm=teslamateapi"
       - "traefik.http.middlewares.teslamate-auth.basicauth.usersfile=/auth/.htpasswd"

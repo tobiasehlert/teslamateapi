@@ -185,7 +185,7 @@ func main() {
 		})
 	})
 
-	// run this! :)
+	// run this on port 8080! :)
 	r.Run()
 }
 
