@@ -18,7 +18,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o TeslaMateApi .
 FROM alpine:latest
 
 # add ca-certificates
-RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add ca-certificates tzdata
 
 # create workdir
 WORKDIR /root/
