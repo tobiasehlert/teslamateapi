@@ -27,6 +27,13 @@ func main() {
 	// kicking off Gin in value r
 	r := gin.Default()
 
+	// root endpoint telling API is running
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "API runnnig..",
+		})
+	})
+
 	// /cars endpoint
 	r.GET("/cars", func(c *gin.Context) {
 		// TeslaMateAPICars to get cars
