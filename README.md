@@ -55,11 +55,13 @@ services:
       - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.teslamateapi-auth.basicauth.realm=teslamateapi"
       - "traefik.http.middlewares.teslamateapi-auth.basicauth.usersfile=/auth/.htpasswd"
+      - "traefik.http.middlewares.teslamateapi-prefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.teslamateapi-insecure.rule=Host(`${FQDN_TM}`)"
       - "traefik.http.routers.teslamateapi-insecure.middlewares=redirect"
       - "traefik.http.routers.teslamateapi.rule=Path(`/api`) || PathPrefix(`/api/`)"
       - "traefik.http.routers.teslamateapi.entrypoints=websecure"
       - "traefik.http.routers.teslamateapi.middlewares=teslamateapi-auth"
+      - "traefik.http.routers.teslamateapi.middlewares=teslamateapi-prefix"
       - "traefik.http.routers.teslamateapi.tls.certresolver=tmhttpchallenge"
 ```
 
