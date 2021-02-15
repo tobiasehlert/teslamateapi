@@ -1,5 +1,8 @@
 # TeslaMateApi
 
+[![GitHub CI](https://github.com/tobiasehlert/teslamateapi/workflows/build/badge.svg?branch=main)](https://github.com/tobiasehlert/teslamateapi/actions?query=workflow%3Abuild)
+[![Docker pulls](https://img.shields.io/docker/pulls/tobiasehlert/teslamateapi?color=%23099cec)](https://hub.docker.com/r/tobiasehlert/teslamateapi)
+
 TeslaMateApi is a RESTful API to get data collected by self-hosted data logger **[TeslaMate](https://github.com/adriankumpf/teslamate)** in JSON.
 
 - Written in **[Golang](https://golang.org/)**

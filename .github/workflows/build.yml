@@ -20,7 +20,7 @@ jobs:
         uses: crazy-max/ghaction-docker-meta@v1
         with:
           images: tobiasehlert/teslamateapi
-          tag-sha: true #
+          tag-sha: true
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v1
