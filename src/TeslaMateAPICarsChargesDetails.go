@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 
 	_ "github.com/lib/pq"
@@ -315,6 +314,6 @@ func TeslaMateAPICarsChargesDetails(CarID int, ChargeID int) (string, bool) {
 	log.Printf("data for /cars/%d/charges/%d created:", CarID, ChargeID)
 
 	js, _ := json.Marshal(jsonData)
-	fmt.Printf("%s\n", js)
+	log.Printf("%s\n", js)
 	return string(js), ValidResponse
 }

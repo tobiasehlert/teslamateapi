@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 
 	_ "github.com/lib/pq"
@@ -128,6 +127,6 @@ func TeslaMateAPIGlobalSettings() (string, bool) {
 	log.Println("data for /globalsettings created:")
 
 	js, _ := json.Marshal(jsonData)
-	fmt.Printf("%s\n", js)
+	log.Printf("%s\n", js)
 	return string(js), ValidResponse
 }

@@ -199,8 +199,8 @@ func main() {
 		})
 	})
 
-	// run this on port 8080! :)
-	r.Run()
+	// run this and serve on 0.0.0.0:8080
+	r.Run(":8080")
 }
 
 // initAPI func
