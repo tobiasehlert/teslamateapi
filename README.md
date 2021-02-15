@@ -97,6 +97,7 @@ Basically the same environment variables for the database, mqqt and timezone nee
 
 More detailed documentation of every endpoint will come..
 
+- GET `/`
 - GET `/cars`
 - GET `/cars/:CarID`
 - GET `/cars/:CarID/charges`
