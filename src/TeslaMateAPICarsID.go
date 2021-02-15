@@ -20,7 +20,7 @@ func TeslaMateAPICarsID(CarID int) bool {
 	// getting data from database
 	query := `
 		SELECT
-			id,
+			id
 		FROM cars
 		WHERE id=$1
 		LIMIT 1;`

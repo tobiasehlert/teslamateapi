@@ -50,7 +50,7 @@ func TeslaMateAPICarsUpdates(CarID int, ResultPage int, ResultShow int) (string,
 	query := `
 		SELECT
 			updates.id,
-			car.name,
+			cars.name,
 			start_date,
 			end_date,
 			version
