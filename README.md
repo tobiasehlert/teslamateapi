@@ -10,7 +10,27 @@ TeslaMateApi is a RESTful API to get data collected by self-hosted data logger *
 
 You can either use it in a Docker container or go download the code and deploy it yourself on any server.
 
-If you are using TeslaMate as Docker (version with Traefik as webserver) with environment variables file (.env), then you can simply add this section to the `services:` section of the `docker-compose.yml` file:
+If you run the simple Docker deployment of TeslaMate, then adding this will do the trick. You'll have TeslaMateApi exposed at port 8080 locally then.
+
+```
+services:
+  teslamateapi:
+    image: tobiasehlert/teslamateapi:latest
+    restart: always
+    depends_on:
+      - database
+    environment:
+      - DATABASE_USER=teslamate
+      - DATABASE_PASS=secret
+      - DATABASE_NAME=teslamate
+      - DATABASE_HOST=database
+      - MQTT_HOST=mosquitto
+      - TZ=Europe/Berlin
+    port:
+      - 8080:8080
+```
+
+If you are using TeslaMate Traefik setup in Docker with environment variables file (.env), then you can simply add this section to the `services:` section of the `docker-compose.yml` file:
 
 ```
 services:
@@ -30,13 +50,13 @@ services:
       - "traefik.enable=true"
       - "traefik.port=8080"
       - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.teslamate-auth.basicauth.realm=teslamateapi"
-      - "traefik.http.middlewares.teslamate-auth.basicauth.usersfile=/auth/.htpasswd"
+      - "traefik.http.middlewares.teslamateapi-auth.basicauth.realm=teslamateapi"
+      - "traefik.http.middlewares.teslamateapi-auth.basicauth.usersfile=/auth/.htpasswd"
       - "traefik.http.routers.teslamateapi-insecure.rule=Host(`${FQDN_TM}`)"
       - "traefik.http.routers.teslamateapi-insecure.middlewares=redirect"
       - "traefik.http.routers.teslamateapi.rule=Path(`/api`) || PathPrefix(`/api/`)"
       - "traefik.http.routers.teslamateapi.entrypoints=websecure"
-      - "traefik.http.routers.teslamateapi.middlewares=teslamate-auth"
+      - "traefik.http.routers.teslamateapi.middlewares=teslamateapi-auth"
       - "traefik.http.routers.teslamateapi.tls.certresolver=tmhttpchallenge"
 ```
 
