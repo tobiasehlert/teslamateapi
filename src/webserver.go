@@ -24,6 +24,13 @@ func main() {
 	initAPI()
 	defer db.Close()
 
+	// setting application to ReleaseMode if DEBUG_MODE is false
+	if getEnvAsBool("DEBUG_MODE", false) == false {
+		gin.SetMode(gin.ReleaseMode)
+	} else {
+		gin.SetMode(gin.DebugMode)
+	}
+
 	// kicking off Gin in value r
 	r := gin.Default()
 

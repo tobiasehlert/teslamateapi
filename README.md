@@ -83,6 +83,7 @@ Basically the same environment variables for the database, mqqt and timezone nee
 - **DATABASE_PORT** integer *(default: 5432)*
 - **DATABASE_TIMEOUT** integer *(default: 60000)*
 - **DATABASE_SSL** boolean *(default: true)*
+- **DEBUG_MODE** boolean *(default: false)*
 - **DISABLE_MQTT** boolean *(default: false)*
 - **MQTT_TLS** boolean *(default: false)*
 - **MQTT_PORT** integer *(default: 1883 / default if TLS is true: 8883)*
