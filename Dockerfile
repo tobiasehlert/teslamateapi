@@ -26,5 +26,8 @@ WORKDIR /root/
 # copy binary from first container
 COPY --from=0 /go/src/TeslaMateApi .
 
+# expose port 8080
+EXPOSE 8080
+
 # run application
 CMD ["./TeslaMateApi"]
