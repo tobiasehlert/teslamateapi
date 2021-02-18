@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Added
+- setting mqtt cleansession flag for unsubscribe on disconnect
+
+### Changed
+- changing to one multi-subscribe instead of 46 separate subscribes on mqtt
+
 ## [1.1.0] - 2021-02-18
 
 ### Added
