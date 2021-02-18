@@ -13,7 +13,11 @@ import (
 func TeslaMateAPICars(c *gin.Context) {
 
 	// getting CarID param from URL
-	CarID := convertStringToInteger(c.DefaultQuery("CarID", "0"))
+	ParamCarID := c.Param("CarID")
+	var CarID int
+	if ParamCarID != "" {
+		CarID = convertStringToInteger(ParamCarID)
+	}
 
 	// creating structs for /cars
 	// CarDetails struct - child of Cars
@@ -72,12 +76,6 @@ func TeslaMateAPICars(c *gin.Context) {
 	// creating required vars
 	var CarsData []Cars
 	var ValidResponse bool // default is false
-	var whereFilter string
-
-	// if CarID is set.. we will filter the postgres query
-	if CarID > 0 {
-		whereFilter = ("WHERE cars.id = " + string(CarID))
-	}
 
 	// getting data from database
 	query := `
@@ -103,10 +101,10 @@ func TeslaMateAPICars(c *gin.Context) {
 			(SELECT COUNT(*) FROM charging_processes WHERE car_id=cars.id) as total_charges,
 			(SELECT COUNT(*) FROM drives WHERE car_id=cars.id) as total_drives,
 			(SELECT COUNT(*) FROM updates WHERE car_id=cars.id) as total_charges
-		FROM cars $1
+		FROM cars
 		LEFT JOIN car_settings ON cars.id = car_settings.id
 		ORDER BY id;`
-	rows, err := db.Query(query, whereFilter)
+	rows, err := db.Query(query)
 
 	// checking for errors in query
 	if err != nil {
@@ -147,18 +145,21 @@ func TeslaMateAPICars(c *gin.Context) {
 			&car.TeslaMateStats.TotalUpdates,
 		)
 
-		// adjusting to timezone differences from UTC to be userspecific
-		car.TeslaMateDetails.InsertedAt = getTimeInTimeZone(car.TeslaMateDetails.InsertedAt)
-		car.TeslaMateDetails.UpdatedAt = getTimeInTimeZone(car.TeslaMateDetails.UpdatedAt)
-
 		// checking for errors after scanning
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		// appending car to CarsData
-		CarsData = append(CarsData, car)
-		ValidResponse = true
+		// appending car to CarsData if CarID is 0 or is CarID matches car.CarID
+		if CarID == 0 && len(ParamCarID) == 0 || CarID != 0 && CarID == car.CarID {
+
+			// adjusting to timezone differences from UTC to be userspecific
+			car.TeslaMateDetails.InsertedAt = getTimeInTimeZone(car.TeslaMateDetails.InsertedAt)
+			car.TeslaMateDetails.UpdatedAt = getTimeInTimeZone(car.TeslaMateDetails.UpdatedAt)
+
+			CarsData = append(CarsData, car)
+			ValidResponse = true
+		}
 	}
 
 	// checking for errors in the rows result
@@ -176,7 +177,7 @@ func TeslaMateAPICars(c *gin.Context) {
 	}
 
 	// print to log about request
-	if gin.IsDebugging() {
+	if gin.IsDebugging() && ValidResponse {
 		if CarID > 0 {
 			log.Printf("[TeslaMateApi] TeslaMateAPICars returned /cars/%d data:", CarID)
 		} else {
@@ -197,6 +198,8 @@ func TeslaMateAPICars(c *gin.Context) {
 	} else {
 		if CarID > 0 {
 			log.Printf("[TeslaMateApi] TeslaMateAPICars error in /cars/%d execution!", CarID)
+		} else if len(ParamCarID) > 0 {
+			log.Printf("[TeslaMateApi] TeslaMateAPICars error in /cars/%s execution!", ParamCarID)
 		} else {
 			log.Println("[TeslaMateApi] TeslaMateAPICars error in /cars execution!")
 		}
