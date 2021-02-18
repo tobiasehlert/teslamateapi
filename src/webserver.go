@@ -50,7 +50,7 @@ func main() {
 	r.GET("/cars/:CarID/drives/:DriveID", TeslaMateAPICarsDrivesDetails)
 	r.GET("/cars/:CarID/status", TeslaMateAPICarsStatus)
 	r.GET("/cars/:CarID/updates", TeslaMateAPICarsUpdates)
-	r.GET("/globalsettings", TeslaMateAPIGlobalSettings)
+	r.GET("/globalsettings", TeslaMateAPIGlobalsettings)
 
 	// /ping endpoint
 	r.GET("/ping", func(c *gin.Context) {
@@ -152,20 +152,29 @@ func getEnv(key string, defaultVal string) string {
 	return defaultVal
 }
 
-// getEnvAsInt func - read an environment variable into integer or return a default value
-func getEnvAsInt(name string, defaultVal int) int {
-	valueStr := getEnv(name, "")
-	if value, err := strconv.Atoi(valueStr); err == nil {
-		return value
-	}
-	return defaultVal
-}
-
 // getEnvAsBool func - read an environment variable into a bool or return default value
 func getEnvAsBool(name string, defaultVal bool) bool {
 	valStr := getEnv(name, "")
 	if val, err := strconv.ParseBool(valStr); err == nil {
 		return val
+	}
+	return defaultVal
+}
+
+// getEnvAsFloat func - read an environment variable into a float64 or return default value
+func getEnvAsFloat(name string, defaultVal float64) float64 {
+	valStr := getEnv(name, "")
+	if val, err := strconv.ParseFloat(valStr, 64); err == nil {
+		return val
+	}
+	return defaultVal
+}
+
+// getEnvAsInt func - read an environment variable into integer or return a default value
+func getEnvAsInt(name string, defaultVal int) int {
+	valueStr := getEnv(name, "")
+	if value, err := strconv.Atoi(valueStr); err == nil {
+		return value
 	}
 	return defaultVal
 }

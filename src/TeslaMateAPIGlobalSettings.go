@@ -9,8 +9,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// TeslaMateAPIGlobalSettings func
-func TeslaMateAPIGlobalSettings(c *gin.Context) {
+// TeslaMateAPIGlobalsettings func
+func TeslaMateAPIGlobalsettings(c *gin.Context) {
 
 	// creating structs for /globalsettings
 	// AccountInfo struct - child of GlobalSettings
@@ -127,17 +127,17 @@ func TeslaMateAPIGlobalSettings(c *gin.Context) {
 
 	// print to log about request
 	if gin.IsDebugging() {
-		log.Println("[TeslaMateAPIGlobalSettings] returned /cars data:")
+		log.Println("[TeslaMateAPIGlobalsettings] returned /cars data:")
 		js, _ := json.Marshal(jsonData)
 		log.Printf("%s\n", js)
 	}
 
 	// return jsonData
 	if ValidResponse {
-		log.Println("[TeslaMateAPIGlobalSettings] executed /cars successful.")
+		log.Println("[TeslaMateAPIGlobalsettings] executed /cars successful.")
 		c.JSON(http.StatusOK, jsonData)
 	} else {
-		log.Println("[TeslaMateAPIGlobalSettings] error in /cars execution!")
-		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPIGlobalSettings.."})
+		log.Println("[TeslaMateAPIGlobalsettings] error in /cars execution!")
+		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPIGlobalsettings.."})
 	}
 }
