@@ -4,8 +4,11 @@ FROM golang:1.15.8
 # create and set workingfolder
 WORKDIR /go/src/
 
-# download dependencies
-RUN go get -v -u -d github.com/gin-gonic/gin github.com/lib/pq github.com/eclipse/paho.mqtt.golang github.com/go-sql-driver/mysql
+# copy go mod files
+COPY go.mod go.sum ./
+
+# download go mods
+RUN go mod download
 
 # copy all sourcecode
 COPY src/ .
