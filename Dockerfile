@@ -1,4 +1,4 @@
-# get latest 1.15.8 golang
+# get latest golang container
 FROM golang:1.16.0
 
 # create and set workingfolder
