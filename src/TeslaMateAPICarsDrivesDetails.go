@@ -373,8 +373,8 @@ func TeslaMateAPICarsDrivesDetails(CarID int, DriveID int) (string, bool) {
 		},
 	}
 
-	// print readable output to log
-	log.Printf("data for /cars/%d/drives/%d created:", CarID, DriveID)
+	// print to log about request
+		log.Printf("[TeslaMateAPICarsDrivesDetails] returned /cars/%d/drives/%d data:", CarID, DriveID)
 
 	js, _ := json.Marshal(jsonData)
 	log.Printf("%s\n", js)

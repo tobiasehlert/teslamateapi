@@ -37,7 +37,7 @@ func main() {
 	// root endpoint telling API is running
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"message": "API runnnig..",
+			"message": "TeslaMateApi runnnig..",
 		})
 	})
 

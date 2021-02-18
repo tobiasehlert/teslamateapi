@@ -571,8 +571,8 @@ func TeslaMateAPICarsStatus(CarID int) (string, bool) {
 		},
 	}
 
-	// print readable output to log
-	log.Printf("data for /cars/%d/status created:", CarID)
+	// print to log about request
+		log.Printf("[TeslaMateAPICarsStatus] returned /cars/%d/status data:", CarID)
 
 	js, _ := json.Marshal(jsonData)
 	log.Printf("%s\n", js)
