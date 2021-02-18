@@ -3,12 +3,20 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"net/http"
 
+	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
 // TeslaMateAPICarsDrives func
-func TeslaMateAPICarsDrives(CarID int, ResultPage int, ResultShow int) (string, bool) {
+func TeslaMateAPICarsDrives(c *gin.Context) {
+
+	// getting CarID param from URL
+	CarID := convertStringToInteger(c.Param("CarID"))
+	// query options to modify query when collecting data
+	ResultPage := convertStringToInteger(c.DefaultQuery("page", "1"))
+	ResultShow := convertStringToInteger(c.DefaultQuery("show", "100"))
 
 	// creating structs for /cars/<CarID>/drives
 	// Car struct - child of Data
@@ -238,8 +246,15 @@ func TeslaMateAPICarsDrives(CarID int, ResultPage int, ResultShow int) (string, 
 
 	// print to log about request
 		log.Printf("[TeslaMateAPICarsDrives] returned /cars/%d/drives data:", CarID)
+		js, _ := json.Marshal(jsonData)
+		log.Printf("%s\n", js)
 
-	js, _ := json.Marshal(jsonData)
-	log.Printf("%s\n", js)
-	return string(js), ValidResponse
+	// return jsonData
+	if ValidResponse {
+		log.Printf("[TeslaMateAPICarsDrives] executed /cars/%d/drives successful.", CarID)
+		c.JSON(http.StatusOK, jsonData)
+	} else {
+		log.Printf("[TeslaMateAPICarsDrives] error in /cars/%d/drives execution!", CarID)
+		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICarsDrives.."})
+	}
 }

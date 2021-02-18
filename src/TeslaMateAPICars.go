@@ -3,12 +3,17 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"net/http"
 
+	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
 // TeslaMateAPICars func
-func TeslaMateAPICars() (string, bool) {
+func TeslaMateAPICars(c *gin.Context) {
+
+	// getting CarID param from URL
+	CarID := convertStringToInteger(c.DefaultQuery("CarID", "0"))
 
 	// creating structs for /cars
 	// CarDetails struct - child of Cars
@@ -67,6 +72,12 @@ func TeslaMateAPICars() (string, bool) {
 	// creating required vars
 	var CarsData []Cars
 	var ValidResponse bool // default is false
+	var whereFilter string
+
+	// if CarID is set.. we will filter the postgres query
+	if CarID > 0 {
+		whereFilter = ("WHERE cars.id = " + string(CarID))
+	}
 
 	// getting data from database
 	query := `
@@ -92,10 +103,10 @@ func TeslaMateAPICars() (string, bool) {
 			(SELECT COUNT(*) FROM charging_processes WHERE car_id=cars.id) as total_charges,
 			(SELECT COUNT(*) FROM drives WHERE car_id=cars.id) as total_drives,
 			(SELECT COUNT(*) FROM updates WHERE car_id=cars.id) as total_charges
-		FROM cars
+		FROM cars $1
 		LEFT JOIN car_settings ON cars.id = car_settings.id
 		ORDER BY id;`
-	rows, err := db.Query(query)
+	rows, err := db.Query(query, whereFilter)
 
 	// checking for errors in query
 	if err != nil {
@@ -165,9 +176,29 @@ func TeslaMateAPICars() (string, bool) {
 	}
 
 	// print to log about request
+		if CarID > 0 {
+			log.Printf("[TeslaMateAPICars] returned /cars/%d data:", CarID)
+		} else {
 			log.Println("[TeslaMateAPICars] returned /cars data:")
+		}
+		js, _ := json.Marshal(jsonData)
+		log.Printf("%s\n", js)
 
-	js, _ := json.Marshal(jsonData)
-	log.Printf("%s\n", js)
-	return string(js), ValidResponse
+	// return jsonData
+	if ValidResponse {
+		if CarID > 0 {
+			log.Printf("[TeslaMateAPICars] executed /cars/%d successful.", CarID)
+		} else {
+			log.Println("[TeslaMateAPICars] executed /cars successful.")
+		}
+		c.JSON(http.StatusOK, jsonData)
+	} else {
+		if CarID > 0 {
+			log.Printf("[TeslaMateAPICars] error in /cars/%d execution!", CarID)
+		} else {
+			log.Println("[TeslaMateAPICars] error in /cars execution!")
+		}
+		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICars.."})
+	}
+
 }

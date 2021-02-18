@@ -3,12 +3,14 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"net/http"
 
+	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
 // TeslaMateAPIGlobalSettings func
-func TeslaMateAPIGlobalSettings() (string, bool) {
+func TeslaMateAPIGlobalSettings(c *gin.Context) {
 
 	// creating structs for /globalsettings
 	// AccountInfo struct - child of GlobalSettings
@@ -125,8 +127,15 @@ func TeslaMateAPIGlobalSettings() (string, bool) {
 
 	// print to log about request
 		log.Println("[TeslaMateAPIGlobalSettings] returned /cars data:")
+		js, _ := json.Marshal(jsonData)
+		log.Printf("%s\n", js)
 
-	js, _ := json.Marshal(jsonData)
-	log.Printf("%s\n", js)
-	return string(js), ValidResponse
+	// return jsonData
+	if ValidResponse {
+		log.Println("[TeslaMateAPIGlobalSettings] executed /cars successful.")
+		c.JSON(http.StatusOK, jsonData)
+	} else {
+		log.Println("[TeslaMateAPIGlobalSettings] error in /cars execution!")
+		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPIGlobalSettings.."})
+	}
 }

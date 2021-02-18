@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"path"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
@@ -167,7 +169,18 @@ var f mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 }
 
 // TeslaMateAPICarsStatus func
-func TeslaMateAPICarsStatus(CarID int) (string, bool) {
+func TeslaMateAPICarsStatus(c *gin.Context) {
+
+	// getting mqtt flag
+	mqttdisabled := getEnvAsBool("DISABLE_MQTT", false)
+	if mqttdisabled {
+		log.Println("[TeslaMateAPICars] DISABLE_MQTT is set to true.. can not return status for car without mqtt!")
+		c.JSON(http.StatusNotImplemented, gin.H{"error": "mqtt disabled.. status not accessible!"})
+		return
+	}
+
+	// getting CarID param from URL
+	CarID := convertStringToInteger(c.Param("CarID"))
 
 	// default values that get might get overwritten..
 	MQTTPort := 0
@@ -220,8 +233,8 @@ func TeslaMateAPICarsStatus(CarID int) (string, bool) {
 	opts.SetPingTimeout(1 * time.Second)
 
 	// creating MQTT connection with options
-	c := mqtt.NewClient(opts)
-	if token := c.Connect(); token.Wait() && token.Error() != nil {
+	m := mqtt.NewClient(opts)
+	if token := m.Connect(); token.Wait() && token.Error() != nil {
 		log.Panic(token.Error())
 	}
 
@@ -380,106 +393,106 @@ func TeslaMateAPICarsStatus(CarID int) (string, bool) {
 		if CarID != 0 && CarID == CarData.CarID || CarID == 0 {
 
 			// creating lots of subscribe to get values from every topic..
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/display_name", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/state", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/since", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/healthy", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/version", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/update_available", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/update_version", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/model", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/trim_badging", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/exterior_color", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/wheel_type", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/spoiler_type", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/geofence", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/latitude", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/longitude", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/shift_state", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/speed", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/heading", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/elevation", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/locked", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/sentry_mode", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/windows_open", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/doors_open", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/trunk_open", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/frunk_open", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/is_user_present", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/is_climate_on", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/inside_temp", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/outside_temp", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/is_preconditioning", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/odometer", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/est_battery_range_km", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/rated_battery_range_km", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/ideal_battery_range_km", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/battery_level", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/usable_battery_level", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/plugged_in", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/charge_energy_added", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/charge_limit_soc", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/charge_port_door_open", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/charger_actual_current", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/charger_phases", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/charger_power", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/charger_voltage", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/scheduled_charging_start_time", MQTTNameSpace, CarID), 0, nil)
-			c.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/time_to_full_charge", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/display_name", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/state", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/since", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/healthy", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/version", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/update_available", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/update_version", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/model", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/trim_badging", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/exterior_color", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/wheel_type", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/spoiler_type", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/geofence", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/latitude", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/longitude", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/shift_state", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/speed", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/heading", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/elevation", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/locked", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/sentry_mode", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/windows_open", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/doors_open", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/trunk_open", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/frunk_open", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/is_user_present", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/is_climate_on", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/inside_temp", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/outside_temp", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/is_preconditioning", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/odometer", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/est_battery_range_km", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/rated_battery_range_km", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/ideal_battery_range_km", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/battery_level", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/usable_battery_level", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/plugged_in", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/charge_energy_added", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/charge_limit_soc", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/charge_port_door_open", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/charger_actual_current", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/charger_phases", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/charger_power", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/charger_voltage", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/scheduled_charging_start_time", MQTTNameSpace, CarID), 0, nil)
+			m.Subscribe(fmt.Sprintf("teslamate%s/cars/%d/time_to_full_charge", MQTTNameSpace, CarID), 0, nil)
 
 			// adding some short sleep before unsubscribe
 			time.Sleep(100 * time.Millisecond)
 
 			// doing unsubscribe to not receive info anymore..
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/display_name", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/state", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/since", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/healthy", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/version", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/update_available", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/update_version", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/model", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/trim_badging", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/exterior_color", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/wheel_type", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/spoiler_type", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/geofence", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/latitude", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/longitude", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/shift_state", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/speed", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/heading", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/elevation", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/locked", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/sentry_mode", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/windows_open", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/doors_open", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/trunk_open", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/frunk_open", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/is_user_present", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/is_climate_on", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/inside_temp", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/outside_temp", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/is_preconditioning", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/odometer", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/est_battery_range_km", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/rated_battery_range_km", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/ideal_battery_range_km", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/battery_level", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/usable_battery_level", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/plugged_in", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/charge_energy_added", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/charge_limit_soc", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/charge_port_door_open", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/charger_actual_current", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/charger_phases", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/charger_power", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/charger_voltage", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/scheduled_charging_start_time", MQTTNameSpace, CarID))
-			c.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/time_to_full_charge", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/display_name", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/state", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/since", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/healthy", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/version", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/update_available", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/update_version", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/model", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/trim_badging", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/exterior_color", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/wheel_type", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/spoiler_type", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/geofence", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/latitude", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/longitude", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/shift_state", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/speed", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/heading", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/elevation", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/locked", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/sentry_mode", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/windows_open", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/doors_open", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/trunk_open", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/frunk_open", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/is_user_present", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/is_climate_on", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/inside_temp", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/outside_temp", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/is_preconditioning", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/odometer", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/est_battery_range_km", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/rated_battery_range_km", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/ideal_battery_range_km", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/battery_level", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/usable_battery_level", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/plugged_in", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/charge_energy_added", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/charge_limit_soc", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/charge_port_door_open", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/charger_actual_current", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/charger_phases", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/charger_power", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/charger_voltage", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/scheduled_charging_start_time", MQTTNameSpace, CarID))
+			m.Unsubscribe(fmt.Sprintf("teslamate%s/cars/%d/time_to_full_charge", MQTTNameSpace, CarID))
 
 			// disconnecting from MQTT
-			c.Disconnect(250)
+			m.Disconnect(250)
 
 			// setting data from MQTT into data fields to return
 			MQTTInformationData.DisplayName = MQTTDataDisplayName
@@ -573,8 +586,15 @@ func TeslaMateAPICarsStatus(CarID int) (string, bool) {
 
 	// print to log about request
 		log.Printf("[TeslaMateAPICarsStatus] returned /cars/%d/status data:", CarID)
+		js, _ := json.Marshal(jsonData)
+		log.Printf("%s\n", js)
 
-	js, _ := json.Marshal(jsonData)
-	log.Printf("%s\n", js)
-	return string(js), ValidResponse
+	// return jsonData
+	if ValidResponse {
+		log.Printf("[TeslaMateAPICarsStatus] executed /cars/%d/status successful.", CarID)
+		c.JSON(http.StatusOK, jsonData)
+	} else {
+		log.Printf("[TeslaMateAPICarsStatus] error in /cars/%d/status execution!", CarID)
+		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICarsStatus.."})
+	}
 }
