@@ -21,7 +21,7 @@ var db *sql.DB
 func main() {
 
 	// init of API with connection to database
-	initAPI()
+	initDBconnection()
 	defer db.Close()
 
 	// setting application to ReleaseMode if DEBUG_MODE is false
@@ -63,8 +63,8 @@ func main() {
 	r.Run(":8080")
 }
 
-// initAPI func
-func initAPI() {
+// initDBconnection func
+func initDBconnection() {
 
 	// declare error var for use insite initAPI
 	var err error
@@ -98,7 +98,9 @@ func initAPI() {
 	}
 
 	// showing database successfully connected
-	log.Println("successfully connected to postgres.")
+	if gin.IsDebugging() {
+		log.Println("[TeslaMateApi] initDBconnection - successfully completed (connected to postgres).")
+	}
 }
 
 func getTimeInTimeZone(datestring string) string {
@@ -113,7 +115,9 @@ func getTimeInTimeZone(datestring string) string {
 	t, _ := time.Parse(TeslaMateDateFormat, datestring)
 
 	// logging UTC time to log
-	// log.Println("UTC: ", t.Format(time.RFC3339))
+	if gin.IsDebugging() {
+		log.Println("[TeslaMateApi] getTimeInTimeZone - UTC: ", t.Format(time.RFC3339))
+	}
 
 	// loading timezone location
 	UserLocation, _ := time.LoadLocation(UsersTimezone)
@@ -122,7 +126,9 @@ func getTimeInTimeZone(datestring string) string {
 	ReturnDate := t.In(UserLocation).Format(time.RFC3339)
 
 	// logging Users location-converted time to log
-	// log.Println("Location at User: " + ReturnDate)
+	if gin.IsDebugging() {
+		log.Println("[TeslaMateApi] getTimeInTimeZone - location at User: " + ReturnDate)
+	}
 
 	return ReturnDate
 }
