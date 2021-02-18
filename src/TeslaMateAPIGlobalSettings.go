@@ -126,9 +126,11 @@ func TeslaMateAPIGlobalSettings(c *gin.Context) {
 	}
 
 	// print to log about request
+	if gin.IsDebugging() {
 		log.Println("[TeslaMateAPIGlobalSettings] returned /cars data:")
 		js, _ := json.Marshal(jsonData)
 		log.Printf("%s\n", js)
+	}
 
 	// return jsonData
 	if ValidResponse {

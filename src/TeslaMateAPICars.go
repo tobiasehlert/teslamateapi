@@ -176,6 +176,7 @@ func TeslaMateAPICars(c *gin.Context) {
 	}
 
 	// print to log about request
+	if gin.IsDebugging() {
 		if CarID > 0 {
 			log.Printf("[TeslaMateAPICars] returned /cars/%d data:", CarID)
 		} else {
@@ -183,6 +184,7 @@ func TeslaMateAPICars(c *gin.Context) {
 		}
 		js, _ := json.Marshal(jsonData)
 		log.Printf("%s\n", js)
+	}
 
 	// return jsonData
 	if ValidResponse {

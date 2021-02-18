@@ -245,9 +245,11 @@ func TeslaMateAPICarsDrives(c *gin.Context) {
 	}
 
 	// print to log about request
+	if gin.IsDebugging() {
 		log.Printf("[TeslaMateAPICarsDrives] returned /cars/%d/drives data:", CarID)
 		js, _ := json.Marshal(jsonData)
 		log.Printf("%s\n", js)
+	}
 
 	// return jsonData
 	if ValidResponse {
