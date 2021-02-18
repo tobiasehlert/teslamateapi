@@ -239,7 +239,9 @@ func TeslaMateAPICarsStatus(c *gin.Context) {
 	}
 
 	// showing mqtt successfully connected
-	log.Println("successfully connected to mqtt.")
+	if gin.IsDebugging() {
+		log.Println("[TeslaMateApi] TeslaMateAPICarsStatus successfully connected to mqtt.")
+	}
 
 	// creating structs for /cars
 	// BatteryDetails struct - child of MQTTInformation
@@ -586,17 +588,17 @@ func TeslaMateAPICarsStatus(c *gin.Context) {
 
 	// print to log about request
 	if gin.IsDebugging() {
-		log.Printf("[TeslaMateAPICarsStatus] returned /cars/%d/status data:", CarID)
+		log.Printf("[TeslaMateApi] TeslaMateAPICarsStatus returned /cars/%d/status data:", CarID)
 		js, _ := json.Marshal(jsonData)
 		log.Printf("%s\n", js)
 	}
 
 	// return jsonData
 	if ValidResponse {
-		log.Printf("[TeslaMateAPICarsStatus] executed /cars/%d/status successful.", CarID)
+		log.Printf("[TeslaMateApi] TeslaMateAPICarsStatus executed /cars/%d/status successful.", CarID)
 		c.JSON(http.StatusOK, jsonData)
 	} else {
-		log.Printf("[TeslaMateAPICarsStatus] error in /cars/%d/status execution!", CarID)
+		log.Printf("[TeslaMateApi] TeslaMateAPICarsStatus error in /cars/%d/status execution!", CarID)
 		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICarsStatus.."})
 	}
 }

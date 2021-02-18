@@ -114,20 +114,15 @@ func getTimeInTimeZone(datestring string) string {
 	// parsing datestring into TeslaMateDateFormat
 	t, _ := time.Parse(TeslaMateDateFormat, datestring)
 
-	// logging UTC time to log
-	if gin.IsDebugging() {
-		log.Println("[TeslaMateApi] getTimeInTimeZone - UTC: ", t.Format(time.RFC3339))
-	}
-
 	// loading timezone location
 	UserLocation, _ := time.LoadLocation(UsersTimezone)
 
 	// formatting in users location in RFC3339 format
 	ReturnDate := t.In(UserLocation).Format(time.RFC3339)
 
-	// logging Users location-converted time to log
+	// logging time conversion to log
 	if gin.IsDebugging() {
-		log.Println("[TeslaMateApi] getTimeInTimeZone - location at User: " + ReturnDate)
+		log.Println("[TeslaMateApi] getTimeInTimeZone - UTC", t.Format(time.RFC3339), "time converted to", UsersTimezone, "is", ReturnDate)
 	}
 
 	return ReturnDate
@@ -185,7 +180,7 @@ func convertStringToBool(data string) bool {
 		return value
 	}
 	// else..
-	log.Println("Error: convertStringToBool could not return value correct.. returning false")
+	log.Println("[TeslaMateApi] convertStringToBool error could not return value correct.. returning false")
 	return false
 }
 
@@ -195,7 +190,7 @@ func convertStringToFloat(data string) float64 {
 		return value
 	}
 	// else..
-	log.Println("Error: convertStringToFloat could not return value correct.. returning 0.0")
+	log.Println("[TeslaMateApi] convertStringToFloat error could not return value correct.. returning 0.0")
 	return 0.0
 }
 
@@ -205,7 +200,7 @@ func convertStringToInteger(data string) int {
 		return value
 	}
 	// else..
-	log.Println("Error: convertStringToInteger could not return value correct.. returning 0")
+	log.Println("[TeslaMateApi] convertStringToInteger error could not return value correct.. returning 0")
 	return 0
 }
 
