@@ -33,7 +33,7 @@ services:
       - DATABASE_HOST=database
       - MQTT_HOST=mosquitto
       - TZ=Europe/Berlin
-    port:
+    ports:
       - 8080:8080
 ```
 
