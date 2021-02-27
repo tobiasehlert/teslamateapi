@@ -119,7 +119,7 @@ There is **no** possibility to get access to your Tesla account tokens by this A
 
 The data that is accessible is data like the cars, charges, drives, current status, updates and global settings.
 
-Also, apply some authentication on your webserver in front of the container, so your data is not unprotected. The example above, we use the same .htpasswd file as used my TeslaMate.
+Also, apply some authentication on your webserver in front of the container, so your data is not unprotected and too exposed. In the example above, we use the same .htpasswd file as used by TeslaMate.
 
 ## Credits
 
