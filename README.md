@@ -13,13 +13,24 @@ TeslaMateApi is a RESTful API to get data collected by self-hosted data logger *
 - Data is collected from TeslaMate **Postgres** database and local **MQTT** Broker
 - Endpoints return data in JSON format
 
+### Table of Contents
+
+- [How to use](#how-to-use)
+  - [Docker-compose](#docker-compose)
+  - [Environment variables](#environment-variables)
+- [API documentation](#api-documentation)
+- [Security information](#security-information)
+- [Credits](#credits)
+
 ## How to use
 
 You can either use it in a Docker container or go download the code and deploy it yourself on any server.
 
+### Docker-compose
+
 If you run the simple Docker deployment of TeslaMate, then adding this will do the trick. You'll have TeslaMateApi exposed at port 8080 locally then.
 
-```
+```yaml
 services:
   teslamateapi:
     image: tobiasehlert/teslamateapi:latest
@@ -39,7 +50,7 @@ services:
 
 If you are using TeslaMate Traefik setup in Docker with environment variables file (.env), then you can simply add this section to the `services:` section of the `docker-compose.yml` file:
 
-```
+```yaml
 services:
   teslamateapi:
     image: tobiasehlert/teslamateapi:latest
