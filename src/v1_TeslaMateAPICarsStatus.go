@@ -548,17 +548,17 @@ func TeslaMateAPICarsStatusV1(c *gin.Context) {
 
 	// print to log about request
 	if gin.IsDebugging() {
-		log.Printf("[debug] TeslaMateAPICarsStatusV1 returned /cars/%d/status data:", CarID)
+		log.Printf("[debug] TeslaMateAPICarsStatusV1 returned /api/v1/cars/%d/status data:", CarID)
 		js, _ := json.Marshal(jsonData)
 		log.Printf("[debug] %s\n", js)
 	}
 
 	// return jsonData
 	if ValidResponse {
-		log.Printf("[info] TeslaMateAPICarsStatusV1 executed /cars/%d/status successful.", CarID)
+		log.Printf("[info] TeslaMateAPICarsStatusV1 executed /api/v1/cars/%d/status successful.", CarID)
 		c.JSON(http.StatusOK, jsonData)
 	} else {
-		log.Printf("[error] TeslaMateAPICarsStatusV1 error in /cars/%d/status execution!", CarID)
+		log.Printf("[error] TeslaMateAPICarsStatusV1 error in /api/v1/cars/%d/status execution!", CarID)
 		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICarsStatusV1.."})
 	}
 }

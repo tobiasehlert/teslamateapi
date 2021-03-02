@@ -112,18 +112,18 @@ Basically the same environment variables for the database, mqqt and timezone nee
 
 More detailed documentation of every endpoint will come..
 
-- GET `/`
-- GET `/v1`
-- GET `/v1/cars`
-- GET `/v1/cars/:CarID`
-- GET `/v1/cars/:CarID/charges`
-- GET `/v1/cars/:CarID/charges/:ChargeID`
-- GET `/v1/cars/:CarID/drives`
-- GET `/v1/cars/:CarID/drives/:DriveID`
-- GET `/v1/cars/:CarID/status`
-- GET `/v1/cars/:CarID/updates`
-- GET `/v1/globalsettings`
-- GET `/ping`
+- GET `/api`
+- GET `/api/v1`
+- GET `/api/v1/cars`
+- GET `/api/v1/cars/:CarID`
+- GET `/api/v1/cars/:CarID/charges`
+- GET `/api/v1/cars/:CarID/charges/:ChargeID`
+- GET `/api/v1/cars/:CarID/drives`
+- GET `/api/v1/cars/:CarID/drives/:DriveID`
+- GET `/api/v1/cars/:CarID/status`
+- GET `/api/v1/cars/:CarID/updates`
+- GET `/api/v1/globalsettings`
+- GET `/api/ping`
 
 ## Security information
 

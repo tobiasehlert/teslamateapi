@@ -127,17 +127,17 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 
 	// print to log about request
 	if gin.IsDebugging() {
-		log.Println("[debug] TeslaMateAPIGlobalsettingsV1 returned /cars data:")
+		log.Println("[debug] TeslaMateAPIGlobalsettingsV1 returned /api/v1/globalsettings data:")
 		js, _ := json.Marshal(jsonData)
 		log.Printf("[debug] %s\n", js)
 	}
 
 	// return jsonData
 	if ValidResponse {
-		log.Println("[info] TeslaMateAPIGlobalsettingsV1 executed /cars successful.")
+		log.Println("[info] TeslaMateAPIGlobalsettingsV1 executed /api/v1/globalsettings successful.")
 		c.JSON(http.StatusOK, jsonData)
 	} else {
-		log.Println("[error] TeslaMateAPIGlobalsettingsV1 error in /cars execution!")
+		log.Println("[error] TeslaMateAPIGlobalsettingsV1 error in /api/v1/globalsettings execution!")
 		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPIGlobalsettingsV1.."})
 	}
 }
