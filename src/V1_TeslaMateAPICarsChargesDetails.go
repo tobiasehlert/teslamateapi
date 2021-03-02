@@ -320,7 +320,7 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 	if gin.IsDebugging() {
 		log.Printf("[debug] TeslaMateAPICarsChargesDetailsV1 returned /cars/%d/charges/%d data:", CarID, ChargeID)
 		js, _ := json.Marshal(jsonData)
-		log.Printf("%s\n", js)
+		log.Printf("[debug] %s\n", js)
 	}
 
 	// return jsonData

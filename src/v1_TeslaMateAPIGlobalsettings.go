@@ -129,7 +129,7 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 	if gin.IsDebugging() {
 		log.Println("[debug] TeslaMateAPIGlobalsettingsV1 returned /cars data:")
 		js, _ := json.Marshal(jsonData)
-		log.Printf("%s\n", js)
+		log.Printf("[debug] %s\n", js)
 	}
 
 	// return jsonData

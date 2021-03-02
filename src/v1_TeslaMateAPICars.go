@@ -184,7 +184,7 @@ func TeslaMateAPICarsV1(c *gin.Context) {
 			log.Println("[debug] TeslaMateAPICarsV1 returned /cars data:")
 		}
 		js, _ := json.Marshal(jsonData)
-		log.Printf("%s\n", js)
+		log.Printf("[debug] %s\n", js)
 	}
 
 	// return jsonData

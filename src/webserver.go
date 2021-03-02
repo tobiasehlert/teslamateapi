@@ -21,19 +21,22 @@ var db *sql.DB
 func main() {
 
 	// setting log parameters
-	// log.SetPrefix("[TeslaMateApi] ")
-	log.SetFlags(log.Ldate | log.Lmicroseconds | log.Lshortfile)
+	log.SetFlags(log.Ldate | log.Lmicroseconds)
+
+	// setting application to ReleaseMode if DEBUG_MODE is false
+	if getEnvAsBool("DEBUG_MODE", false) == false {
+		// setting GIN_MODE to ReleaseMode
+		gin.SetMode(gin.ReleaseMode)
+		log.Printf("[info] TeslaMateApi running in release mode.")
+	} else {
+		// setting GIN_MODE to DebugMode
+		gin.SetMode(gin.DebugMode)
+		log.Printf("[info] TeslaMateApi running in debug mode.")
+	}
 
 	// init of API with connection to database
 	initDBconnection()
 	defer db.Close()
-
-	// setting application to ReleaseMode if DEBUG_MODE is false
-	if getEnvAsBool("DEBUG_MODE", false) == false {
-		gin.SetMode(gin.ReleaseMode)
-	} else {
-		gin.SetMode(gin.DebugMode)
-	}
 
 	// kicking off Gin in value r
 	r := gin.Default()
