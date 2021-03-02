@@ -9,8 +9,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// TeslaMateAPICarsUpdates func
-func TeslaMateAPICarsUpdates(c *gin.Context) {
+// TeslaMateAPICarsUpdatesV1 func
+func TeslaMateAPICarsUpdatesV1(c *gin.Context) {
 
 	// getting CarID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))
@@ -124,17 +124,17 @@ func TeslaMateAPICarsUpdates(c *gin.Context) {
 
 	// print to log about request
 	if gin.IsDebugging() {
-		log.Printf("[TeslaMateApi] TeslaMateAPICarsUpdates returned /cars/%d/updates data:", CarID)
+		log.Printf("[debug] TeslaMateAPICarsUpdatesV1 returned /cars/%d/updates data:", CarID)
 		js, _ := json.Marshal(jsonData)
 		log.Printf("%s\n", js)
 	}
 
 	// return jsonData
 	if ValidResponse {
-		log.Printf("[TeslaMateApi] TeslaMateAPICarsUpdates executed /cars/%d/updates successful.", CarID)
+		log.Printf("[info] TeslaMateAPICarsUpdatesV1 executed /cars/%d/updates successful.", CarID)
 		c.JSON(http.StatusOK, jsonData)
 	} else {
-		log.Printf("[TeslaMateApi] TeslaMateAPICarsUpdates error in /cars/%d/updates execution!", CarID)
-		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICarsUpdates.."})
+		log.Printf("[error] TeslaMateAPICarsUpdatesV1 error in /cars/%d/updates execution!", CarID)
+		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICarsUpdatesV1.."})
 	}
 }

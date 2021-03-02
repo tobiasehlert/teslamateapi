@@ -163,18 +163,18 @@ var f mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 	} else if MqttTopic == "time_to_full_charge" {
 		MQTTDataTimeToFullCharge = convertStringToFloat(string(msg.Payload()))
 	} else {
-		log.Printf("Error: extraction of data for %s not implemented in mqtt.MessageHandler yet.", MqttTopic)
+		log.Printf("[warning] mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
 	}
 
 }
 
-// TeslaMateAPICarsStatus func
-func TeslaMateAPICarsStatus(c *gin.Context) {
+// TeslaMateAPICarsStatusV1 func
+func TeslaMateAPICarsStatusV1(c *gin.Context) {
 
 	// getting mqtt flag
 	mqttdisabled := getEnvAsBool("DISABLE_MQTT", false)
 	if mqttdisabled {
-		log.Println("[TeslaMateAPICars] DISABLE_MQTT is set to true.. can not return status for car without mqtt!")
+		log.Println("[notice] TeslaMateAPICarsStatusV1 DISABLE_MQTT is set to true.. can not return status for car without mqtt!")
 		c.JSON(http.StatusNotImplemented, gin.H{"error": "mqtt disabled.. status not accessible!"})
 		return
 	}
@@ -243,7 +243,7 @@ func TeslaMateAPICarsStatus(c *gin.Context) {
 
 	// showing mqtt successfully connected
 	if gin.IsDebugging() {
-		log.Println("[TeslaMateApi] TeslaMateAPICarsStatus successfully connected to mqtt.")
+		log.Println("TeslaMateAPICarsStatus successfully connected to mqtt.")
 	}
 
 	// creating structs for /cars
@@ -548,17 +548,17 @@ func TeslaMateAPICarsStatus(c *gin.Context) {
 
 	// print to log about request
 	if gin.IsDebugging() {
-		log.Printf("[TeslaMateApi] TeslaMateAPICarsStatus returned /cars/%d/status data:", CarID)
+		log.Printf("[debug] TeslaMateAPICarsStatusV1 returned /cars/%d/status data:", CarID)
 		js, _ := json.Marshal(jsonData)
 		log.Printf("%s\n", js)
 	}
 
 	// return jsonData
 	if ValidResponse {
-		log.Printf("[TeslaMateApi] TeslaMateAPICarsStatus executed /cars/%d/status successful.", CarID)
+		log.Printf("[info] TeslaMateAPICarsStatusV1 executed /cars/%d/status successful.", CarID)
 		c.JSON(http.StatusOK, jsonData)
 	} else {
-		log.Printf("[TeslaMateApi] TeslaMateAPICarsStatus error in /cars/%d/status execution!", CarID)
-		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICarsStatus.."})
+		log.Printf("[error] TeslaMateAPICarsStatusV1 error in /cars/%d/status execution!", CarID)
+		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICarsStatusV1.."})
 	}
 }

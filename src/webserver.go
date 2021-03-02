@@ -35,29 +35,36 @@ func main() {
 	r := gin.Default()
 
 	// root endpoint telling API is running
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "TeslaMateApi runnnig..",
-		})
-	})
+	r.GET("/", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi container runnnig.."}) })
 
-	// TeslaMateApi endpoints
-	r.GET("/cars", TeslaMateAPICars)
-	r.GET("/cars/:CarID", TeslaMateAPICars)
-	r.GET("/cars/:CarID/charges", TeslaMateAPICarsCharges)
-	r.GET("/cars/:CarID/charges/:ChargeID", TeslaMateAPICarsChargesDetails)
-	r.GET("/cars/:CarID/drives", TeslaMateAPICarsDrives)
-	r.GET("/cars/:CarID/drives/:DriveID", TeslaMateAPICarsDrivesDetails)
-	r.GET("/cars/:CarID/status", TeslaMateAPICarsStatus)
-	r.GET("/cars/:CarID/updates", TeslaMateAPICarsUpdates)
-	r.GET("/globalsettings", TeslaMateAPIGlobalsettings)
+	// TeslaMateApi v1 endpoints
+	v1 := r.Group("/v1")
+	{
+		v1.GET("/", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi v1 runnnig.."}) })
+		v1.GET("/cars", TeslaMateAPICarsV1)
+		v1.GET("/cars/:CarID", TeslaMateAPICarsV1)
+		v1.GET("/cars/:CarID/charges", TeslaMateAPICarsChargesV1)
+		v1.GET("/cars/:CarID/charges/:ChargeID", TeslaMateAPICarsChargesDetailsV1)
+		v1.GET("/cars/:CarID/drives", TeslaMateAPICarsDrivesV1)
+		v1.GET("/cars/:CarID/drives/:DriveID", TeslaMateAPICarsDrivesDetailsV1)
+		v1.GET("/cars/:CarID/status", TeslaMateAPICarsStatusV1)
+		v1.GET("/cars/:CarID/updates", TeslaMateAPICarsUpdatesV1)
+		v1.GET("/globalsettings", TeslaMateAPIGlobalsettingsV1)
+	}
+
+	// TeslaMateApi endpoints (bofore versioning)
+	r.GET("/cars", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/v1"+c.Request.RequestURI) })
+	r.GET("/cars/:CarID", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/v1"+c.Request.RequestURI) })
+	r.GET("/cars/:CarID/charges", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/v1"+c.Request.RequestURI) })
+	r.GET("/cars/:CarID/charges/:ChargeID", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/v1"+c.Request.RequestURI) })
+	r.GET("/cars/:CarID/drives", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/v1"+c.Request.RequestURI) })
+	r.GET("/cars/:CarID/drives/:DriveID", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/v1"+c.Request.RequestURI) })
+	r.GET("/cars/:CarID/status", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/v1"+c.Request.RequestURI) })
+	r.GET("/cars/:CarID/updates", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/v1"+c.Request.RequestURI) })
+	r.GET("/globalsettings", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/v1"+c.Request.RequestURI) })
 
 	// /ping endpoint
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
+	r.GET("/ping", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "pong"}) })
 
 	// run this and serve on 0.0.0.0:8080
 	r.Run(":8080")

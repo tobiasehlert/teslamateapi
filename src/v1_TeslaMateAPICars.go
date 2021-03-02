@@ -9,8 +9,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// TeslaMateAPICars func
-func TeslaMateAPICars(c *gin.Context) {
+// TeslaMateAPICarsV1 func
+func TeslaMateAPICarsV1(c *gin.Context) {
 
 	// getting CarID param from URL
 	ParamCarID := c.Param("CarID")
@@ -179,9 +179,9 @@ func TeslaMateAPICars(c *gin.Context) {
 	// print to log about request
 	if gin.IsDebugging() && ValidResponse {
 		if CarID > 0 {
-			log.Printf("[TeslaMateApi] TeslaMateAPICars returned /cars/%d data:", CarID)
+			log.Printf("[debug] TeslaMateAPICarsV1 returned /cars/%d data:", CarID)
 		} else {
-			log.Println("[TeslaMateApi] TeslaMateAPICars returned /cars data:")
+			log.Println("[debug] TeslaMateAPICarsV1 returned /cars data:")
 		}
 		js, _ := json.Marshal(jsonData)
 		log.Printf("%s\n", js)
@@ -190,20 +190,20 @@ func TeslaMateAPICars(c *gin.Context) {
 	// return jsonData
 	if ValidResponse {
 		if CarID > 0 {
-			log.Printf("[TeslaMateApi] TeslaMateAPICars executed /cars/%d successful.", CarID)
+			log.Printf("[info] TeslaMateAPICarsV1 executed /cars/%d successful.", CarID)
 		} else {
-			log.Println("[TeslaMateApi] TeslaMateAPICars executed /cars successful.")
+			log.Println("[info] TeslaMateAPICarsV1 executed /cars successful.")
 		}
 		c.JSON(http.StatusOK, jsonData)
 	} else {
 		if CarID > 0 {
-			log.Printf("[TeslaMateApi] TeslaMateAPICars error in /cars/%d execution!", CarID)
+			log.Printf("[error] TeslaMateAPICarsV1 error in /cars/%d execution!", CarID)
 		} else if len(ParamCarID) > 0 {
-			log.Printf("[TeslaMateApi] TeslaMateAPICars error in /cars/%s execution!", ParamCarID)
+			log.Printf("[error] TeslaMateAPICarsV1 error in /cars/%s execution!", ParamCarID)
 		} else {
-			log.Println("[TeslaMateApi] TeslaMateAPICars error in /cars execution!")
+			log.Println("[error] TeslaMateAPICarsV1 error in /cars execution!")
 		}
-		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICars.."})
+		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICarsV1.."})
 	}
 
 }

@@ -9,8 +9,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// TeslaMateAPICarsDrivesDetails func
-func TeslaMateAPICarsDrivesDetails(c *gin.Context) {
+// TeslaMateAPICarsDrivesDetailsV1 func
+func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 
 	// getting CarID and DriveID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))
@@ -381,17 +381,17 @@ func TeslaMateAPICarsDrivesDetails(c *gin.Context) {
 
 	// print to log about request
 	if gin.IsDebugging() {
-		log.Printf("[TeslaMateApi] TeslaMateAPICarsDrivesDetails returned /cars/%d/drives/%d data:", CarID, DriveID)
+		log.Printf("[debug] TeslaMateAPICarsDrivesDetailsV1 returned /cars/%d/drives/%d data:", CarID, DriveID)
 		js, _ := json.Marshal(jsonData)
 		log.Printf("%s\n", js)
 	}
 
 	// return jsonData
 	if ValidResponse {
-		log.Printf("[TeslaMateApi] TeslaMateAPICarsDrivesDetails executed /cars/%d/drives/%d successful.", CarID, DriveID)
+		log.Printf("[info] TeslaMateAPICarsDrivesDetailsV1 executed /cars/%d/drives/%d successful.", CarID, DriveID)
 		c.JSON(http.StatusOK, jsonData)
 	} else {
-		log.Printf("[TeslaMateApi] TeslaMateAPICarsDrivesDetails error in /cars/%d/drives/%d execution!", CarID, DriveID)
-		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICarsDrivesDetails.."})
+		log.Printf("[error] TeslaMateAPICarsDrivesDetailsV1 error in /cars/%d/drives/%d execution!", CarID, DriveID)
+		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICarsDrivesDetailsV1.."})
 	}
 }
