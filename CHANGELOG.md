@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [1.2.0] - 2021-03-02
+
+### Added
+- adding version into URL for better versioning of api
+
+### Changed
+- previous endpoints (without versioning) return 301 towards new uri
+- renaming of all go files to see version number
+
 ## [1.1.1] - 2021-02-18
 
 ### Added
@@ -50,7 +59,8 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.0.1...v1.0.2
