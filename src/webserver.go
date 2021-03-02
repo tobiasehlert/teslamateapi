@@ -20,6 +20,10 @@ var db *sql.DB
 // main function
 func main() {
 
+	// setting log parameters
+	// log.SetPrefix("[TeslaMateApi] ")
+	log.SetFlags(log.Ldate | log.Lmicroseconds | log.Lshortfile)
+
 	// init of API with connection to database
 	initDBconnection()
 	defer db.Close()
@@ -106,7 +110,7 @@ func initDBconnection() {
 
 	// showing database successfully connected
 	if gin.IsDebugging() {
-		log.Println("[TeslaMateApi] initDBconnection - successfully completed (connected to postgres).")
+		log.Println("[debug] initDBconnection - successfully completed (connected to postgres).")
 	}
 }
 
@@ -129,7 +133,7 @@ func getTimeInTimeZone(datestring string) string {
 
 	// logging time conversion to log
 	if gin.IsDebugging() {
-		log.Println("[TeslaMateApi] getTimeInTimeZone - UTC", t.Format(time.RFC3339), "time converted to", UsersTimezone, "is", ReturnDate)
+		log.Println("[debug] getTimeInTimeZone - UTC", t.Format(time.RFC3339), "time converted to", UsersTimezone, "is", ReturnDate)
 	}
 
 	return ReturnDate
@@ -187,7 +191,7 @@ func convertStringToBool(data string) bool {
 		return value
 	}
 	// else..
-	log.Println("[TeslaMateApi] convertStringToBool error could not return value correct.. returning false")
+	log.Println("[warning] convertStringToBool error could not return value correct.. returning false")
 	return false
 }
 
@@ -197,7 +201,7 @@ func convertStringToFloat(data string) float64 {
 		return value
 	}
 	// else..
-	log.Println("[TeslaMateApi] convertStringToFloat error could not return value correct.. returning 0.0")
+	log.Println("[warning] convertStringToFloat error could not return value correct.. returning 0.0")
 	return 0.0
 }
 
@@ -207,7 +211,7 @@ func convertStringToInteger(data string) int {
 		return value
 	}
 	// else..
-	log.Println("[TeslaMateApi] convertStringToInteger error could not return value correct.. returning 0")
+	log.Println("[warning] convertStringToInteger error could not return value correct.. returning 0")
 	return 0
 }
 
