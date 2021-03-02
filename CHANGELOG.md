@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [1.2.1] - 2021-03-02
+
+### Fixed
+- fixing endpoint redirect to /api/v1 destinations
+- resolving path issue with traefik
+
 ## [1.2.0] - 2021-03-02
 
 ### Added
@@ -59,7 +65,8 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.0.2...v1.1.0
