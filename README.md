@@ -13,6 +13,7 @@ TeslaMateApi is a RESTful API to get data collected by self-hosted data logger *
 - Written in **[Golang](https://golang.org/)**
 - Data is collected from TeslaMate **Postgres** database and local **MQTT** Broker
 - Endpoints return data in JSON format
+- Send commands to your Tesla through the TeslaMateApi
 
 ### Table of Contents
 
@@ -108,6 +109,28 @@ Basically the same environment variables for the database, mqqt and timezone nee
 - **MQTT_NAMESPACE** string *(default: )*
 - **MQTT_SLEEPTIME** integer *(default: 100)*
 
+**Commands** environment variables
+
+- **ENABLE_COMMANDS** boolean *(default: false)*
+- **COMMANDS_ALL** boolean *(default: false)*
+- **COMMANDS_ALLOWLIST** string *(default: allow_list.json)*
+- **COMMANDS_WAKE** boolean *(default: false)*
+- **COMMANDS_ALERT** boolean *(default: false)*
+- **COMMANDS_REMOTESTART** boolean *(default: false)*
+- **COMMANDS_HOMELINK** boolean *(default: false)*
+- **COMMANDS_SPEEDLIMIT** boolean *(default: false)*
+- **COMMANDS_VALET** boolean *(default: false)*
+- **COMMANDS_SENTRYMODE** boolean *(default: false)*
+- **COMMANDS_DOORS** boolean *(default: false)*
+- **COMMANDS_TRUNK** boolean *(default: false)*
+- **COMMANDS_WINDOWS** boolean *(default: false)*
+- **COMMANDS_SUNROOF** boolean *(default: false)*
+- **COMMANDS_CHARGING** boolean *(default: false)*
+- **COMMANDS_CLIMATE** boolean *(default: false)*
+- **COMMANDS_MEDIA** boolean *(default: false)*
+- **COMMANDS_SHARING** boolean *(default: false)*
+- **COMMANDS_SOFTWAREUPDATE** boolean *(default: false)*
+
 ## API documentation
 
 More detailed documentation of every endpoint will come..
@@ -118,10 +141,13 @@ More detailed documentation of every endpoint will come..
 - GET `/api/v1/cars/:CarID`
 - GET `/api/v1/cars/:CarID/charges`
 - GET `/api/v1/cars/:CarID/charges/:ChargeID`
+- GET `/api/v1/cars/:CarID/command`
+- POST `/api/v1/cars/:CarID/command/:Command`
 - GET `/api/v1/cars/:CarID/drives`
 - GET `/api/v1/cars/:CarID/drives/:DriveID`
 - GET `/api/v1/cars/:CarID/status`
 - GET `/api/v1/cars/:CarID/updates`
+- POST `/api/v1/cars/:CarID/wake_up`
 - GET `/api/v1/globalsettings`
 - GET `/api/ping`
 
