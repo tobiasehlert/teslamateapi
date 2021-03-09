@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- bump github.com/lib/pq from 1.9.0 to 1.10.0 (#7 by dependabot)
+
 ## [1.2.1] - 2021-03-02
 
 ### Fixed
@@ -38,7 +41,7 @@
 - merged TeslaMateAPICars and TeslaMateAPICarsID into one file
 - updating Dockerfile a little
 - renaming of functions
-- bumping dependabot versions
+- bump golang from 1.15.8 to 1.16.0 (#2 by dependabot)
 - some code cleanup
 
 ### Fixed
