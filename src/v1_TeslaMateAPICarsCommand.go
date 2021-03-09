@@ -43,7 +43,9 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 		CarID = convertStringToInteger(ParamCarID)
 	}
 
+	// validating that CarID is not zero
 	if CarID == 0 {
+		log.Println("[error] TeslaMateAPICarsCommand CarID is invalid (zero)!")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "CarID invalid"})
 		return
 	}
@@ -159,7 +161,7 @@ func getCommandToken() string {
 
 func getAllowList() []string {
 
-	var allowAll bool = getEnvAsBool("COMMANDS_ALL", false)
+	allowAll := getEnvAsBool("COMMANDS_ALL", false)
 
 	// https://tesla-api.timdorr.com/vehicle/commands/wake
 	if getEnvAsBool("COMMANDS_WAKE", false) || allowAll {
@@ -224,7 +226,7 @@ func getAllowList() []string {
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/sunroof
-	if getEnvAsBool("COMMAND_SUNROOF", false) || allowAll {
+	if getEnvAsBool("COMMANDS_SUNROOF", false) || allowAll {
 		allowList = append(allowList, "/command/sun_roof_control")
 	}
 

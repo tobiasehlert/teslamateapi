@@ -75,16 +75,16 @@ func main() {
 			v1.GET("/cars/:CarID", TeslaMateAPICarsV1)
 			v1.GET("/cars/:CarID/charges", TeslaMateAPICarsChargesV1)
 			v1.GET("/cars/:CarID/charges/:ChargeID", TeslaMateAPICarsChargesDetailsV1)
+			v1.GET("/cars/:CarID/commands", TeslaMateAPICarsCommandV1)
+			v1.POST("/cars/:CarID/commands/:Command", TeslaMateAPICarsCommandV1)
 			v1.GET("/cars/:CarID/drives", TeslaMateAPICarsDrivesV1)
 			v1.GET("/cars/:CarID/drives/:DriveID", TeslaMateAPICarsDrivesDetailsV1)
 			v1.GET("/cars/:CarID/status", TeslaMateAPICarsStatusV1)
+
 			v1.GET("/cars/:CarID/updates", TeslaMateAPICarsUpdatesV1)
-			v1.GET("/globalsettings", TeslaMateAPIGlobalsettingsV1)
 
-			v1.GET("/cars/:CarID/command", TeslaMateAPICarsCommandV1)
-
-			v1.POST("/cars/:CarID/command/:Command", TeslaMateAPICarsCommandV1)
 			v1.POST("/cars/:CarID/wake_up", TeslaMateAPICarsCommandV1)
+			v1.GET("/globalsettings", TeslaMateAPIGlobalsettingsV1)
 		}
 
 		// /api/ping endpoint
