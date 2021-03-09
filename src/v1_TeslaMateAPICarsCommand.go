@@ -26,6 +26,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	// verify X-Command-Token
 	requestToken = c.Request.Header.Get("X-Command-Token")
 	if requestToken != commandToken || requestToken == "" {
+		log.Println("[error] TeslaMateAPICarsCommand missing X-Command-Token header.. throwing error!")
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthroized"})
 		return
 	}
@@ -53,7 +54,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	// getting request body to pass to Tesla
 	reqBody, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
-		log.Println(err)
+		log.Println("[error] TeslaMateAPICarsCommand error in first ioutil.ReadAll", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal"})
 		return
 	}
@@ -63,7 +64,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	command = (c.Request.RequestURI[len("/api/v1/cars/"+ParamCarID):])
 
 	if !contains(allowList, command) {
-		log.Print("command: " + command + " not allowed")
+		log.Print("[warning] TeslaMateAPICarsCommand command: " + command + " not allowed")
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthroized"})
 		return
 	}
@@ -83,7 +84,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	// checking for errors in query
 	if err != nil {
-		log.Println(err)
+		log.Println("[error] TeslaMateAPICarsCommand error in token sql query ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal"})
 		return
 	}
@@ -101,7 +102,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	// checking for errors in query
 	if err != nil {
-		log.Println(err)
+		log.Println("[error] TeslaMateAPICarsCommand error in cars sql query ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal"})
 		return
 	}
@@ -114,7 +115,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	// check response error
 	if err != nil {
-		log.Println(err)
+		log.Println("[error] TeslaMateAPICarsCommand error in http request to owner-api.teslamotors.com ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal"})
 		return
 	}
@@ -124,7 +125,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Println(err)
+		log.Println("[error] TeslaMateAPICarsCommand error in second ioutil.ReadAll ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal"})
 		return
 	}
@@ -132,9 +133,9 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	// print to log about request
 	if gin.IsDebugging() {
-		log.Println("[TeslaMateApi] TeslaMateAPICarsCommand " + command + " returned data:")
+		log.Println("[debug] TeslaMateAPICarsCommand " + command + " returned data:")
 		js, _ := json.Marshal(jsonData)
-		log.Printf("%s\n", js)
+		log.Printf("[debug] %s\n", js)
 	}
 
 	c.JSON(resp.StatusCode, jsonData)
@@ -153,7 +154,7 @@ func getCommandToken() string {
 	// get token from environment variable COMMAND_TOKEN
 	token := getEnv("COMMAND_TOKEN", "")
 	if token == "" || len(token) < 32 {
-		log.Println("Environment variable COMMAND_TOKEN not set, is empty, or too short. All commands will return unauthroized.")
+		log.Println("[warning] getCommandToken environment variable COMMAND_TOKEN not set, is empty, or too short. All POST commands will return unauthroized.")
 		token = ""
 	}
 	return token
@@ -283,15 +284,15 @@ func getAllowList() []string {
 		var allowListFile []string
 		commandAllowListFile, err := os.Open(commandAllowListLocation)
 		if err != nil {
-			log.Println("COMMANDS_ALLOWLIST: " + commandAllowListLocation + " not found and will be ignored")
+			log.Println("[error] getAllowList error with COMMANDS_ALLOWLIST: " + commandAllowListLocation + " not found and will be ignored")
 		} else {
 			byteValue, err := ioutil.ReadAll(commandAllowListFile)
 			if err != nil {
-				log.Println("error reading COMMANDS_ALLOWLIST: " + commandAllowListLocation + " it will be ignored")
+				log.Println("[error] getAllowList error while reading COMMANDS_ALLOWLIST: " + commandAllowListLocation + " it will be ignored")
 			} else {
 				err = json.Unmarshal(byteValue, &allowListFile)
 				if err != nil {
-					log.Println("error parsing JSON.. COMMANDS_ALLOWLIST: " + commandAllowListLocation + " it will be ignored")
+					log.Println("[error] getAllowList error while parsing JSON.. COMMANDS_ALLOWLIST: " + commandAllowListLocation + " it will be ignored")
 				} else {
 					allowList = append(allowList, allowListFile...)
 					commandAllowListFile.Close()
@@ -299,10 +300,10 @@ func getAllowList() []string {
 			}
 		}
 	} else {
-		log.Print("COMMANDS from environemnt variables set, " + commandAllowListLocation + " will be ignored.")
+		log.Print("[info] getAllowList COMMANDS from environment variables set, " + commandAllowListLocation + " will be ignored.")
 	}
 
-	log.Println("List of allowed Commands: " + strings.Join(allowList, ", "))
+	log.Println("[info] getAllowList list of allowed Commands: " + strings.Join(allowList, ", "))
 
 	return allowList
 

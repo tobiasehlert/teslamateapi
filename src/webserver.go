@@ -71,19 +71,32 @@ func main() {
 				c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi v1 runnnig..", "path": "/api/v1"})
 			})
 
+			// v1 /api/v1/cars endpoints
 			v1.GET("/cars", TeslaMateAPICarsV1)
 			v1.GET("/cars/:CarID", TeslaMateAPICarsV1)
+
+			// v1 /api/v1/cars/:CarID/charges endpoints
 			v1.GET("/cars/:CarID/charges", TeslaMateAPICarsChargesV1)
 			v1.GET("/cars/:CarID/charges/:ChargeID", TeslaMateAPICarsChargesDetailsV1)
+
+			// v1 /api/v1/cars/:CarID/command endpoints
 			v1.GET("/cars/:CarID/commands", TeslaMateAPICarsCommandV1)
 			v1.POST("/cars/:CarID/commands/:Command", TeslaMateAPICarsCommandV1)
+
+			// v1 /api/v1/cars/:CarID/drives endpoints
 			v1.GET("/cars/:CarID/drives", TeslaMateAPICarsDrivesV1)
 			v1.GET("/cars/:CarID/drives/:DriveID", TeslaMateAPICarsDrivesDetailsV1)
+
+			// v1 /api/v1/cars/:CarID/status endpoints
 			v1.GET("/cars/:CarID/status", TeslaMateAPICarsStatusV1)
 
+			// v1 /api/v1/cars/:CarID/updates endpoints
 			v1.GET("/cars/:CarID/updates", TeslaMateAPICarsUpdatesV1)
 
+			// v1 /api/v1/cars/:CarID/wake_up endpoints
 			v1.POST("/cars/:CarID/wake_up", TeslaMateAPICarsCommandV1)
+
+			// v1 /api/v1/globalsettings endpoints
 			v1.GET("/globalsettings", TeslaMateAPIGlobalsettingsV1)
 		}
 
