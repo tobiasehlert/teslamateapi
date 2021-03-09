@@ -17,6 +17,12 @@ import (
 // defining db var
 var db *sql.DB
 
+// list of allowed commands
+var allowList []string
+
+// token to authroize commands
+var commandToken string
+
 // main function
 func main() {
 
@@ -37,6 +43,9 @@ func main() {
 	// init of API with connection to database
 	initDBconnection()
 	defer db.Close()
+
+	commandToken = getCommandToken()
+	allowList = getAllowList()
 
 	// kicking off Gin in value r
 	r := gin.Default()
@@ -71,6 +80,11 @@ func main() {
 			v1.GET("/cars/:CarID/status", TeslaMateAPICarsStatusV1)
 			v1.GET("/cars/:CarID/updates", TeslaMateAPICarsUpdatesV1)
 			v1.GET("/globalsettings", TeslaMateAPIGlobalsettingsV1)
+
+			v1.GET("/cars/:CarID/command", TeslaMateAPICarsCommandV1)
+
+			v1.POST("/cars/:CarID/command/:Command", TeslaMateAPICarsCommandV1)
+			v1.POST("/cars/:CarID/wake_up", TeslaMateAPICarsCommandV1)
 		}
 
 		// /api/ping endpoint
