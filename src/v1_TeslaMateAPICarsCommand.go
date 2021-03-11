@@ -37,6 +37,13 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 		return
 	}
 
+	// authentication for the endpoint
+	validToken, errorMessage := validateAuthToken(c)
+	if !validToken {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": errorMessage})
+		return
+	}
+
 	// getting CarID param from URL
 	ParamCarID := c.Param("CarID")
 	var CarID int

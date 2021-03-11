@@ -17,11 +17,11 @@ import (
 // defining db var
 var db *sql.DB
 
+// defining envToken that contains API_TOKEN value
+var envToken string
+
 // list of allowed commands
 var allowList []string
-
-// token to authroize commands
-var commandToken string
 
 // main function
 func main() {
@@ -44,8 +44,9 @@ func main() {
 	initDBconnection()
 	defer db.Close()
 
-	commandToken = getCommandToken()
 	allowList = getAllowList()
+	// run initAuthToken to validate environment vars
+	initAuthToken()
 
 	// kicking off Gin in value r
 	r := gin.Default()
