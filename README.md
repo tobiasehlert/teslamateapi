@@ -96,6 +96,7 @@ Basically the same environment variables for the database, mqqt and timezone nee
 
 **Optional** environment variables
 
+- **API_TOKEN** string *(default: )*
 - **DATABASE_PORT** integer *(default: 5432)*
 - **DATABASE_TIMEOUT** integer *(default: 60000)*
 - **DATABASE_SSL** boolean *(default: true)*
