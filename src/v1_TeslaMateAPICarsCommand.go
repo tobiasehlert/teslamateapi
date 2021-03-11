@@ -18,7 +18,6 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	var TeslaAccessToken, TeslaVehicleID string
 	var jsonData map[string]interface{}
 	var err error
-	var command string
 
 	// check if commands are enabled.. if not we need to abort
 	if getEnvAsBool("ENABLE_COMMANDS", false) == false {
@@ -62,12 +61,16 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 		return
 	}
 
-	// I am not a fan of hardcoding "/api/v1/"
-	//   it would be nice to find a way to retrieve api.Group
-	command = (c.Request.RequestURI[len("/api/v1/cars/"+ParamCarID):])
+	// getting :Command
+	command := ("/command/" + c.Param("Command"))
+	// if command is /command/ or /command/wake_up, set to /wake_up only
+	if command == "/command/" || command == "/command/wake_up" {
+		command = "/wake_up"
+	}
+	log.Println("[debug] TeslaMateAPICarsCommandV1 command received:", command)
 
-		log.Print("[warning] TeslaMateAPICarsCommand command: " + command + " not allowed")
 	if !checkArrayContainsString(allowList, command) {
+		log.Print("[warning] TeslaMateAPICarsCommandV1 command: " + command + " not allowed")
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthroized"})
 		return
 	}
