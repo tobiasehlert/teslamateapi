@@ -2,8 +2,11 @@
 
 ## [Unreleased]
 
+## [1.2.2] - 2021-03-11
+
 ### Changed
 - bump github.com/lib/pq from 1.9.0 to 1.10.0 (#7 by dependabot)
+- adjustment in logging
 
 ## [1.2.1] - 2021-03-02
 
@@ -68,7 +71,8 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.2.2...HEAD
+[1.2.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.1.0...v1.1.1
