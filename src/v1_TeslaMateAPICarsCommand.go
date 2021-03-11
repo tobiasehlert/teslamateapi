@@ -63,8 +63,8 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	//   it would be nice to find a way to retrieve api.Group
 	command = (c.Request.RequestURI[len("/api/v1/cars/"+ParamCarID):])
 
-	if !contains(allowList, command) {
 		log.Print("[warning] TeslaMateAPICarsCommand command: " + command + " not allowed")
+	if !checkArrayContainsString(allowList, command) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthroized"})
 		return
 	}
@@ -139,15 +139,6 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	}
 
 	c.JSON(resp.StatusCode, jsonData)
-}
-
-func contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
 }
 
 func getCommandToken() string {

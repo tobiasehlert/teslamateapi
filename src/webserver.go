@@ -80,8 +80,8 @@ func main() {
 			v1.GET("/cars/:CarID/charges/:ChargeID", TeslaMateAPICarsChargesDetailsV1)
 
 			// v1 /api/v1/cars/:CarID/command endpoints
-			v1.GET("/cars/:CarID/commands", TeslaMateAPICarsCommandV1)
-			v1.POST("/cars/:CarID/commands/:Command", TeslaMateAPICarsCommandV1)
+			v1.GET("/cars/:CarID/command", TeslaMateAPICarsCommandV1)
+			v1.POST("/cars/:CarID/command/:Command", TeslaMateAPICarsCommandV1)
 
 			// v1 /api/v1/cars/:CarID/drives endpoints
 			v1.GET("/cars/:CarID/drives", TeslaMateAPICarsDrivesV1)
@@ -302,4 +302,14 @@ func fahrenheitToCelsius(f float64) float64 {
 func fahrenheitToCelsiusNilSupport(f NullFloat64) NullFloat64 {
 	f.Float64 = ((f.Float64 - 32) * 5 / 9)
 	return (f)
+}
+
+// checkArrayContainsString func - check if string is inside stringarray
+func checkArrayContainsString(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
