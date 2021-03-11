@@ -44,9 +44,10 @@ func main() {
 	initDBconnection()
 	defer db.Close()
 
-	allowList = getAllowList()
 	// run initAuthToken to validate environment vars
 	initAuthToken()
+	// initialize allowList stored for /command section
+	initCommandAllowList()
 
 	// kicking off Gin in value r
 	r := gin.Default()
