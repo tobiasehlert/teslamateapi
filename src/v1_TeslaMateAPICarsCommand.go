@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -16,24 +15,21 @@ import (
 func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	// creating required vars
-	var accessToken string
-	var vehicleID string
+	var TeslaAccessToken, TeslaVehicleID string
 	var jsonData map[string]interface{}
 	var err error
 	var command string
-	var requestToken string
 
-	// verify X-Command-Token
-	requestToken = c.Request.Header.Get("X-Command-Token")
-	if requestToken != commandToken || requestToken == "" {
-		log.Println("[error] TeslaMateAPICarsCommand missing X-Command-Token header.. throwing error!")
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthroized"})
+	// check if commands are enabled.. if not we need to abort
+	if getEnvAsBool("ENABLE_COMMANDS", false) == false {
+		log.Println("[warning] TeslaMateAPICarsCommandV1 ENABLE_COMMANDS is not true.. returning 403 forbidden.")
+		c.JSON(http.StatusForbidden, gin.H{"error": "You are not allowed to access commands"})
 		return
 	}
 
 	// if request method is GET return list of commands
 	if c.Request.Method == "GET" {
-		c.JSON(http.StatusOK, allowList)
+		c.JSON(http.StatusOK, gin.H{"enabled_commands": allowList})
 		return
 	}
 
@@ -53,7 +49,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	// validating that CarID is not zero
 	if CarID == 0 {
-		log.Println("[error] TeslaMateAPICarsCommand CarID is invalid (zero)!")
+		log.Println("[error] TeslaMateAPICarsCommandV1 CarID is invalid (zero)!")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "CarID invalid"})
 		return
 	}
@@ -61,7 +57,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	// getting request body to pass to Tesla
 	reqBody, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
-		log.Println("[error] TeslaMateAPICarsCommand error in first ioutil.ReadAll", err)
+		log.Println("[error] TeslaMateAPICarsCommandV1 error in first ioutil.ReadAll", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal"})
 		return
 	}
@@ -76,53 +72,49 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 		return
 	}
 
-	// allow /command/wake_up but silently `redirect` it to /wake_up
-	if command == "/command/wake_up" {
-		command = "/wake_up"
-	}
-
-	// getting access token
-	err = db.QueryRow(`
+	// get TeslaVehicleID and TeslaAccessToken
+	query := `
 		SELECT
-			access
-		FROM tokens
-		LIMIT 1;
-	`).Scan(&accessToken)
-
-	// checking for errors in query
-	if err != nil {
-		log.Println("[error] TeslaMateAPICarsCommand error in token sql query ", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal"})
-		return
-	}
-
-	// get vehicle ID
-	err = db.QueryRow(`
-		SELECT
-			eid
+			eid as TeslaVehicleID,
+			(SELECT access FROM tokens LIMIT 1) as TeslaAccessToken
 		FROM cars
 		WHERE id = $1
-		LIMIT 1;
-	`, CarID).Scan(&vehicleID)
-
-	// ToDo: ?cleanup DB connections? -- I can't find an example of closing db.QueryRow() ¯\_(ツ)_/¯
+		LIMIT 1;`
+	rows, err := db.Query(query, CarID)
 
 	// checking for errors in query
 	if err != nil {
-		log.Println("[error] TeslaMateAPICarsCommand error in cars sql query ", err)
+		log.Fatal(err)
+	}
+
+	// defer closing rows
+	defer rows.Close()
+
+	// looping through all results (even if it's only one..)
+	for rows.Next() {
+		// scanning row and putting values into the drive
+		err = rows.Scan(
+			&TeslaVehicleID,
+			&TeslaAccessToken,
+		)
+	}
+
+	// checking for errors in query when doing scan action
+	if err != nil {
+		log.Println("[error] TeslaMateAPICarsCommandV1 error in sql query:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal"})
 		return
 	}
 
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", "https://owner-api.teslamotors.com/api/1/vehicles/"+vehicleID+command, strings.NewReader(string(reqBody)))
-	req.Header.Add("Authorization", "Bearer "+accessToken)
+	req, err := http.NewRequest("POST", "https://owner-api.teslamotors.com/api/1/vehicles/"+TeslaVehicleID+command, strings.NewReader(string(reqBody)))
+	req.Header.Add("Authorization", "Bearer "+TeslaAccessToken)
 	req.Header.Add("Content-Type", "application/json")
 	resp, err := client.Do(req)
 
 	// check response error
 	if err != nil {
-		log.Println("[error] TeslaMateAPICarsCommand error in http request to owner-api.teslamotors.com ", err)
+		log.Println("[error] TeslaMateAPICarsCommandV1 error in http request to https://owner-api.teslamotors.com:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal"})
 		return
 	}
@@ -132,7 +124,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Println("[error] TeslaMateAPICarsCommand error in second ioutil.ReadAll ", err)
+		log.Println("[error] TeslaMateAPICarsCommandV1 error in second ioutil.ReadAll:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal"})
 		return
 	}
@@ -140,25 +132,15 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	// print to log about request
 	if gin.IsDebugging() {
-		log.Println("[debug] TeslaMateAPICarsCommand " + command + " returned data:")
+		log.Println("[debug] TeslaMateAPICarsCommandV1 " + c.Request.RequestURI + " returned data:")
 		js, _ := json.Marshal(jsonData)
 		log.Printf("[debug] %s\n", js)
 	}
 
-	c.JSON(resp.StatusCode, jsonData)
-}
-
-func getCommandToken() string {
-	// get token from environment variable COMMAND_TOKEN
-	token := getEnv("COMMAND_TOKEN", "")
-	if token == "" || len(token) < 32 {
-		log.Println("[warning] getCommandToken environment variable COMMAND_TOKEN not set, is empty, or too short. All POST commands will return unauthroized.")
-		token = ""
-	}
-	return token
-}
-
+	if resp.StatusCode == http.StatusOK {
+		log.Println("[info] TeslaMateAPICarsCommandV1 " + c.Request.RequestURI + " executed successful.")
 	} else {
-		log.Print("[info] getAllowList COMMANDS from environment variables set, " + commandAllowListLocation + " will be ignored.")
+		log.Println("[error] TeslaMateAPICarsCommandV1 " + c.Request.RequestURI + " error in execution!")
 	}
+	c.JSON(resp.StatusCode, jsonData)
 }
