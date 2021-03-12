@@ -14,6 +14,10 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// setting TeslaMateApi version number
+// TODO: get the value from git-tag later..
+var apiVersion = "1.2.2"
+
 // defining db var
 var db *sql.DB
 
