@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,6 +23,36 @@ func initAuthToken() {
 // validateAuthToken func
 func validateAuthToken(c *gin.Context) (bool, string) {
 
+	// trying with http header - Authorization: Bearer <token>
+	reqHeaderToken := c.Request.Header.Get("Authorization")
+
+	// if length of reqHeaderToken is more than zero
+	if len(reqHeaderToken) > 0 {
+
+		// removing Bearer part from header to get token out of header
+		splitToken := strings.Split(reqHeaderToken, "Bearer")
+
+		if len(splitToken) != 2 {
+			// bearer token is not proper formatted.. returning bad request
+			log.Println("[info] validateAuthToken - header authorization bearer token is not proper formatted.. returning 401")
+			return false, "header authorization bearer token is not proper formatted"
+
+		} else if strings.TrimSpace(splitToken[1]) == "" {
+			// bearer token is empty string.. we'll return unauthorized
+			log.Println("[info] validateAuthToken - header authorization bearer token is empty.. returning 401")
+			return false, "header authorization bearer token is empty"
+
+		} else if checkAuthToken(strings.TrimSpace(splitToken[1])) {
+			// the bearer token is valid!
+			log.Println("[debug] validateAuthToken - header authorization bearer token valid.")
+			return true, ""
+
+		}
+		// the check did fail.. bearer token is invalid
+		log.Println("[info] validateAuthToken - header authorization bearer token invalid.. returning 401")
+		return false, "header authorization bearer token invalid"
+	}
+
 	// trying with http parameter - ?token=<token>
 	tokenParamsValue := c.DefaultQuery("token", "")
 
@@ -39,40 +70,6 @@ func validateAuthToken(c *gin.Context) (bool, string) {
 		log.Println("[info] validateAuthToken - param token invalid.. returning 401")
 		return false, "param token invalid"
 	}
-
-	/*
-	    // NOT fully ready I think..
-
-	   	// trying with http header - Authorization: Bearer <token>
-	   	reqHeaderToken := c.Request.Header.Get("Authorization")
-
-	   	// if length of reqHeaderToken is more than zero
-	   	if len(reqHeaderToken) > 0 {
-
-	   		// removing Bearer part from header to get token out of header
-	   		splitToken := strings.Split(reqHeaderToken, "Bearer")
-
-	   		if len(splitToken) != 2 {
-	   			// bearer token is not proper formatted.. returning bad request
-	   			log.Println("[info] validateAuthToken - header authorization bearer token is not proper formatted.. returning 401")
-	   			return false, "header authorization bearer token is not proper formatted"
-
-	   		} else if strings.TrimSpace(splitToken[1]) == "" {
-	   			// bearer token is empty string.. we'll return unauthozied
-	   			log.Println("[info] validateAuthToken - header authorization bearer token is empty.. returning 401")
-	   			return false, "header authorization bearer token is empty"
-
-	   		} else if checkAuthToken(strings.TrimSpace(splitToken[1])) {
-	   			// the bearer token is valid!
-	   			log.Println("[debug] validateAuthToken - header authorization bearer token valid.")
-	   			return true, ""
-
-	   		}
-	   		// the check did fail.. bearer token is invalid
-	   		log.Println("[info] validateAuthToken - header authorization bearer token invalid.. returning 401")
-	   		return false, "header authorization bearer token invalid"
-	   	}
-	*/
 
 	// unauthozie all calls!
 	return false, "failed validation"
