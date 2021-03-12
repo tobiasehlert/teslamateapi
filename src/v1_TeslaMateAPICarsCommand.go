@@ -27,7 +27,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	}
 
 	// if request method is GET return list of commands
-	if c.Request.Method == "GET" {
+	if c.Request.Method == http.MethodGet {
 		c.JSON(http.StatusOK, gin.H{"enabled_commands": allowList})
 		return
 	}
@@ -110,9 +110,10 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	}
 
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", "https://owner-api.teslamotors.com/api/1/vehicles/"+TeslaVehicleID+command, strings.NewReader(string(reqBody)))
-	req.Header.Add("Authorization", "Bearer "+TeslaAccessToken)
-	req.Header.Add("Content-Type", "application/json")
+	req, _ := http.NewRequest(http.MethodPost, "https://owner-api.teslamotors.com/api/1/vehicles/"+TeslaVehicleID+command, strings.NewReader(string(reqBody)))
+	req.Header.Set("Authorization", "Bearer "+TeslaAccessToken)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", "TeslaMateApi/"+apiVersion+" https://github.com/tobiasehlert/teslamateapi")
 	resp, err := client.Do(req)
 
 	// check response error
