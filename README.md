@@ -173,7 +173,11 @@ There are two options available for authentication to be done.
 
 ### Commands
 
-Commands are not enabled by default. You need to enable it in your environment variables file and you need to specify which commands you want to use as well.
+Commands are not enabled by default. You need to enable them in your environment variables and you need to specify which commands you want to use as well.
+
+The most coarse option `COMMANDS_ALL=true` will enable all commands. Specific groups of commands can be enabled for example `COMMANDS_ALERT=true` will enable the [alert](https://tesla-api.timdorr.com/vehicle/commands/alerts) commands group. If you need a granular set of commands enabled `COMMANDS_ALLOWLIST=/path/to/allow_list.json` can be used to specify a [JSON formatted list of commands](./example/allow_list.json) to enable.
+
+*note: if `COMMANDS_ALL` or any specific group of commands has been enabled `COMMANDS_ALLOWLIST` is ignored.
 
 A list of possible commands can be found under [environment variables](#environment-variables).
 
