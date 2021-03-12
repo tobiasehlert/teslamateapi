@@ -71,7 +71,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	if !checkArrayContainsString(allowList, command) {
 		log.Print("[warning] TeslaMateAPICarsCommandV1 command: " + command + " not allowed")
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthroized"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 

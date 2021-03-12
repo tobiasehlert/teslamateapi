@@ -20,6 +20,9 @@ TeslaMateApi is a RESTful API to get data collected by self-hosted data logger *
   - [Docker-compose](#docker-compose)
   - [Environment variables](#environment-variables)
 - [API documentation](#api-documentation)
+  - [Available endpoints](#available-endpoints)
+  - [Authentication](#authentication)
+  - [Commands](#commands)
 - [Security information](#security-information)
 - [Credits](#credits)
 
@@ -134,6 +137,8 @@ Basically the same environment variables for the database, mqqt and timezone nee
 
 More detailed documentation of every endpoint will come..
 
+### Available endpoints
+
 - GET `/api`
 - GET `/api/v1`
 - GET `/api/v1/cars`
@@ -149,6 +154,28 @@ More detailed documentation of every endpoint will come..
 - POST `/api/v1/cars/:CarID/wake_up`
 - GET `/api/v1/globalsettings`
 - GET `/api/ping`
+
+### Authentication
+
+If you want to use command endpoints such as `/api/v1/cars/:CarID/command/:Command` and `/api/v1/cars/:CarID/wake_up`, you need to add authentication to your request.
+
+You need to specify a token yourself (called **API_TOKEN**) in the environment variables file, to set it. The token has the requirement to be a minimum of 32 characters long.
+
+There are two options available for authentication to be done.
+
+1. Adding extra header `Authorization: Bearer <token>` to your request. (recommended option)
+
+2. Adding URI parameter `?token=<token>` to the endpoint you try to reach. (not a good option)
+
+\* *Note: If you use the second option and your logs get compromised, your token will be leaked.*
+
+### Commands
+
+Commands are not enabled by default. You need to enable it in your environment variables file and you need to specify which commands you want to use as well.
+
+A list of possible commands can be found under [environment variables](#environment-variables).
+
+Regarding what fields you need to provide in the commands, we will referr to the [timdorr/tesla-api](https://tesla-api.timdorr.com/vehicle/commands) documentation.
 
 ## Security information
 
