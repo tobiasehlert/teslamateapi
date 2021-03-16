@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- adding randomized string to mqtt client (#15 by @LelandSindt)
+
 ## [1.2.2] - 2021-03-11
 
 ### Changed
