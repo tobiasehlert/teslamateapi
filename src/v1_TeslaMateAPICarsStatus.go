@@ -450,8 +450,10 @@ func TeslaMateAPICarsStatusV1(c *gin.Context) {
 			// run SubscribeMultiple on MQTTAllTopics map[string]byte
 			m.SubscribeMultiple(MQTTAllTopics, nil)
 
-			// adding some short sleep before disconnecting
-			time.Sleep(100 * time.Millisecond)
+			// getting sleep tim before disconnecting
+			MQTTSleepTime := getEnvAsInt("MQTT_SLEEPTIME", 100)
+			// adding some short sleep before disconnecting (based on MQTTSleepTimer)
+			time.Sleep(time.Duration(MQTTSleepTime) * time.Millisecond)
 
 			// disconnecting from MQTT
 			m.Disconnect(250)
