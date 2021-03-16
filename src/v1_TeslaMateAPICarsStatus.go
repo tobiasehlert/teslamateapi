@@ -455,7 +455,7 @@ func TeslaMateAPICarsStatusV1(c *gin.Context) {
 			time.Sleep(100 * time.Millisecond)
 
 			// disconnecting from MQTT
-			m.Disconnect(250)
+			defer m.Disconnect(250)
 
 			// setting data from MQTT into data fields to return
 			MQTTInformationData.DisplayName = MQTTDataDisplayName
