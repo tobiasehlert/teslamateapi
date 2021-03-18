@@ -74,7 +74,9 @@ type statusCache struct {
 }
 
 func startMQTT() (*statusCache, error) {
-	var s statusCache
+	s := statusCache{
+		cache: make(map[int]*statusInfo),
+	}
 	// getting mqtt flag
 	s.mqttDisabled = getEnvAsBool("DISABLE_MQTT", false)
 	if s.mqttDisabled {
