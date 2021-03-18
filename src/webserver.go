@@ -38,6 +38,12 @@ func main() {
 	initDBconnection()
 	defer db.Close()
 
+	// Connect to the MQTT broker
+	statusCache, err := startMQTT()
+	if err != nil {
+		log.Fatalf("MQTT connection failed: %s", err)
+	}
+
 	// kicking off Gin in value r
 	r := gin.Default()
 
@@ -68,7 +74,7 @@ func main() {
 			v1.GET("/cars/:CarID/charges/:ChargeID", TeslaMateAPICarsChargesDetailsV1)
 			v1.GET("/cars/:CarID/drives", TeslaMateAPICarsDrivesV1)
 			v1.GET("/cars/:CarID/drives/:DriveID", TeslaMateAPICarsDrivesDetailsV1)
-			v1.GET("/cars/:CarID/status", TeslaMateAPICarsStatusV1)
+			v1.GET("/cars/:CarID/status", statusCache.TeslaMateAPICarsStatusV1)
 			v1.GET("/cars/:CarID/updates", TeslaMateAPICarsUpdatesV1)
 			v1.GET("/globalsettings", TeslaMateAPIGlobalsettingsV1)
 		}
