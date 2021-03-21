@@ -49,11 +49,11 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 	}
 	// BatteryInfo struct - child of ChargeDetails
 	type BatteryInfo struct {
-		IdealBatteryRange    float64 `json:"ideal_battery_range"`     // float64
-		RatedBatteryRange    float64 `json:"rated_battery_range"`     // float64
-		BatteryHeater        bool    `json:"battery_heater"`          // bool
-		BatteryHeaterOn      bool    `json:"battery_heater_on"`       // bool
-		BatteryHeaterNoPower bool    `json:"battery_heater_no_power"` // bool
+		IdealBatteryRange    float64  `json:"ideal_battery_range"`     // float64
+		RatedBatteryRange    float64  `json:"rated_battery_range"`     // float64
+		BatteryHeater        bool     `json:"battery_heater"`          // bool
+		BatteryHeaterOn      bool     `json:"battery_heater_on"`       // bool
+		BatteryHeaterNoPower NullBool `json:"battery_heater_no_power"` // bool
 	}
 	// ChargeDetails struct - child of Charge
 	type ChargeDetails struct {
@@ -62,7 +62,7 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 		BatteryLevel         int             `json:"battery_level"`            // int
 		UsableBatteryLevel   int             `json:"usable_battery_level"`     // int
 		ChargeEnergyAdded    float64         `json:"charge_energy_added"`      // float64
-		NotEnoughPowerToHeat bool            `json:"not_enough_power_to_heat"` // bool
+		NotEnoughPowerToHeat NullBool        `json:"not_enough_power_to_heat"` // bool
 		ChargerDetails       ChargerDetails  `json:"charger_details"`          // struct
 		BatteryInfo          BatteryInfo     `json:"battery_info"`             // struct
 		ConnChargeCable      string          `json:"conn_charge_cable"`        // string
