@@ -12,6 +12,7 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+	"github.com/thanhpk/randstr"
 )
 
 // statusInfo holds the status info for a car
