@@ -133,6 +133,7 @@ func initCommandAllowList() {
 	if len(allowList) == 0 {
 		var allowListFile []string
 		commandAllowListFile, err := os.Open(commandAllowListLocation)
+		defer commandAllowListFile.Close()
 		if err != nil {
 			log.Println("[error] getAllowList error with COMMANDS_ALLOWLIST: " + commandAllowListLocation + " not found and will be ignored")
 		} else {
@@ -145,7 +146,6 @@ func initCommandAllowList() {
 					log.Println("[error] getAllowList error while parsing JSON.. COMMANDS_ALLOWLIST: " + commandAllowListLocation + " it will be ignored")
 				} else {
 					allowList = append(allowList, allowListFile...)
-					commandAllowListFile.Close()
 				}
 			}
 		}
