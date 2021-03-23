@@ -5,6 +5,20 @@
 ### Changed
 - adding randomized string to mqtt client (#15 by @LelandSindt)
 
+## [1.3.0] - 2021-03-17
+
+### Added
+- adding mqtt sleep time before doing disconnect (#17)
+
+## [1.2.3] - 2021-03-16
+
+### Added
+- adding probot for stale and no-response
+
+### Changed
+- bump golang from 1.16.0 to 1.16.2 (#12 by dependabot)
+- bump go mod version from 1.15 to 1.16
+
 ## [1.2.2] - 2021-03-11
 
 ### Changed
@@ -74,7 +88,9 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.2.2...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.2.3...v1.3.0
+[1.2.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.2.2...v1.2.3
 [1.2.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.1.1...v1.2.0
