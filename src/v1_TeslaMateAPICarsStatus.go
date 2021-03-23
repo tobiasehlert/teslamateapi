@@ -115,34 +115,28 @@ func startMQTT() (*statusCache, error) {
 
 	mqttURL := fmt.Sprintf("%s://%s%s:%d", MQTTProtocol, MQTTUserstring, MQTTHost, MQTTPort)
 
-	/*
-		// if some more logging is needed.. which we skip for now
-		mqtt.DEBUG = log.New(os.Stdout, "", 0)
-		mqtt.ERROR = log.New(os.Stdout, "", 0)
-	*/
-
 	// create options for the MQTT client connection
 	opts := mqtt.NewClientOptions().AddBroker(mqttURL)
 	// setting generic MQTT settings in opts
-	opts.SetKeepAlive(2 * time.Second)          // setting keepalive for client
-	opts.SetDefaultPublishHandler(s.newMessage) // using f mqtt.MessageHandler function
-	opts.SetPingTimeout(1 * time.Second)        // setting pingtimeout for client
-	opts.SetClientID("teslamateapi")            // setting mqtt client id for TeslaMateApi
-	opts.SetCleanSession(true)                  // removal of all subscriptions on disconnect
-	opts.SetOrderMatters(false)                 // don't care about order (removes need for callbacks to return immediately)
-	opts.SetAutoReconnect(true)                 // if connection drops automatically re-establish it
+	opts.SetKeepAlive(2 * time.Second)                    // setting keepalive for client
+	opts.SetDefaultPublishHandler(s.newMessage)           // using f mqtt.MessageHandler function
+	opts.SetPingTimeout(1 * time.Second)                  // setting pingtimeout for client
+	opts.SetClientID("teslamateapi-" + randstr.String(4)) // setting mqtt client id for TeslaMateApi
+	opts.SetCleanSession(true)                            // removal of all subscriptions on disconnect
+	opts.SetOrderMatters(false)                           // don't care about order (removes need for callbacks to return immediately)
+	opts.SetAutoReconnect(true)                           // if connection drops automatically re-establish it
 	opts.AutoReconnect = true
 
 	// creating MQTT connection with options
 	m := mqtt.NewClient(opts)
 	if token := m.Connect(); token.Wait() && token.Error() != nil {
-		return nil, fmt.Errorf("failed to connect to MQTT: %w", token.Error())
+		return nil, fmt.Errorf("[error] TeslaMateAPICarsStatusV1 failed to connect to MQTT: %w", token.Error())
 		// Note : May want to use opts.ConnectRetry which will keep trying the connection
 	}
 
 	// showing mqtt successfully connected
 	if gin.IsDebugging() {
-		log.Println("TeslaMateAPICarsStatus successfully connected to mqtt.")
+		log.Println("[debug] TeslaMateAPICarsStatusV1 successfully connected to mqtt.")
 	}
 
 	// adding MQTTNameSpace info
@@ -169,7 +163,7 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 	var MqttTopic string
 	_, err := fmt.Sscanf(msg.Topic(), s.topicScan, &carID, &MqttTopic)
 	if err != nil {
-		log.Printf("Unexpected topic format (%s) - ignoring message: %v", msg.Topic(), err)
+		log.Printf("[warning] TeslaMateAPICarsStatusV1 unexpected topic format (%s) - ignoring message: %v", msg.Topic(), err)
 		return
 	}
 
@@ -276,7 +270,7 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 	} else if MqttTopic == "time_to_full_charge" {
 		stat.MQTTDataTimeToFullCharge = convertStringToFloat(string(msg.Payload()))
 	} else {
-		log.Printf("[warning] mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
+		log.Printf("[warning] TeslaMateAPICarsStatusV1 mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
 		return
 	}
 }

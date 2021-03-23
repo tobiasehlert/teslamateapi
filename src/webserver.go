@@ -41,7 +41,7 @@ func main() {
 	// Connect to the MQTT broker
 	statusCache, err := startMQTT()
 	if err != nil {
-		log.Fatalf("MQTT connection failed: %s", err)
+		log.Fatalf("[error] TeslaMateApi MQTT connection failed: %s", err)
 	}
 
 	// kicking off Gin in value r
