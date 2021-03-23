@@ -2,10 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
-	"path"
+	"sync"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -14,8 +15,8 @@ import (
 	"github.com/thanhpk/randstr"
 )
 
-// defining a lot of vars that are used my the MQTT MessageHandler
-var (
+// statusInfo holds the status info for a car
+type statusInfo struct {
 	MQTTDataDisplayName                string
 	MQTTDataState                      string
 	MQTTDataStateSince                 string
@@ -62,126 +63,26 @@ var (
 	MQTTDataChargerVoltage             int
 	MQTTDataScheduledChargingStartTime string
 	MQTTDataTimeToFullCharge           float64
-)
-
-// define a function for the default message handler
-var f mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
-
-	// extracting the last part of topic
-	_, MqttTopic := path.Split(msg.Topic())
-
-	// running if-else statements to collect data and put into overall vars..
-	if MqttTopic == "display_name" {
-		MQTTDataDisplayName = string(msg.Payload())
-	} else if MqttTopic == "state" {
-		MQTTDataState = string(msg.Payload())
-	} else if MqttTopic == "since" {
-		MQTTDataStateSince = string(msg.Payload())
-	} else if MqttTopic == "healthy" {
-		MQTTDataHealthy = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "version" {
-		MQTTDataVersion = string(msg.Payload())
-	} else if MqttTopic == "update_available" {
-		MQTTDataUpdateAvailable = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "update_version" {
-		MQTTDataUpdateVersion = string(msg.Payload())
-	} else if MqttTopic == "model" {
-		MQTTDataModel = string(msg.Payload())
-	} else if MqttTopic == "trim_badging" {
-		MQTTDataTrimBadging = string(msg.Payload())
-	} else if MqttTopic == "exterior_color" {
-		MQTTDataExteriorColor = string(msg.Payload())
-	} else if MqttTopic == "wheel_type" {
-		MQTTDataWheelType = string(msg.Payload())
-	} else if MqttTopic == "spoiler_type" {
-		MQTTDataSpoilerType = string(msg.Payload())
-	} else if MqttTopic == "geofence" {
-		MQTTDataGeofence = string(msg.Payload())
-	} else if MqttTopic == "latitude" {
-		MQTTDataLatitude = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "longitude" {
-		MQTTDataLongitude = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "shift_state" {
-		MQTTDataShiftState = string(msg.Payload())
-	} else if MqttTopic == "speed" {
-		MQTTDataSpeed = convertStringToInteger(string(msg.Payload()))
-	} else if MqttTopic == "heading" {
-		MQTTDataHeading = convertStringToInteger(string(msg.Payload()))
-	} else if MqttTopic == "elevation" {
-		MQTTDataElevation = convertStringToInteger(string(msg.Payload()))
-	} else if MqttTopic == "locked" {
-		MQTTDataLocked = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "sentry_mode" {
-		MQTTDataSentryMode = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "windows_open" {
-		MQTTDataWindowsOpen = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "doors_open" {
-		MQTTDataDoorsOpen = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "trunk_open" {
-		MQTTDataTrunkOpen = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "frunk_open" {
-		MQTTDataFrunkOpen = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "is_user_present" {
-		MQTTDataIsUserPresent = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "is_climate_on" {
-		MQTTDataIsClimateOn = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "inside_temp" {
-		MQTTDataInsideTemp = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "outside_temp" {
-		MQTTDataOutsideTemp = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "is_preconditioning" {
-		MQTTDataIsPreconditioning = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "odometer" {
-		MQTTDataOdometer = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "est_battery_range_km" {
-		MQTTDataEstBatteryRange = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "rated_battery_range_km" {
-		MQTTDataRatedBatteryRange = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "ideal_battery_range_km" {
-		MQTTDataIdealBatteryRange = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "battery_level" {
-		MQTTDataBatteryLevel = convertStringToInteger(string(msg.Payload()))
-	} else if MqttTopic == "usable_battery_level" {
-		MQTTDataUsableBatteryLevel = convertStringToInteger(string(msg.Payload()))
-	} else if MqttTopic == "plugged_in" {
-		MQTTDataPluggedIn = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "charge_energy_added" {
-		MQTTDataChargeEnergyAdded = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "charge_limit_soc" {
-		MQTTDataChargeLimitSoc = convertStringToInteger(string(msg.Payload()))
-	} else if MqttTopic == "charge_port_door_open" {
-		MQTTDataChargePortDoorOpen = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "charger_actual_current" {
-		MQTTDataChargerActualCurrent = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "charger_phases" {
-		MQTTDataChargerPhases = convertStringToInteger(string(msg.Payload()))
-	} else if MqttTopic == "charger_power" {
-		MQTTDataChargerPower = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "charger_voltage" {
-		MQTTDataChargerVoltage = convertStringToInteger(string(msg.Payload()))
-	} else if MqttTopic == "scheduled_charging_start_time" {
-		MQTTDataScheduledChargingStartTime = string(msg.Payload())
-	} else if MqttTopic == "time_to_full_charge" {
-		MQTTDataTimeToFullCharge = convertStringToFloat(string(msg.Payload()))
-	} else {
-		log.Printf("[warning] mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
-	}
-
 }
 
-// TeslaMateAPICarsStatusV1 func
-func TeslaMateAPICarsStatusV1(c *gin.Context) {
+type statusCache struct {
+	mqttDisabled bool
 
-	// getting mqtt flag
-	mqttdisabled := getEnvAsBool("DISABLE_MQTT", false)
-	if mqttdisabled {
-		log.Println("[notice] TeslaMateAPICarsStatusV1 DISABLE_MQTT is set to true.. can not return status for car without mqtt!")
-		c.JSON(http.StatusNotImplemented, gin.H{"error": "mqtt disabled.. status not accessible!"})
-		return
+	topicScan string // scan parameter (expect it to generate car ID then relevant parameter)
+
+	cache map[int]*statusInfo
+	mu    sync.Mutex
+}
+
+func startMQTT() (*statusCache, error) {
+	s := statusCache{
+		cache: make(map[int]*statusInfo),
 	}
-
-	// getting CarID param from URL
-	CarID := convertStringToInteger(c.Param("CarID"))
+	// getting mqtt flag
+	s.mqttDisabled = getEnvAsBool("DISABLE_MQTT", false)
+	if s.mqttDisabled {
+		return nil, errors.New("[notice] TeslaMateAPICarsStatusV1 DISABLE_MQTT is set to true.. can not return status for car without mqtt!")
+	}
 
 	// default values that get might get overwritten..
 	MQTTPort := 0
@@ -200,7 +101,6 @@ func TeslaMateAPICarsStatusV1(c *gin.Context) {
 	MQTTUser := getEnv("MQTT_USERNAME", "")
 	MQTTPass := getEnv("MQTT_PASSWORD", "")
 	// MQTTInvCert := getEnvAsBool("MQTT_TLS_ACCEPT_INVALID_CERTS", false)
-	MQTTNameSpace := getEnv("MQTT_NAMESPACE", "")
 
 	// creating mqttURL to connect with
 	// mqtt[s]://[username][:password]@host.domain[:port]
@@ -216,35 +116,185 @@ func TeslaMateAPICarsStatusV1(c *gin.Context) {
 
 	mqttURL := fmt.Sprintf("%s://%s%s:%d", MQTTProtocol, MQTTUserstring, MQTTHost, MQTTPort)
 
-	// adding MQTTNameSpace info
-	if len(MQTTNameSpace) > 0 {
-		MQTTNameSpace = ("/" + MQTTNameSpace)
-	}
-
-	/*
-		// if some more logging is needed.. which we skip for now
-		mqtt.DEBUG = log.New(os.Stdout, "", 0)
-		mqtt.ERROR = log.New(os.Stdout, "", 0)
-	*/
-
 	// create options for the MQTT client connection
 	opts := mqtt.NewClientOptions().AddBroker(mqttURL)
 	// setting generic MQTT settings in opts
 	opts.SetKeepAlive(2 * time.Second)                    // setting keepalive for client
-	opts.SetDefaultPublishHandler(f)                      // using f mqtt.MessageHandler function
+	opts.SetDefaultPublishHandler(s.newMessage)           // using f mqtt.MessageHandler function
 	opts.SetPingTimeout(1 * time.Second)                  // setting pingtimeout for client
 	opts.SetClientID("teslamateapi-" + randstr.String(4)) // setting mqtt client id for TeslaMateApi
 	opts.SetCleanSession(true)                            // removal of all subscriptions on disconnect
+	opts.SetOrderMatters(false)                           // don't care about order (removes need for callbacks to return immediately)
+	opts.SetAutoReconnect(true)                           // if connection drops automatically re-establish it
+	opts.AutoReconnect = true
 
 	// creating MQTT connection with options
 	m := mqtt.NewClient(opts)
 	if token := m.Connect(); token.Wait() && token.Error() != nil {
-		log.Panic(token.Error())
+		return nil, fmt.Errorf("[error] TeslaMateAPICarsStatusV1 failed to connect to MQTT: %w", token.Error())
+		// Note : May want to use opts.ConnectRetry which will keep trying the connection
 	}
 
 	// showing mqtt successfully connected
 	if gin.IsDebugging() {
-		log.Println("TeslaMateAPICarsStatus successfully connected to mqtt.")
+		log.Println("[debug] TeslaMateAPICarsStatusV1 successfully connected to mqtt.")
+	}
+
+	// adding MQTTNameSpace info
+	MQTTNameSpace := getEnv("MQTT_NAMESPACE", "")
+	if len(MQTTNameSpace) > 0 {
+		MQTTNameSpace = ("/" + MQTTNameSpace)
+	}
+
+	// Subscribe - we will accept info on any car...
+	topic := fmt.Sprintf("teslamate%s/cars/#", MQTTNameSpace)
+	if token := m.Subscribe(topic, 0, s.newMessage); token.Wait() && token.Error() != nil {
+		log.Panic(token.Error()) // Note : May want to use opts.ConnectRetry which will keep trying the connection
+	}
+	s.topicScan = fmt.Sprintf("teslamate%s/cars/%%d/%%s", MQTTNameSpace)
+
+	// Thats all - newMessage will be called when something new arrives
+	return &s, nil
+}
+
+// newMessage - called by mqtt package when new message received
+func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
+	// topic is in the format teslamateMQTT_NAMESPACE/cars/carID/display_name
+	var carID int
+	var MqttTopic string
+	_, err := fmt.Sscanf(msg.Topic(), s.topicScan, &carID, &MqttTopic)
+	if err != nil {
+		log.Printf("[warning] TeslaMateAPICarsStatusV1 unexpected topic format (%s) - ignoring message: %v", msg.Topic(), err)
+		return
+	}
+
+	// extracting the last part of topic
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	stat := s.cache[carID]
+	if stat == nil {
+		stat = &statusInfo{}
+		s.cache[carID] = stat
+	}
+
+	// running if-else statements to collect data and put into overall vars..
+	if MqttTopic == "display_name" {
+		stat.MQTTDataDisplayName = string(msg.Payload())
+	} else if MqttTopic == "state" {
+		stat.MQTTDataState = string(msg.Payload())
+	} else if MqttTopic == "since" {
+		stat.MQTTDataStateSince = string(msg.Payload())
+	} else if MqttTopic == "healthy" {
+		stat.MQTTDataHealthy = convertStringToBool(string(msg.Payload()))
+	} else if MqttTopic == "version" {
+		stat.MQTTDataVersion = string(msg.Payload())
+	} else if MqttTopic == "update_available" {
+		stat.MQTTDataUpdateAvailable = convertStringToBool(string(msg.Payload()))
+	} else if MqttTopic == "update_version" {
+		stat.MQTTDataUpdateVersion = string(msg.Payload())
+	} else if MqttTopic == "model" {
+		stat.MQTTDataModel = string(msg.Payload())
+	} else if MqttTopic == "trim_badging" {
+		stat.MQTTDataTrimBadging = string(msg.Payload())
+	} else if MqttTopic == "exterior_color" {
+		stat.MQTTDataExteriorColor = string(msg.Payload())
+	} else if MqttTopic == "wheel_type" {
+		stat.MQTTDataWheelType = string(msg.Payload())
+	} else if MqttTopic == "spoiler_type" {
+		stat.MQTTDataSpoilerType = string(msg.Payload())
+	} else if MqttTopic == "geofence" {
+		stat.MQTTDataGeofence = string(msg.Payload())
+	} else if MqttTopic == "latitude" {
+		stat.MQTTDataLatitude = convertStringToFloat(string(msg.Payload()))
+	} else if MqttTopic == "longitude" {
+		stat.MQTTDataLongitude = convertStringToFloat(string(msg.Payload()))
+	} else if MqttTopic == "shift_state" {
+		stat.MQTTDataShiftState = string(msg.Payload())
+	} else if MqttTopic == "speed" {
+		stat.MQTTDataSpeed = convertStringToInteger(string(msg.Payload()))
+	} else if MqttTopic == "heading" {
+		stat.MQTTDataHeading = convertStringToInteger(string(msg.Payload()))
+	} else if MqttTopic == "elevation" {
+		stat.MQTTDataElevation = convertStringToInteger(string(msg.Payload()))
+	} else if MqttTopic == "locked" {
+		stat.MQTTDataLocked = convertStringToBool(string(msg.Payload()))
+	} else if MqttTopic == "sentry_mode" {
+		stat.MQTTDataSentryMode = convertStringToBool(string(msg.Payload()))
+	} else if MqttTopic == "windows_open" {
+		stat.MQTTDataWindowsOpen = convertStringToBool(string(msg.Payload()))
+	} else if MqttTopic == "doors_open" {
+		stat.MQTTDataDoorsOpen = convertStringToBool(string(msg.Payload()))
+	} else if MqttTopic == "trunk_open" {
+		stat.MQTTDataTrunkOpen = convertStringToBool(string(msg.Payload()))
+	} else if MqttTopic == "frunk_open" {
+		stat.MQTTDataFrunkOpen = convertStringToBool(string(msg.Payload()))
+	} else if MqttTopic == "is_user_present" {
+		stat.MQTTDataIsUserPresent = convertStringToBool(string(msg.Payload()))
+	} else if MqttTopic == "is_climate_on" {
+		stat.MQTTDataIsClimateOn = convertStringToBool(string(msg.Payload()))
+	} else if MqttTopic == "inside_temp" {
+		stat.MQTTDataInsideTemp = convertStringToFloat(string(msg.Payload()))
+	} else if MqttTopic == "outside_temp" {
+		stat.MQTTDataOutsideTemp = convertStringToFloat(string(msg.Payload()))
+	} else if MqttTopic == "is_preconditioning" {
+		stat.MQTTDataIsPreconditioning = convertStringToBool(string(msg.Payload()))
+	} else if MqttTopic == "odometer" {
+		stat.MQTTDataOdometer = convertStringToFloat(string(msg.Payload()))
+	} else if MqttTopic == "est_battery_range_km" {
+		stat.MQTTDataEstBatteryRange = convertStringToFloat(string(msg.Payload()))
+	} else if MqttTopic == "rated_battery_range_km" {
+		stat.MQTTDataRatedBatteryRange = convertStringToFloat(string(msg.Payload()))
+	} else if MqttTopic == "ideal_battery_range_km" {
+		stat.MQTTDataIdealBatteryRange = convertStringToFloat(string(msg.Payload()))
+	} else if MqttTopic == "battery_level" {
+		stat.MQTTDataBatteryLevel = convertStringToInteger(string(msg.Payload()))
+	} else if MqttTopic == "usable_battery_level" {
+		stat.MQTTDataUsableBatteryLevel = convertStringToInteger(string(msg.Payload()))
+	} else if MqttTopic == "plugged_in" {
+		stat.MQTTDataPluggedIn = convertStringToBool(string(msg.Payload()))
+	} else if MqttTopic == "charge_energy_added" {
+		stat.MQTTDataChargeEnergyAdded = convertStringToFloat(string(msg.Payload()))
+	} else if MqttTopic == "charge_limit_soc" {
+		stat.MQTTDataChargeLimitSoc = convertStringToInteger(string(msg.Payload()))
+	} else if MqttTopic == "charge_port_door_open" {
+		stat.MQTTDataChargePortDoorOpen = convertStringToBool(string(msg.Payload()))
+	} else if MqttTopic == "charger_actual_current" {
+		stat.MQTTDataChargerActualCurrent = convertStringToFloat(string(msg.Payload()))
+	} else if MqttTopic == "charger_phases" {
+		stat.MQTTDataChargerPhases = convertStringToInteger(string(msg.Payload()))
+	} else if MqttTopic == "charger_power" {
+		stat.MQTTDataChargerPower = convertStringToFloat(string(msg.Payload()))
+	} else if MqttTopic == "charger_voltage" {
+		stat.MQTTDataChargerVoltage = convertStringToInteger(string(msg.Payload()))
+	} else if MqttTopic == "scheduled_charging_start_time" {
+		stat.MQTTDataScheduledChargingStartTime = string(msg.Payload())
+	} else if MqttTopic == "time_to_full_charge" {
+		stat.MQTTDataTimeToFullCharge = convertStringToFloat(string(msg.Payload()))
+	} else {
+		log.Printf("[warning] TeslaMateAPICarsStatusV1 mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
+		return
+	}
+}
+
+// TeslaMateAPICarsStatusV1 func
+func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
+	if s.mqttDisabled {
+		log.Println("[notice] TeslaMateAPICarsStatusV1 DISABLE_MQTT is set to true.. can not return status for car without mqtt!")
+		c.JSON(http.StatusNotImplemented, gin.H{"error": "mqtt disabled.. status not accessible!"})
+		return
+	}
+
+	// getting CarID param from URL
+	carID := convertStringToInteger(c.Param("CarID"))
+
+	// Now see what data we have on the car
+	s.mu.Lock()
+	stat := s.cache[carID]
+	s.mu.Unlock()
+
+	if stat == nil {
+		c.JSON(http.StatusNoContent, gin.H{"error": "no info on this car ID"})
+		return
 	}
 
 	// creating structs for /cars
@@ -360,7 +410,7 @@ func TeslaMateAPICarsStatusV1(c *gin.Context) {
 	var UnitsLength, UnitsTemperature string
 	var ValidResponse bool // default is false
 
-	// getting data from database
+	// getting data from database (assume that carID is unique!)
 	query := `
 		SELECT
 			id,
@@ -370,171 +420,84 @@ func TeslaMateAPICarsStatusV1(c *gin.Context) {
 		FROM cars
 		WHERE id=$1
 		LIMIT 1;`
-	rows, err := db.Query(query, CarID)
+	err := db.QueryRow(query, carID).Scan(&CarData.CarID,
+		&CarData.CarName,
+		&UnitsLength,
+		&UnitsTemperature)
 
-	// checking for errors in query
+	// checking for errors in query (this will include no rows found)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// defer closing rows
-	defer rows.Close()
+	// setting data from MQTT into data fields to return
+	MQTTInformationData.DisplayName = stat.MQTTDataDisplayName
+	MQTTInformationData.State = stat.MQTTDataState
+	MQTTInformationData.StateSince = stat.MQTTDataStateSince
+	MQTTInformationData.CarStatus.Healthy = stat.MQTTDataHealthy
+	MQTTInformationData.CarVersions.Version = stat.MQTTDataVersion
+	MQTTInformationData.CarVersions.UpdateAvailable = stat.MQTTDataUpdateAvailable
+	MQTTInformationData.CarVersions.UpdateVersion = stat.MQTTDataUpdateVersion
+	MQTTInformationData.CarDetails.Model = stat.MQTTDataModel
+	MQTTInformationData.CarDetails.TrimBadging = stat.MQTTDataTrimBadging
+	MQTTInformationData.CarExterior.ExteriorColor = stat.MQTTDataExteriorColor
+	MQTTInformationData.CarExterior.WheelType = stat.MQTTDataWheelType
+	MQTTInformationData.CarExterior.SpoilerType = stat.MQTTDataSpoilerType
+	MQTTInformationData.CarGeodata.Geofence = stat.MQTTDataGeofence
+	MQTTInformationData.CarGeodata.Latitude = stat.MQTTDataLatitude
+	MQTTInformationData.CarGeodata.Longitude = stat.MQTTDataLongitude
+	MQTTInformationData.DrivingDetails.ShiftState = stat.MQTTDataShiftState
+	MQTTInformationData.DrivingDetails.Speed = stat.MQTTDataSpeed
+	MQTTInformationData.DrivingDetails.Heading = stat.MQTTDataHeading
+	MQTTInformationData.DrivingDetails.Elevation = stat.MQTTDataElevation
+	MQTTInformationData.CarStatus.Locked = stat.MQTTDataLocked
+	MQTTInformationData.CarStatus.SentryMode = stat.MQTTDataSentryMode
+	MQTTInformationData.CarStatus.WindowsOpen = stat.MQTTDataWindowsOpen
+	MQTTInformationData.CarStatus.DoorsOpen = stat.MQTTDataDoorsOpen
+	MQTTInformationData.CarStatus.TrunkOpen = stat.MQTTDataTrunkOpen
+	MQTTInformationData.CarStatus.FrunkOpen = stat.MQTTDataFrunkOpen
+	MQTTInformationData.CarStatus.IsUserPresent = stat.MQTTDataIsUserPresent
+	MQTTInformationData.ClimateDetails.IsClimateOn = stat.MQTTDataIsClimateOn
+	MQTTInformationData.ClimateDetails.InsideTemp = stat.MQTTDataInsideTemp
+	MQTTInformationData.ClimateDetails.OutsideTemp = stat.MQTTDataOutsideTemp
+	MQTTInformationData.ClimateDetails.IsPreconditioning = stat.MQTTDataIsPreconditioning
+	MQTTInformationData.Odometer = stat.MQTTDataOdometer
+	MQTTInformationData.BatteryDetails.EstBatteryRange = stat.MQTTDataEstBatteryRange
+	MQTTInformationData.BatteryDetails.RatedBatteryRange = stat.MQTTDataRatedBatteryRange
+	MQTTInformationData.BatteryDetails.IdealBatteryRange = stat.MQTTDataIdealBatteryRange
+	MQTTInformationData.BatteryDetails.BatteryLevel = stat.MQTTDataBatteryLevel
+	MQTTInformationData.BatteryDetails.UsableBatteryLevel = stat.MQTTDataUsableBatteryLevel
+	MQTTInformationData.ChargingDetails.PluggedIn = stat.MQTTDataPluggedIn
+	MQTTInformationData.ChargingDetails.ChargeEnergyAdded = stat.MQTTDataChargeEnergyAdded
+	MQTTInformationData.ChargingDetails.ChargeLimitSoc = stat.MQTTDataChargeLimitSoc
+	MQTTInformationData.ChargingDetails.ChargePortDoorOpen = stat.MQTTDataChargePortDoorOpen
+	MQTTInformationData.ChargingDetails.ChargerActualCurrent = stat.MQTTDataChargerActualCurrent
+	MQTTInformationData.ChargingDetails.ChargerPhases = stat.MQTTDataChargerPhases
+	MQTTInformationData.ChargingDetails.ChargerPower = stat.MQTTDataChargerPower
+	MQTTInformationData.ChargingDetails.ChargerVoltage = stat.MQTTDataChargerVoltage
+	MQTTInformationData.ChargingDetails.ScheduledChargingStartTime = stat.MQTTDataScheduledChargingStartTime
+	MQTTInformationData.ChargingDetails.TimeToFullCharge = stat.MQTTDataTimeToFullCharge
 
-	// looping through all results
-	for rows.Next() {
-
-		// scanning row and putting values into the car
-		err = rows.Scan(
-			&CarData.CarID,
-			&CarData.CarName,
-			&UnitsLength,
-			&UnitsTemperature,
-		)
-
-		// checking for errors after scanning
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if CarID != 0 && CarID == CarData.CarID || CarID == 0 {
-
-			// creating list of all topics to subscribe on..
-			MQTTAllTopics := map[string]byte{
-				fmt.Sprintf("teslamate%s/cars/%d/display_name", MQTTNameSpace, CarID):                  0,
-				fmt.Sprintf("teslamate%s/cars/%d/state", MQTTNameSpace, CarID):                         0,
-				fmt.Sprintf("teslamate%s/cars/%d/since", MQTTNameSpace, CarID):                         0,
-				fmt.Sprintf("teslamate%s/cars/%d/healthy", MQTTNameSpace, CarID):                       0,
-				fmt.Sprintf("teslamate%s/cars/%d/version", MQTTNameSpace, CarID):                       0,
-				fmt.Sprintf("teslamate%s/cars/%d/update_available", MQTTNameSpace, CarID):              0,
-				fmt.Sprintf("teslamate%s/cars/%d/update_version", MQTTNameSpace, CarID):                0,
-				fmt.Sprintf("teslamate%s/cars/%d/model", MQTTNameSpace, CarID):                         0,
-				fmt.Sprintf("teslamate%s/cars/%d/trim_badging", MQTTNameSpace, CarID):                  0,
-				fmt.Sprintf("teslamate%s/cars/%d/exterior_color", MQTTNameSpace, CarID):                0,
-				fmt.Sprintf("teslamate%s/cars/%d/wheel_type", MQTTNameSpace, CarID):                    0,
-				fmt.Sprintf("teslamate%s/cars/%d/spoiler_type", MQTTNameSpace, CarID):                  0,
-				fmt.Sprintf("teslamate%s/cars/%d/geofence", MQTTNameSpace, CarID):                      0,
-				fmt.Sprintf("teslamate%s/cars/%d/latitude", MQTTNameSpace, CarID):                      0,
-				fmt.Sprintf("teslamate%s/cars/%d/longitude", MQTTNameSpace, CarID):                     0,
-				fmt.Sprintf("teslamate%s/cars/%d/shift_state", MQTTNameSpace, CarID):                   0,
-				fmt.Sprintf("teslamate%s/cars/%d/speed", MQTTNameSpace, CarID):                         0,
-				fmt.Sprintf("teslamate%s/cars/%d/heading", MQTTNameSpace, CarID):                       0,
-				fmt.Sprintf("teslamate%s/cars/%d/elevation", MQTTNameSpace, CarID):                     0,
-				fmt.Sprintf("teslamate%s/cars/%d/locked", MQTTNameSpace, CarID):                        0,
-				fmt.Sprintf("teslamate%s/cars/%d/sentry_mode", MQTTNameSpace, CarID):                   0,
-				fmt.Sprintf("teslamate%s/cars/%d/windows_open", MQTTNameSpace, CarID):                  0,
-				fmt.Sprintf("teslamate%s/cars/%d/doors_open", MQTTNameSpace, CarID):                    0,
-				fmt.Sprintf("teslamate%s/cars/%d/trunk_open", MQTTNameSpace, CarID):                    0,
-				fmt.Sprintf("teslamate%s/cars/%d/frunk_open", MQTTNameSpace, CarID):                    0,
-				fmt.Sprintf("teslamate%s/cars/%d/is_user_present", MQTTNameSpace, CarID):               0,
-				fmt.Sprintf("teslamate%s/cars/%d/is_climate_on", MQTTNameSpace, CarID):                 0,
-				fmt.Sprintf("teslamate%s/cars/%d/inside_temp", MQTTNameSpace, CarID):                   0,
-				fmt.Sprintf("teslamate%s/cars/%d/outside_temp", MQTTNameSpace, CarID):                  0,
-				fmt.Sprintf("teslamate%s/cars/%d/is_preconditioning", MQTTNameSpace, CarID):            0,
-				fmt.Sprintf("teslamate%s/cars/%d/odometer", MQTTNameSpace, CarID):                      0,
-				fmt.Sprintf("teslamate%s/cars/%d/est_battery_range_km", MQTTNameSpace, CarID):          0,
-				fmt.Sprintf("teslamate%s/cars/%d/rated_battery_range_km", MQTTNameSpace, CarID):        0,
-				fmt.Sprintf("teslamate%s/cars/%d/ideal_battery_range_km", MQTTNameSpace, CarID):        0,
-				fmt.Sprintf("teslamate%s/cars/%d/battery_level", MQTTNameSpace, CarID):                 0,
-				fmt.Sprintf("teslamate%s/cars/%d/usable_battery_level", MQTTNameSpace, CarID):          0,
-				fmt.Sprintf("teslamate%s/cars/%d/plugged_in", MQTTNameSpace, CarID):                    0,
-				fmt.Sprintf("teslamate%s/cars/%d/charge_energy_added", MQTTNameSpace, CarID):           0,
-				fmt.Sprintf("teslamate%s/cars/%d/charge_limit_soc", MQTTNameSpace, CarID):              0,
-				fmt.Sprintf("teslamate%s/cars/%d/charge_port_door_open", MQTTNameSpace, CarID):         0,
-				fmt.Sprintf("teslamate%s/cars/%d/charger_actual_current", MQTTNameSpace, CarID):        0,
-				fmt.Sprintf("teslamate%s/cars/%d/charger_phases", MQTTNameSpace, CarID):                0,
-				fmt.Sprintf("teslamate%s/cars/%d/charger_power", MQTTNameSpace, CarID):                 0,
-				fmt.Sprintf("teslamate%s/cars/%d/charger_voltage", MQTTNameSpace, CarID):               0,
-				fmt.Sprintf("teslamate%s/cars/%d/scheduled_charging_start_time", MQTTNameSpace, CarID): 0,
-				fmt.Sprintf("teslamate%s/cars/%d/time_to_full_charge", MQTTNameSpace, CarID):           0,
-			}
-
-			// run SubscribeMultiple on MQTTAllTopics map[string]byte
-			m.SubscribeMultiple(MQTTAllTopics, nil)
-
-			// getting sleep tim before disconnecting
-			MQTTSleepTime := getEnvAsInt("MQTT_SLEEPTIME", 100)
-			// adding some short sleep before disconnecting (based on MQTTSleepTimer)
-			time.Sleep(time.Duration(MQTTSleepTime) * time.Millisecond)
-
-			// disconnecting from MQTT
-			defer m.Disconnect(250)
-
-			// setting data from MQTT into data fields to return
-			MQTTInformationData.DisplayName = MQTTDataDisplayName
-			MQTTInformationData.State = MQTTDataState
-			MQTTInformationData.StateSince = MQTTDataStateSince
-			MQTTInformationData.CarStatus.Healthy = MQTTDataHealthy
-			MQTTInformationData.CarVersions.Version = MQTTDataVersion
-			MQTTInformationData.CarVersions.UpdateAvailable = MQTTDataUpdateAvailable
-			MQTTInformationData.CarVersions.UpdateVersion = MQTTDataUpdateVersion
-			MQTTInformationData.CarDetails.Model = MQTTDataModel
-			MQTTInformationData.CarDetails.TrimBadging = MQTTDataTrimBadging
-			MQTTInformationData.CarExterior.ExteriorColor = MQTTDataExteriorColor
-			MQTTInformationData.CarExterior.WheelType = MQTTDataWheelType
-			MQTTInformationData.CarExterior.SpoilerType = MQTTDataSpoilerType
-			MQTTInformationData.CarGeodata.Geofence = MQTTDataGeofence
-			MQTTInformationData.CarGeodata.Latitude = MQTTDataLatitude
-			MQTTInformationData.CarGeodata.Longitude = MQTTDataLongitude
-			MQTTInformationData.DrivingDetails.ShiftState = MQTTDataShiftState
-			MQTTInformationData.DrivingDetails.Speed = MQTTDataSpeed
-			MQTTInformationData.DrivingDetails.Heading = MQTTDataHeading
-			MQTTInformationData.DrivingDetails.Elevation = MQTTDataElevation
-			MQTTInformationData.CarStatus.Locked = MQTTDataLocked
-			MQTTInformationData.CarStatus.SentryMode = MQTTDataSentryMode
-			MQTTInformationData.CarStatus.WindowsOpen = MQTTDataWindowsOpen
-			MQTTInformationData.CarStatus.DoorsOpen = MQTTDataDoorsOpen
-			MQTTInformationData.CarStatus.TrunkOpen = MQTTDataTrunkOpen
-			MQTTInformationData.CarStatus.FrunkOpen = MQTTDataFrunkOpen
-			MQTTInformationData.CarStatus.IsUserPresent = MQTTDataIsUserPresent
-			MQTTInformationData.ClimateDetails.IsClimateOn = MQTTDataIsClimateOn
-			MQTTInformationData.ClimateDetails.InsideTemp = MQTTDataInsideTemp
-			MQTTInformationData.ClimateDetails.OutsideTemp = MQTTDataOutsideTemp
-			MQTTInformationData.ClimateDetails.IsPreconditioning = MQTTDataIsPreconditioning
-			MQTTInformationData.Odometer = MQTTDataOdometer
-			MQTTInformationData.BatteryDetails.EstBatteryRange = MQTTDataEstBatteryRange
-			MQTTInformationData.BatteryDetails.RatedBatteryRange = MQTTDataRatedBatteryRange
-			MQTTInformationData.BatteryDetails.IdealBatteryRange = MQTTDataIdealBatteryRange
-			MQTTInformationData.BatteryDetails.BatteryLevel = MQTTDataBatteryLevel
-			MQTTInformationData.BatteryDetails.UsableBatteryLevel = MQTTDataUsableBatteryLevel
-			MQTTInformationData.ChargingDetails.PluggedIn = MQTTDataPluggedIn
-			MQTTInformationData.ChargingDetails.ChargeEnergyAdded = MQTTDataChargeEnergyAdded
-			MQTTInformationData.ChargingDetails.ChargeLimitSoc = MQTTDataChargeLimitSoc
-			MQTTInformationData.ChargingDetails.ChargePortDoorOpen = MQTTDataChargePortDoorOpen
-			MQTTInformationData.ChargingDetails.ChargerActualCurrent = MQTTDataChargerActualCurrent
-			MQTTInformationData.ChargingDetails.ChargerPhases = MQTTDataChargerPhases
-			MQTTInformationData.ChargingDetails.ChargerPower = MQTTDataChargerPower
-			MQTTInformationData.ChargingDetails.ChargerVoltage = MQTTDataChargerVoltage
-			MQTTInformationData.ChargingDetails.ScheduledChargingStartTime = MQTTDataScheduledChargingStartTime
-			MQTTInformationData.ChargingDetails.TimeToFullCharge = MQTTDataTimeToFullCharge
-
-			// converting values based of settings UnitsLength
-			if UnitsLength == "mi" {
-				// drive.OdometerDetails.OdometerStart = kilometersToMiles(drive.OdometerDetails.OdometerStart)
-				MQTTInformationData.Odometer = kilometersToMiles(MQTTInformationData.Odometer)
-				MQTTInformationData.BatteryDetails.EstBatteryRange = kilometersToMiles(MQTTInformationData.BatteryDetails.EstBatteryRange)
-				MQTTInformationData.BatteryDetails.RatedBatteryRange = kilometersToMiles(MQTTInformationData.BatteryDetails.RatedBatteryRange)
-				MQTTInformationData.BatteryDetails.IdealBatteryRange = kilometersToMiles(MQTTInformationData.BatteryDetails.IdealBatteryRange)
-			}
-			// converting values based of settings UnitsTemperature
-			if UnitsTemperature == "F" {
-				MQTTInformationData.ClimateDetails.InsideTemp = celsiusToFahrenheit(MQTTInformationData.ClimateDetails.InsideTemp)
-				MQTTInformationData.ClimateDetails.OutsideTemp = celsiusToFahrenheit(MQTTInformationData.ClimateDetails.OutsideTemp)
-			}
-
-			// adjusting to timezone differences from UTC to be userspecific
-			MQTTInformationData.StateSince = getTimeInTimeZone(MQTTInformationData.StateSince)
-			MQTTInformationData.ChargingDetails.ScheduledChargingStartTime = getTimeInTimeZone(MQTTInformationData.ChargingDetails.ScheduledChargingStartTime)
-
-			// setting response as valid
-			ValidResponse = true
-		}
+	// converting values based of settings UnitsLength
+	if UnitsLength == "mi" {
+		// drive.OdometerDetails.OdometerStart = kilometersToMiles(drive.OdometerDetails.OdometerStart)
+		MQTTInformationData.Odometer = kilometersToMiles(MQTTInformationData.Odometer)
+		MQTTInformationData.BatteryDetails.EstBatteryRange = kilometersToMiles(MQTTInformationData.BatteryDetails.EstBatteryRange)
+		MQTTInformationData.BatteryDetails.RatedBatteryRange = kilometersToMiles(MQTTInformationData.BatteryDetails.RatedBatteryRange)
+		MQTTInformationData.BatteryDetails.IdealBatteryRange = kilometersToMiles(MQTTInformationData.BatteryDetails.IdealBatteryRange)
+	}
+	// converting values based of settings UnitsTemperature
+	if UnitsTemperature == "F" {
+		MQTTInformationData.ClimateDetails.InsideTemp = celsiusToFahrenheit(MQTTInformationData.ClimateDetails.InsideTemp)
+		MQTTInformationData.ClimateDetails.OutsideTemp = celsiusToFahrenheit(MQTTInformationData.ClimateDetails.OutsideTemp)
 	}
 
-	// checking for errors in the rows result
-	err = rows.Err()
-	if err != nil {
-		log.Fatal(err)
-	}
+	// adjusting to timezone differences from UTC to be userspecific
+	MQTTInformationData.StateSince = getTimeInTimeZone(MQTTInformationData.StateSince)
+	MQTTInformationData.ChargingDetails.ScheduledChargingStartTime = getTimeInTimeZone(MQTTInformationData.ChargingDetails.ScheduledChargingStartTime)
+
+	// setting response as valid
+	ValidResponse = true
 
 	//
 	// build the data-blob
