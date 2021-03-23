@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -125,34 +128,30 @@ func initCommandAllowList() {
 			"/command/cancel_software_update")
 	}
 
-	/*
-		// TODO: add back COMMANDS_ALLOWLIST check..
-
-		// if allowList is empty, read COMMANDS_ALLOWLIST and append to allowList
-		commandAllowListLocation := getEnv("COMMANDS_ALLOWLIST", "allow_list.json")
-		if len(allowList) == 0 {
-			var allowListFile []string
-			commandAllowListFile, err := os.Open(commandAllowListLocation)
+	// if allowList is empty, read COMMANDS_ALLOWLIST and append to allowList
+	commandAllowListLocation := getEnv("COMMANDS_ALLOWLIST", "allow_list.json")
+	if len(allowList) == 0 {
+		var allowListFile []string
+		commandAllowListFile, err := os.Open(commandAllowListLocation)
+		if err != nil {
+			log.Println("[error] getAllowList error with COMMANDS_ALLOWLIST: " + commandAllowListLocation + " not found and will be ignored")
+		} else {
+			byteValue, err := ioutil.ReadAll(commandAllowListFile)
 			if err != nil {
-				log.Println("[error] getAllowList error with COMMANDS_ALLOWLIST: " + commandAllowListLocation + " not found and will be ignored")
+				log.Println("[error] getAllowList error while reading COMMANDS_ALLOWLIST: " + commandAllowListLocation + " it will be ignored")
 			} else {
-				byteValue, err := ioutil.ReadAll(commandAllowListFile)
+				err = json.Unmarshal(byteValue, &allowListFile)
 				if err != nil {
-					log.Println("[error] getAllowList error while reading COMMANDS_ALLOWLIST: " + commandAllowListLocation + " it will be ignored")
+					log.Println("[error] getAllowList error while parsing JSON.. COMMANDS_ALLOWLIST: " + commandAllowListLocation + " it will be ignored")
 				} else {
-					err = json.Unmarshal(byteValue, &allowListFile)
-					if err != nil {
-						log.Println("[error] getAllowList error while parsing JSON.. COMMANDS_ALLOWLIST: " + commandAllowListLocation + " it will be ignored")
-					} else {
-						allowList = append(allowList, allowListFile...)
-						commandAllowListFile.Close()
-					}
+					allowList = append(allowList, allowListFile...)
+					commandAllowListFile.Close()
 				}
 			}
-		} else {
-			log.Print("[info] getAllowList COMMANDS from environment variables set, " + commandAllowListLocation + " will be ignored.")
 		}
-	*/
+	} else {
+		log.Print("[info] getAllowList COMMANDS from environment variables set, " + commandAllowListLocation + " will be ignored.")
+	}
 
 	if gin.IsDebugging() {
 		log.Println("[info] initCommandAllowList - generated following list of allowed commands: " + strings.Join(allowList, ", "))
