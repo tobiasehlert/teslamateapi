@@ -106,7 +106,6 @@ Basically the same environment variables for the database, mqqt and timezone nee
 - **MQTT_USERNAME** string *(default: )*
 - **MQTT_PASSWORD** string *(default: )*
 - **MQTT_NAMESPACE** string *(default: )*
-- **MQTT_SLEEPTIME** integer *(default: 100)*
 
 ## API documentation
 
