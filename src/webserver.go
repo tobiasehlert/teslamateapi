@@ -87,6 +87,7 @@ func main() {
 
 			// v1 /api/v1/cars/:CarID/command endpoints
 			v1.GET("/cars/:CarID/command", TeslaMateAPICarsCommandV1)
+			v1.GET("/cars/:CarID/commands", TeslaMateAPICarsCommandV1)
 			v1.POST("/cars/:CarID/command/:Command", TeslaMateAPICarsCommandV1)
 
 			// v1 /api/v1/cars/:CarID/drives endpoints
