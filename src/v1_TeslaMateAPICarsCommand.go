@@ -113,7 +113,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	req, _ := http.NewRequest(http.MethodPost, "https://owner-api.teslamotors.com/api/1/vehicles/"+TeslaVehicleID+command, strings.NewReader(string(reqBody)))
 	req.Header.Set("Authorization", "Bearer "+TeslaAccessToken)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", "TeslaMateApi/"+apiVersion+" https://github.com/tobiasehlert/teslamateapi")
+	req.Header.Set("User-Agent", "TeslaMateApi/"+apiVersion+" (+https://github.com/tobiasehlert/teslamateapi)")
 	resp, err := client.Do(req)
 
 	// check response error
