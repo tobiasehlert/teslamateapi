@@ -110,7 +110,7 @@ func main() {
 		api.GET("/ping", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "pong"}) })
 	}
 
-	// TeslaMateApi endpoints (bofore versioning)
+	// TeslaMateApi endpoints (before versioning)
 	r.GET("/cars", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/api/v1"+c.Request.RequestURI) })
 	r.GET("/cars/:CarID", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/api/v1"+c.Request.RequestURI) })
 	r.GET("/cars/:CarID/charges", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/api/v1"+c.Request.RequestURI) })
