@@ -14,8 +14,18 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// setting TeslaMateApi version number
+// TODO: get the value from git-tag later..
+var apiVersion = "1.4.0"
+
 // defining db var
 var db *sql.DB
+
+// defining envToken that contains API_TOKEN value
+var envToken string
+
+// list of allowed commands
+var allowList []string
 
 // main function
 func main() {
@@ -37,6 +47,11 @@ func main() {
 	// init of API with connection to database
 	initDBconnection()
 	defer db.Close()
+
+	// run initAuthToken to validate environment vars
+	initAuthToken()
+	// initialize allowList stored for /command section
+	initCommandAllowList()
 
 	// Connect to the MQTT broker
 	statusCache, err := startMQTT()
@@ -68,14 +83,33 @@ func main() {
 				c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi v1 runnnig..", "path": "/api/v1"})
 			})
 
+			// v1 /api/v1/cars endpoints
 			v1.GET("/cars", TeslaMateAPICarsV1)
 			v1.GET("/cars/:CarID", TeslaMateAPICarsV1)
+
+			// v1 /api/v1/cars/:CarID/charges endpoints
 			v1.GET("/cars/:CarID/charges", TeslaMateAPICarsChargesV1)
 			v1.GET("/cars/:CarID/charges/:ChargeID", TeslaMateAPICarsChargesDetailsV1)
+
+			// v1 /api/v1/cars/:CarID/command endpoints
+			v1.GET("/cars/:CarID/command", TeslaMateAPICarsCommandV1)
+			v1.GET("/cars/:CarID/commands", TeslaMateAPICarsCommandV1)
+			v1.POST("/cars/:CarID/command/:Command", TeslaMateAPICarsCommandV1)
+
+			// v1 /api/v1/cars/:CarID/drives endpoints
 			v1.GET("/cars/:CarID/drives", TeslaMateAPICarsDrivesV1)
 			v1.GET("/cars/:CarID/drives/:DriveID", TeslaMateAPICarsDrivesDetailsV1)
+
+			// v1 /api/v1/cars/:CarID/status endpoints
 			v1.GET("/cars/:CarID/status", statusCache.TeslaMateAPICarsStatusV1)
+
+			// v1 /api/v1/cars/:CarID/updates endpoints
 			v1.GET("/cars/:CarID/updates", TeslaMateAPICarsUpdatesV1)
+
+			// v1 /api/v1/cars/:CarID/wake_up endpoints
+			v1.POST("/cars/:CarID/wake_up", TeslaMateAPICarsCommandV1)
+
+			// v1 /api/v1/globalsettings endpoints
 			v1.GET("/globalsettings", TeslaMateAPIGlobalsettingsV1)
 		}
 
@@ -83,7 +117,7 @@ func main() {
 		api.GET("/ping", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "pong"}) })
 	}
 
-	// TeslaMateApi endpoints (bofore versioning)
+	// TeslaMateApi endpoints (before versioning)
 	r.GET("/cars", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/api/v1"+c.Request.RequestURI) })
 	r.GET("/cars/:CarID", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/api/v1"+c.Request.RequestURI) })
 	r.GET("/cars/:CarID/charges", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/api/v1"+c.Request.RequestURI) })
@@ -281,4 +315,14 @@ func fahrenheitToCelsius(f float64) float64 {
 func fahrenheitToCelsiusNilSupport(f NullFloat64) NullFloat64 {
 	f.Float64 = ((f.Float64 - 32) * 5 / 9)
 	return (f)
+}
+
+// checkArrayContainsString func - check if string is inside stringarray
+func checkArrayContainsString(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }

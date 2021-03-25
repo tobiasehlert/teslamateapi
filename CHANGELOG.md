@@ -5,6 +5,17 @@
 ### Changed
 - adding randomized string to mqtt client (#15 by @LelandSindt)
 
+## [1.4.0] - 2021-03-25
+
+### Added
+- added feature commands to proxy POST commands to Tesla owner API (#22)
+- support for authentication on command endpoints
+
+## [1.3.1] - 2021-03-23
+
+### Fixed
+- fixing sql error when BatteryHeaterNoPower is null (#19 by @LelandSindt)
+
 ## [1.3.0] - 2021-03-17
 
 ### Added
@@ -88,7 +99,9 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.0...HEAD
+[1.3.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.3.1...v1.4.0
+[1.3.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.2.3...v1.3.0
 [1.2.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.2.2...v1.2.3
 [1.2.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.2.1...v1.2.2
