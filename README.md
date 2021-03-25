@@ -13,6 +13,7 @@ TeslaMateApi is a RESTful API to get data collected by self-hosted data logger *
 - Written in **[Golang](https://golang.org/)**
 - Data is collected from TeslaMate **Postgres** database and local **MQTT** Broker
 - Endpoints return data in JSON format
+- Send commands to your Tesla through the TeslaMateApi
 
 ### Table of Contents
 
@@ -20,6 +21,9 @@ TeslaMateApi is a RESTful API to get data collected by self-hosted data logger *
   - [Docker-compose](#docker-compose)
   - [Environment variables](#environment-variables)
 - [API documentation](#api-documentation)
+  - [Available endpoints](#available-endpoints)
+  - [Authentication](#authentication)
+  - [Commands](#commands)
 - [Security information](#security-information)
 - [Credits](#credits)
 
@@ -96,6 +100,7 @@ Basically the same environment variables for the database, mqqt and timezone nee
 
 **Optional** environment variables
 
+- **API_TOKEN** string *(default: )*
 - **DATABASE_PORT** integer *(default: 5432)*
 - **DATABASE_TIMEOUT** integer *(default: 60000)*
 - **DATABASE_SSL** boolean *(default: true)*
@@ -108,9 +113,33 @@ Basically the same environment variables for the database, mqqt and timezone nee
 - **MQTT_NAMESPACE** string *(default: )*
 - **MQTT_SLEEPTIME** integer *(default: 100)*
 
+**Commands** environment variables
+
+- **ENABLE_COMMANDS** boolean *(default: false)*
+- **COMMANDS_ALL** boolean *(default: false)*
+- **COMMANDS_ALLOWLIST** string *(default: allow_list.json)*
+- **COMMANDS_WAKE** boolean *(default: false)*
+- **COMMANDS_ALERT** boolean *(default: false)*
+- **COMMANDS_REMOTESTART** boolean *(default: false)*
+- **COMMANDS_HOMELINK** boolean *(default: false)*
+- **COMMANDS_SPEEDLIMIT** boolean *(default: false)*
+- **COMMANDS_VALET** boolean *(default: false)*
+- **COMMANDS_SENTRYMODE** boolean *(default: false)*
+- **COMMANDS_DOORS** boolean *(default: false)*
+- **COMMANDS_TRUNK** boolean *(default: false)*
+- **COMMANDS_WINDOWS** boolean *(default: false)*
+- **COMMANDS_SUNROOF** boolean *(default: false)*
+- **COMMANDS_CHARGING** boolean *(default: false)*
+- **COMMANDS_CLIMATE** boolean *(default: false)*
+- **COMMANDS_MEDIA** boolean *(default: false)*
+- **COMMANDS_SHARING** boolean *(default: false)*
+- **COMMANDS_SOFTWAREUPDATE** boolean *(default: false)*
+
 ## API documentation
 
 More detailed documentation of every endpoint will come..
+
+### Available endpoints
 
 - GET `/api`
 - GET `/api/v1`
@@ -118,12 +147,49 @@ More detailed documentation of every endpoint will come..
 - GET `/api/v1/cars/:CarID`
 - GET `/api/v1/cars/:CarID/charges`
 - GET `/api/v1/cars/:CarID/charges/:ChargeID`
+- GET `/api/v1/cars/:CarID/command`
+- POST `/api/v1/cars/:CarID/command/:Command`
 - GET `/api/v1/cars/:CarID/drives`
 - GET `/api/v1/cars/:CarID/drives/:DriveID`
 - GET `/api/v1/cars/:CarID/status`
 - GET `/api/v1/cars/:CarID/updates`
+- POST `/api/v1/cars/:CarID/wake_up`
 - GET `/api/v1/globalsettings`
 - GET `/api/ping`
+
+### Authentication
+
+If you want to use command endpoints such as `/api/v1/cars/:CarID/command/:Command` and `/api/v1/cars/:CarID/wake_up`, you need to add authentication to your request.
+
+You need to specify a token yourself (called **API_TOKEN**) in the environment variables file, to set it. The token has the requirement to be a minimum of 32 characters long.
+
+There are two options available for authentication to be done.
+
+1. Adding extra header `Authorization: Bearer <token>` to your request. (recommended option)
+
+2. Adding URI parameter `?token=<token>` to the endpoint you try to reach. (not a good option)
+
+\* *Note: If you use the second option and your logs get compromised, your token will be leaked.*
+
+### Commands
+
+Commands are not enabled by default.
+
+You need to enable them in your environment variables (with `ENABLE_COMMANDS=true`) and you need to specify which commands you want to use as well.
+
+There are 3 ways of using Commands:
+
+1. Specific groups of commands can be enabled for example `COMMANDS_ALERT=true` will enable the [alert](https://tesla-api.timdorr.com/vehicle/commands/alerts) commands group.
+
+2. If you need a granular set of commands enabled `COMMANDS_ALLOWLIST=/path/to/allow_list.json` can be used to specify a [JSON formatted list of commands](./example/allow_list.json) to enable.
+
+3. The most coarse option `COMMANDS_ALL=true` will enable all commands (specific groups and allow_list will be ignored).
+
+\* *Note: if `COMMANDS_ALL` or any specific group of commands has been enabled `COMMANDS_ALLOWLIST` is ignored.*
+
+A list of possible commands can be found under [environment variables](#environment-variables).
+
+Regarding what fields you need to provide in the commands, we will referr to the [timdorr/tesla-api](https://tesla-api.timdorr.com/vehicle/commands) documentation.
 
 ## Security information
 
