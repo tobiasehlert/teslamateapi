@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [1.4.3] - 2021-04-01
+
+### Changed
+- bump github.com/eclipse/paho.mqtt.golang from 1.3.2 to 1.3.3 (#26 by dependabot)
+
+### Removed
+- github.com/go-sql-driver/mysql removed, since NullTime isn't used/supported anymore
+
 ## [1.4.2] - 2021-03-31
 
 ### Changed
@@ -106,7 +114,8 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.2...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.3...HEAD
+[1.4.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.2...v1.4.3
 [1.4.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.3.1...v1.4.0
