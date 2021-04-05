@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [1.4.4] - 2021-04-05
+
+### Changed
+- bump crazy-max/ghaction-docker-meta from v2.1.1 to v2.2.0 (#28 by dependabot)
+- bump golang from 1.16.2 to 1.16.3 (#27 by dependabot)
+
 ## [1.4.3] - 2021-04-01
 
 ### Changed
@@ -114,7 +120,8 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.3...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.4...HEAD
+[1.4.4]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.3...v1.4.4
 [1.4.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.2...v1.4.3
 [1.4.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.0...v1.4.1
