@@ -16,7 +16,7 @@ import (
 
 // setting TeslaMateApi version number
 // TODO: get the value from git-tag later..
-var apiVersion = "1.4.5"
+var apiVersion = "1.4.6"
 
 // defining db var
 var db *sql.DB

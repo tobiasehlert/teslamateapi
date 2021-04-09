@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [1.4.6] - 2021-04-09
+
+### Changed
+- bump github.com/gin-gonic/gin from 1.6.3 to 1.7.1 (#31 by dependabot)
+- bump crazy-max/ghaction-docker-meta from v2.2.1 to v2.3.0 (#30 by dependabot)
+
 ## [1.4.5] - 2021-04-06
 
 ### Changed
@@ -125,7 +131,8 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.5...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.6...HEAD
+[1.4.6]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.5...v1.4.6
 [1.4.5]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.4...v1.4.5
 [1.4.4]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.3...v1.4.4
 [1.4.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.2...v1.4.3
