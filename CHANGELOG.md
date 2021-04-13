@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [1.4.7] - 2021-04-13
+
+### Changed
+- bump actions/cache from v2.1.4 to v2.1.5 (#32 by dependabot)
+- renaming file to lowercase to match other naming
+
 ## [1.4.6] - 2021-04-09
 
 ### Changed
@@ -131,7 +137,8 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.6...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.7...HEAD
+[1.4.7]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.6...v1.4.7
 [1.4.6]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.5...v1.4.6
 [1.4.5]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.4...v1.4.5
 [1.4.4]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.3...v1.4.4
