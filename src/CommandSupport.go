@@ -16,6 +16,13 @@ func initCommandAllowList() {
 	// allow all commands available below
 	allowAll := getEnvAsBool("COMMANDS_ALL", false)
 
+	// https://github.com/adriankumpf/teslamate/discussions/1433
+	if getEnvAsBool("COMMANDS_LOGGING", false) || allowAll {
+		allowList = append(allowList,
+			"/logging/resume",
+			"/logging/suspend")
+	}
+
 	// https://tesla-api.timdorr.com/vehicle/commands/wake
 	if getEnvAsBool("COMMANDS_WAKE", false) || allowAll {
 		allowList = append(allowList, "/wake_up")
