@@ -195,6 +195,8 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 			drive.OdometerDetails.OdometerStart = kilometersToMiles(drive.OdometerDetails.OdometerStart)
 			drive.OdometerDetails.OdometerEnd = kilometersToMiles(drive.OdometerDetails.OdometerEnd)
 			drive.OdometerDetails.OdometerDistance = kilometersToMiles(drive.OdometerDetails.OdometerDistance)
+			drive.SpeedMax = int(kilometersToMiles(float64(drive.SpeedMax)))
+			drive.SpeedAvg = kilometersToMiles(drive.SpeedAvg)
 			drive.RangeIdeal.StartRange = kilometersToMiles(drive.RangeIdeal.StartRange)
 			drive.RangeIdeal.EndRange = kilometersToMiles(drive.RangeIdeal.EndRange)
 			drive.RangeIdeal.RangeDiff = kilometersToMiles(drive.RangeIdeal.RangeDiff)
