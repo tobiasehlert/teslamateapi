@@ -84,7 +84,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		SELECT
 			charging_processes.id AS charge_id,
 			start_date,
-			COALESCE(end_date, '') AS end_date,
+			end_date,
 			COALESCE(geofence.name, CONCAT_WS(', ', COALESCE(address.name, nullif(CONCAT_WS(' ', address.road, address.house_number), '')), address.city)) AS address,
 			COALESCE(charge_energy_added, 0) AS charge_energy_added,
 			COALESCE(charge_energy_used, 0) AS charge_energy_used,
@@ -162,9 +162,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 
 		// adjusting to timezone differences from UTC to be userspecific
 		charge.StartDate = getTimeInTimeZone(charge.StartDate)
-		if charge.EndDate != '' {
-			charge.EndDate = getTimeInTimeZone(charge.EndDate)
-		}
+		charge.EndDate = getTimeInTimeZone(charge.EndDate)
 
 		// checking for errors after scanning
 		if err != nil {
