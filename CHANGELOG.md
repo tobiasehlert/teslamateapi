@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [1.5.0] - 2021-05-03
+
+### Changed
+- missing convertion of SpeedMax and SpeedAvg in Drive (km->mi) (#37 by @alecdoconnor)
+
 ## [1.4.9] - 2021-05-03
 
 ### Changed
@@ -148,7 +153,8 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.9...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.9...v1.5.0
 [1.4.9]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.8...v1.4.9
 [1.4.8]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.7...v1.4.8
 [1.4.7]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.6...v1.4.7
