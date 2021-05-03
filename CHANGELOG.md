@@ -2,8 +2,16 @@
 
 ## [Unreleased]
 
-### Changed
+### Added
+- doing persistant mqtt connection for status collection (#16 by @LelandSindt and #21 by @MattBrittan)
 - adding randomized string to mqtt client (#15 by @LelandSindt)
+
+### Changed
+- updating workflow for stale issues/PRs
+
+### Removed
+- removing MQTT_SLEEPTIME option for mqtt connection
+- removing workflow for no response
 
 ## [1.5.0] - 2021-05-03
 
