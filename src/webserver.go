@@ -53,6 +53,12 @@ func main() {
 	// initialize allowList stored for /command section
 	initCommandAllowList()
 
+	// Connect to the MQTT broker
+	statusCache, err := startMQTT()
+	if err != nil {
+		log.Fatalf("[error] TeslaMateApi MQTT connection failed: %s", err)
+	}
+
 	// kicking off Gin in value r
 	r := gin.Default()
 
@@ -95,7 +101,7 @@ func main() {
 			v1.GET("/cars/:CarID/drives/:DriveID", TeslaMateAPICarsDrivesDetailsV1)
 
 			// v1 /api/v1/cars/:CarID/status endpoints
-			v1.GET("/cars/:CarID/status", TeslaMateAPICarsStatusV1)
+			v1.GET("/cars/:CarID/status", statusCache.TeslaMateAPICarsStatusV1)
 
 			// v1 /api/v1/cars/:CarID/updates endpoints
 			v1.GET("/cars/:CarID/updates", TeslaMateAPICarsUpdatesV1)
