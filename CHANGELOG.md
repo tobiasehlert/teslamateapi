@@ -2,11 +2,14 @@
 
 ## [Unreleased]
 
+## [1.6.0] - 2021-05-03
+
 ### Added
 - doing persistant mqtt connection for status collection (#16 by @LelandSindt and #21 by @MattBrittan)
 - adding randomized string to mqtt client (#15 by @LelandSindt)
 
 ### Changed
+- fixing sql error when FastChargerBrand is null (#39 by @alecdoconnor)
 - updating workflow for stale issues/PRs
 
 ### Removed
@@ -164,7 +167,8 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.9...v1.5.0
 [1.4.9]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.8...v1.4.9
 [1.4.8]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.7...v1.4.8
