@@ -42,9 +42,9 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 	}
 	// FastChargerInfo struct - child of ChargeDetails
 	type FastChargerInfo struct {
-		FastChargerPresent bool   `json:"fast_charger_present"` // bool
-		FastChargerBrand   string `json:"fast_charger_brand"`   // string
-		FastChargerType    string `json:"fast_charger_type"`    // string
+		FastChargerPresent bool       `json:"fast_charger_present"` // bool
+		FastChargerBrand   NullString `json:"fast_charger_brand"`   // string
+		FastChargerType    string     `json:"fast_charger_type"`    // string
 
 	}
 	// BatteryInfo struct - child of ChargeDetails
