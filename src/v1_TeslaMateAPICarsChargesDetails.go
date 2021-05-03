@@ -223,7 +223,7 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 				battery_heater_no_power,
 				conn_charge_cable,
 				fast_charger_present,
-				COALESCE(fast_charger_brand, '') as fast_charger_brand
+				COALESCE(fast_charger_brand, '') AS fast_charger_brand,
 				fast_charger_type,
 				outside_temp
 			FROM charges
