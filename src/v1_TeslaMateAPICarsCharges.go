@@ -121,6 +121,11 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 
 	// looping through all results
 	for rows.Next() {
+		
+		// skip any malformed rows
+		if end_date == NULL {
+			continue
+		}
 
 		// creating charge object based on struct
 		charge := Charges{}
