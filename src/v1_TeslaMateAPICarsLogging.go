@@ -71,7 +71,7 @@ func TeslaMateAPICarsLoggingV1(c *gin.Context) {
 	}
 
 	client := &http.Client{}
-	putURL := getEnv("TESLAMATE_URL", "http://teslamate:4000") + "/api/car/" + ParamCarID + command
+	putURL := getEnv("TESLAMATE_PROTOCOL", "http") + "://" + getEnv("TESLAMATE_FQDN", "teslamate") + ":" + getEnv("TESLAMATE_PORT", "4000") + "/api/car/" + ParamCarID + command
 	req, _ := http.NewRequest(http.MethodPut, putURL, strings.NewReader(string(reqBody)))
 	req.Header.Set("User-Agent", "TeslaMateApi/"+apiVersion+" https://github.com/tobiasehlert/teslamateapi")
 	resp, err := client.Do(req)
