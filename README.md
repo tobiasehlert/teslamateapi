@@ -96,11 +96,13 @@ Basically the same environment variables for the database, mqqt and timezone nee
 - **DATABASE_NAME** string *(default: teslamate)*
 - **DATABASE_HOST** string *(default: database)*
 - **MQTT_HOST** string *(default: mosquitto)*
-- **TESLAMATE_URL** string *(default: http://teslamate:4000)*
 - **TZ** string *(default: Europe/Berlin)*
 
 **Optional** environment variables
 
+- **TESLAMATE_PROTOCOL** string *(default: http)*
+- **TESLAMATE_FQDN** string *(default: teslamate)*
+- **TESLAMATE_PORT** string *(default: 4000)*
 - **API_TOKEN** string *(default: )*
 - **DATABASE_PORT** integer *(default: 5432)*
 - **DATABASE_TIMEOUT** integer *(default: 60000)*

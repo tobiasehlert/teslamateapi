@@ -11,8 +11,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// TeslaMateAPICarsLoggingCommandV1 func
-func TeslaMateAPICarsLoggingCommandV1(c *gin.Context) {
+// TeslaMateAPICarsLoggingV1 func
+func TeslaMateAPICarsLoggingV1(c *gin.Context) {
 
 	// creating required vars
 	var jsonData map[string]interface{}
@@ -20,7 +20,7 @@ func TeslaMateAPICarsLoggingCommandV1(c *gin.Context) {
 
 	// check if commands are enabled.. if not we need to abort
 	if getEnvAsBool("ENABLE_COMMANDS", false) == false {
-		log.Println("[warning] TeslaMateAPICarsLoggingCommandV1 ENABLE_COMMANDS is not true.. returning 403 forbidden.")
+		log.Println("[warning] TeslaMateAPICarsLoggingV1 ENABLE_COMMANDS is not true.. returning 403 forbidden.")
 		c.JSON(http.StatusForbidden, gin.H{"error": "You are not allowed to access logging commands"})
 		return
 	}
@@ -47,7 +47,7 @@ func TeslaMateAPICarsLoggingCommandV1(c *gin.Context) {
 
 	// validating that CarID is not zero
 	if CarID == 0 {
-		log.Println("[error] TeslaMateAPICarsLoggingCommandV1 CarID is invalid (zero)!")
+		log.Println("[error] TeslaMateAPICarsLoggingV1 CarID is invalid (zero)!")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "CarID invalid"})
 		return
 	}
@@ -55,30 +55,30 @@ func TeslaMateAPICarsLoggingCommandV1(c *gin.Context) {
 	// getting request body to pass to Tesla
 	reqBody, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
-		log.Println("[error] TeslaMateAPICarsLoggingCommandV1 error in first ioutil.ReadAll", err)
+		log.Println("[error] TeslaMateAPICarsLoggingV1 error in first ioutil.ReadAll", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal"})
 		return
 	}
 
 	// getting :Command
 	command := ("/logging/" + c.Param("Command"))
-	log.Println("[debug] TeslaMateAPICarsLoggingCommandV1 command received:", command)
+	log.Println("[debug] TeslaMateAPICarsLoggingV1 command received:", command)
 
 	if !checkArrayContainsString(allowList, command) {
-		log.Print("[warning] TeslaMateAPICarsCommandV1 command: " + command + " not allowed")
+		log.Print("[warning] TeslaMateAPICarsLoggingV1 command: " + command + " not allowed")
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 
 	client := &http.Client{}
-	putURL := getEnv("TESLAMATE_URL", "http://teslamate:4000") + "/api/car/" + ParamCarID + command
+	putURL := getEnv("TESLAMATE_PROTOCOL", "http") + "://" + getEnv("TESLAMATE_FQDN", "teslamate") + ":" + getEnv("TESLAMATE_PORT", "4000") + "/api/car/" + ParamCarID + command
 	req, _ := http.NewRequest(http.MethodPut, putURL, strings.NewReader(string(reqBody)))
 	req.Header.Set("User-Agent", "TeslaMateApi/"+apiVersion+" https://github.com/tobiasehlert/teslamateapi")
 	resp, err := client.Do(req)
 
 	// check response error
 	if err != nil {
-		log.Println("[error] TeslaMateAPICarsLoggingCommandV1 error in http request to http://teslamate:", err)
+		log.Println("[error] TeslaMateAPICarsLoggingV1 error in http request to http://teslamate:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal"})
 		return
 	}
@@ -88,7 +88,7 @@ func TeslaMateAPICarsLoggingCommandV1(c *gin.Context) {
 
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Println("[error] TeslaMateAPICarsLoggingCommandV1 error in second ioutil.ReadAll:", err)
+		log.Println("[error] TeslaMateAPICarsLoggingV1 error in second ioutil.ReadAll:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal"})
 		return
 	}
@@ -96,15 +96,15 @@ func TeslaMateAPICarsLoggingCommandV1(c *gin.Context) {
 
 	// print to log about request
 	if gin.IsDebugging() {
-		log.Println("[debug] TeslaMateAPICarsLoggingCommandV1 " + c.Request.RequestURI + " returned data:")
+		log.Println("[debug] TeslaMateAPICarsLoggingV1 " + c.Request.RequestURI + " returned data:")
 		js, _ := json.Marshal(jsonData)
 		log.Printf("[debug] %s\n", js)
 	}
 
 	if resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusNoContent {
-		log.Println("[info] TeslaMateAPICarsLoggingCommandV1 " + c.Request.RequestURI + " executed successful.")
+		log.Println("[info] TeslaMateAPICarsLoggingV1 " + c.Request.RequestURI + " executed successful.")
 	} else {
-		log.Println("[error] TeslaMateAPICarsLoggingCommandV1 " + c.Request.RequestURI + " error in execution!")
+		log.Println("[error] TeslaMateAPICarsLoggingV1 " + c.Request.RequestURI + " error in execution!")
 	}
 	c.JSON(resp.StatusCode, jsonData)
 }
