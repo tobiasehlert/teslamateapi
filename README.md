@@ -100,8 +100,8 @@ Basically the same environment variables for the database, mqqt and timezone nee
 
 **Optional** environment variables
 
-- **TESLAMATE_PROTOCOL** string *(default: http)*
-- **TESLAMATE_FQDN** string *(default: teslamate)*
+- **TESLAMATE_SSL** boolean *(default: false)*
+- **TESLAMATE_HOST** string *(default: teslamate)*
 - **TESLAMATE_PORT** string *(default: 4000)*
 - **API_TOKEN** string *(default: )*
 - **DATABASE_PORT** integer *(default: 5432)*
