@@ -16,7 +16,7 @@ jobs:
 
       - name: Docker meta
         id: docker_meta
-        uses: crazy-max/ghaction-docker-meta@v2.4.0
+        uses: docker/metadata-action@v3
         with:
           images: tobiasehlert/teslamateapi
 
