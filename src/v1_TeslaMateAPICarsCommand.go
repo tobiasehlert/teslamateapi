@@ -20,7 +20,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	var err error
 
 	// check if commands are enabled.. if not we need to abort
-	if getEnvAsBool("ENABLE_COMMANDS", false) == false {
+	if !getEnvAsBool("ENABLE_COMMANDS", false) {
 		log.Println("[warning] TeslaMateAPICarsCommandV1 ENABLE_COMMANDS is not true.. returning 403 forbidden.")
 		c.JSON(http.StatusForbidden, gin.H{"error": "You are not allowed to access commands"})
 		return

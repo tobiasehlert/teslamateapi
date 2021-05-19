@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"reflect"
 	"strconv"
 	"time"
 
@@ -34,7 +33,7 @@ func main() {
 	log.SetFlags(log.Ldate | log.Lmicroseconds)
 
 	// setting application to ReleaseMode if DEBUG_MODE is false
-	if getEnvAsBool("DEBUG_MODE", false) == false {
+	if !getEnvAsBool("DEBUG_MODE", false) {
 		// setting GIN_MODE to ReleaseMode
 		gin.SetMode(gin.ReleaseMode)
 		log.Printf("[info] TeslaMateApi running in release mode.")
@@ -201,6 +200,7 @@ func getTimeInTimeZone(datestring string) string {
 	return ReturnDate
 }
 
+/*
 func isNil(i interface{}) bool {
 	if i == nil {
 		return true
@@ -211,6 +211,7 @@ func isNil(i interface{}) bool {
 	}
 	return false
 }
+*/
 
 // getEnv func - read an environment or return a default value
 func getEnv(key string, defaultVal string) string {
@@ -229,6 +230,7 @@ func getEnvAsBool(name string, defaultVal bool) bool {
 	return defaultVal
 }
 
+/*
 // getEnvAsFloat func - read an environment variable into a float64 or return default value
 func getEnvAsFloat(name string, defaultVal float64) float64 {
 	valStr := getEnv(name, "")
@@ -237,6 +239,7 @@ func getEnvAsFloat(name string, defaultVal float64) float64 {
 	}
 	return defaultVal
 }
+*/
 
 // getEnvAsInt func - read an environment variable into integer or return a default value
 func getEnvAsInt(name string, defaultVal int) int {
@@ -288,6 +291,7 @@ func kilometersToMilesNilSupport(km NullFloat64) NullFloat64 {
 	return (km)
 }
 
+/*
 // milesToKilometers func
 func milesToKilometers(mi float64) float64 {
 	return (mi * 1.609344)
@@ -298,6 +302,7 @@ func milesToKilometersNilSupport(mi NullFloat64) NullFloat64 {
 	mi.Float64 = (mi.Float64 * 1.609344)
 	return (mi)
 }
+*/
 
 // celsiusToFahrenheit func
 func celsiusToFahrenheit(c float64) float64 {
@@ -310,6 +315,7 @@ func celsiusToFahrenheitNilSupport(c NullFloat64) NullFloat64 {
 	return (c)
 }
 
+/*
 // fahrenheitToCelsius func
 func fahrenheitToCelsius(f float64) float64 {
 	return ((f - 32) * 5 / 9)
@@ -320,6 +326,7 @@ func fahrenheitToCelsiusNilSupport(f NullFloat64) NullFloat64 {
 	f.Float64 = ((f.Float64 - 32) * 5 / 9)
 	return (f)
 }
+*/
 
 // checkArrayContainsString func - check if string is inside stringarray
 func checkArrayContainsString(s []string, e string) bool {
