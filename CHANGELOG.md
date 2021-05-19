@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [1.6.2] - 2021-05-19
+
+### Changed
+- bump github.com/lib/pq from 1.10.1 to 1.10.2 (#59 by dependabot)
+- bump various workflow versions (#52, #53, #54, #55, #56 and #57 by dependabot)
+
 ## [1.6.1] - 2021-05-10
 
 ### Changed
@@ -173,7 +179,8 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.6.1...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.6.2...HEAD
+[1.6.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.4.9...v1.5.0
