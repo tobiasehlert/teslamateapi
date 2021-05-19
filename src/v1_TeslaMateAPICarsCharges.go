@@ -106,7 +106,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		LEFT JOIN addresses address ON address_id = address.id
 		LEFT JOIN positions position ON position_id = position.id
 		LEFT JOIN geofences geofence ON geofence_id = geofence.id
-		WHERE charging_processes.car_id=$1
+		WHERE charging_processes.car_id=$1 AND charging_processes.end_date IS NOT NULL
 		ORDER BY start_date DESC
 		LIMIT $2 OFFSET $3;`
 	rows, err := db.Query(query, CarID, ResultShow, ResultPage)
@@ -121,11 +121,6 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 
 	// looping through all results
 	for rows.Next() {
-		
-		// skip any malformed rows
-		if end_date == NULL {
-			continue
-		}
 
 		// creating charge object based on struct
 		charge := Charges{}
