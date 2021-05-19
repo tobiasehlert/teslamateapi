@@ -181,7 +181,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	}
 	
 	// if no errors, but ChargeData is empty, return a valid response with an empty set
-	if len(ChargeData) == 0 {
+	if len(ChargesData) == 0 {
 		ValidResponse = true
 	}
 
