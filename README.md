@@ -100,6 +100,9 @@ Basically the same environment variables for the database, mqqt and timezone nee
 
 **Optional** environment variables
 
+- **TESLAMATE_SSL** boolean *(default: false)*
+- **TESLAMATE_HOST** string *(default: teslamate)*
+- **TESLAMATE_PORT** string *(default: 4000)*
 - **API_TOKEN** string *(default: )*
 - **DATABASE_PORT** integer *(default: 5432)*
 - **DATABASE_TIMEOUT** integer *(default: 60000)*
@@ -117,6 +120,7 @@ Basically the same environment variables for the database, mqqt and timezone nee
 - **ENABLE_COMMANDS** boolean *(default: false)*
 - **COMMANDS_ALL** boolean *(default: false)*
 - **COMMANDS_ALLOWLIST** string *(default: allow_list.json)*
+- **COMMANDS_LOGGING** boolean *(deafault: false)*
 - **COMMANDS_WAKE** boolean *(default: false)*
 - **COMMANDS_ALERT** boolean *(default: false)*
 - **COMMANDS_REMOTESTART** boolean *(default: false)*
@@ -150,6 +154,8 @@ More detailed documentation of every endpoint will come..
 - POST `/api/v1/cars/:CarID/command/:Command`
 - GET `/api/v1/cars/:CarID/drives`
 - GET `/api/v1/cars/:CarID/drives/:DriveID`
+- PUT `/api/v1/cars/:CarID/logging/:Command`
+- GET `/api/v1/cars/:CarID/logging`
 - GET `/api/v1/cars/:CarID/status`
 - GET `/api/v1/cars/:CarID/updates`
 - POST `/api/v1/cars/:CarID/wake_up`
@@ -158,7 +164,7 @@ More detailed documentation of every endpoint will come..
 
 ### Authentication
 
-If you want to use command endpoints such as `/api/v1/cars/:CarID/command/:Command` and `/api/v1/cars/:CarID/wake_up`, you need to add authentication to your request.
+If you want to use command or logging endpoints such as `/api/v1/cars/:CarID/command/:Command`, `/api/v1/cars/:CarID/wake_up`, or `/api/v1/cars/:CarID/logging/:Command` you need to add authentication to your request.
 
 You need to specify a token yourself (called **API_TOKEN**) in the environment variables file, to set it. The token has the requirement to be a minimum of 32 characters long.
 

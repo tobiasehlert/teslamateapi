@@ -100,6 +100,10 @@ func main() {
 			v1.GET("/cars/:CarID/drives", TeslaMateAPICarsDrivesV1)
 			v1.GET("/cars/:CarID/drives/:DriveID", TeslaMateAPICarsDrivesDetailsV1)
 
+			// v1 /api/v1/cars/:CarID/logging endpoints
+			v1.GET("/cars/:CarID/logging", TeslaMateAPICarsLoggingV1)
+			v1.PUT("/cars/:CarID/logging/:Command", TeslaMateAPICarsLoggingV1)
+
 			// v1 /api/v1/cars/:CarID/status endpoints
 			v1.GET("/cars/:CarID/status", statusCache.TeslaMateAPICarsStatusV1)
 
