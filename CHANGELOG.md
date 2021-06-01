@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [1.7.1] - 2021-06-01
+
+### Changed
+- bump github.com/gin-gonic/gin from 1.7.1 to 1.7.2 (#63 by dependabot)
+- bump various workflow versions (#64, #65, #66, #67 by dependabot)
+
 ## [1.7.0] - 2021-05-20
 
 ### Added
@@ -187,7 +193,8 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.7.1...HEAD
+[1.7.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.6.2...v1.7.0
 [1.6.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.6.0...v1.6.1
