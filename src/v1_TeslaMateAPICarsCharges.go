@@ -179,6 +179,11 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	
+	// if no errors, but ChargeData is empty, return a valid response with an empty set
+	if len(ChargesData) == 0 {
+		ValidResponse = true
+	}
 
 	//
 	// build the data-blob
