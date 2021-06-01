@@ -136,7 +136,7 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 		LEFT JOIN positions position ON position_id = position.id
 		LEFT JOIN geofences geofence ON geofence_id = geofence.id
 		LEFT JOIN charges ON charging_processes.id = charges.id
-		WHERE charging_processes.car_id=$1 AND charging_processes.id=$2
+		WHERE charging_processes.car_id=$1 AND charging_processes.id=$2 AND charging_processes.end_date IS NOT NULL
 		ORDER BY start_date DESC;`
 	rows, err := db.Query(query, CarID, ChargeID)
 
