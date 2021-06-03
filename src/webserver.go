@@ -58,6 +58,10 @@ func main() {
 		log.Fatalf("[error] TeslaMateApi MQTT connection failed: %s", err)
 	}
 
+	if getEnvAsBool("API_TOKEN_DISABLE", false) == true {
+		log.Println("[warning] validateAuthToken - header authorization bearer token disabled. Authorizaiton: Bearer token will not be required for commands.")
+	}
+
 	// kicking off Gin in value r
 	r := gin.Default()
 
