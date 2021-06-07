@@ -104,6 +104,7 @@ Basically the same environment variables for the database, mqqt and timezone nee
 - **TESLAMATE_HOST** string *(default: teslamate)*
 - **TESLAMATE_PORT** string *(default: 4000)*
 - **API_TOKEN** string *(default: )*
+- **API_TOKEN_DISABLE** string *(default: false)*
 - **DATABASE_PORT** integer *(default: 5432)*
 - **DATABASE_TIMEOUT** integer *(default: 60000)*
 - **DATABASE_SSL** boolean *(default: true)*
@@ -203,6 +204,8 @@ There is **no** possibility to get access to your Tesla account tokens by this A
 The data that is accessible is data like the cars, charges, drives, current status, updates and global settings.
 
 Also, apply some authentication on your webserver in front of the container, so your data is not unprotected and too exposed. In the example above, we use the same .htpasswd file as used by TeslaMate.
+
+If you have applied a level of authentication in front of the container `API_TOKEN_DISABLE=true` will allow commands without requiring the header or uri token value.
 
 ## Credits
 
