@@ -81,7 +81,7 @@ func startMQTT() (*statusCache, error) {
 	// getting mqtt flag
 	s.mqttDisabled = getEnvAsBool("DISABLE_MQTT", false)
 	if s.mqttDisabled {
-		return nil, errors.New("[notice] TeslaMateAPICarsStatusV1 DISABLE_MQTT is set to true.. can not return status for car without mqtt!")
+		return nil, errors.New("[notice] TeslaMateAPICarsStatusV1 DISABLE_MQTT is set to true.. can not return status for car without mqtt")
 	}
 
 	// default values that get might get overwritten..
