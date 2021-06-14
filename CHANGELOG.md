@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [1.9.0] - 2021-06-14
+
+### Added
+- option to disable auth token for commands (#71 by @LelandSindt)
+
+### Changed
+- bump golang from 1.16.4 to 1.16.5 (#72 by dependabot)
+- bump github.com/eclipse/paho.mqtt.golang from 1.3.4 to 1.3.5 (#73 by dependabot)
+
 ## [1.8.0] - 2021-06-01
 
 ### Fixed
@@ -198,7 +207,8 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.8.0...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.7.1...v1.8.0
 [1.7.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.7.0...v1.7.1
 [1.7.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.6.2...v1.7.0
