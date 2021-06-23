@@ -260,7 +260,7 @@ func convertStringToBool(data string) bool {
 		return value
 	}
 	// else..
-	log.Println("[warning] convertStringToBool error could not return value correct.. returning false")
+	log.Println("[warning] convertStringToBool error could not return value (" + data + ") correctly.. returning false")
 	return false
 }
 
@@ -270,7 +270,7 @@ func convertStringToFloat(data string) float64 {
 		return value
 	}
 	// else..
-	log.Println("[warning] convertStringToFloat error could not return value correct.. returning 0.0")
+	log.Println("[warning] convertStringToFloat error could not return value (" + data + ") correctly.. returning 0.0")
 	return 0.0
 }
 
@@ -280,7 +280,7 @@ func convertStringToInteger(data string) int {
 		return value
 	}
 	// else..
-	log.Println("[warning] convertStringToInteger error could not return value correct.. returning 0")
+	log.Println("[warning] convertStringToInteger error could not return value (" + data + ") correctly.. returning 0")
 	return 0
 }
 
