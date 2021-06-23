@@ -210,10 +210,8 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 
 	// return jsonData
 	if ValidResponse {
-		log.Println("[info] TeslaMateAPICarsChargesV1 " + c.Request.RequestURI + " executed successful.")
-		c.JSON(http.StatusOK, jsonData)
+		TeslaMateAPIHandleSuccessResponse(c, jsonData)
 	} else {
-		log.Println("[error] TeslaMateAPICarsChargesV1 " + c.Request.RequestURI + " error in execution!")
-		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICarsChargesV1.."})
+		TeslaMateAPIHandleErrorResponse(c, "something went wrong in TeslaMateAPICarsChargesV1..")
 	}
 }
