@@ -179,6 +179,16 @@ func initDBconnection() {
 	}
 }
 
+func TeslaMateAPIHandleErrorResponse(c *gin.Context, s string) {
+    log.Println("[error] TeslaMateAPICarsChargesDetailsV1 " + c.Request.RequestURI + " error in execution! " + s)
+    c.JSON(http.StatusOK, gin.H{"error": s})
+}
+
+func TeslaMateAPIHandleSuccessResponse(c *gin.Context, j JSONData) {
+    log.Println("[info] TeslaMateAPICarsChargesDetailsV1 " + c.Request.RequestURI + " executed successful.")
+    c.JSON(http.StatusOK, j)
+}
+
 func getTimeInTimeZone(datestring string) string {
 
 	// getting timezone from environment
