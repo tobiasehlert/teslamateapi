@@ -180,12 +180,12 @@ func initDBconnection() {
 }
 
 func TeslaMateAPIHandleErrorResponse(c *gin.Context, s1 string, s2 string) {
-    log.Println("[error] " + s1 + " - " + c.Request.RequestURI + " error in execution! " + s2)
+    log.Println("[error] " + s1 + " - (" + c.Request.RequestURI + ") error in execution! " + s2)
     c.JSON(http.StatusOK, gin.H{"error": s2})
 }
 
 func TeslaMateAPIHandleSuccessResponse(c *gin.Context, s string, j JSONData) {
-    log.Println("[info] " + s + " - " + c.Request.RequestURI + " executed successful.")
+    log.Println("[info] " + s + " - (" + c.Request.RequestURI + ") executed successfully.")
     c.JSON(http.StatusOK, j)
 }
 
