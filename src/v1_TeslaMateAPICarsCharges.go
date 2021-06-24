@@ -210,8 +210,8 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 
 	// return jsonData
 	if ValidResponse {
-		TeslaMateAPIHandleSuccessResponse(c, jsonData)
+		TeslaMateAPIHandleSuccessResponse(c, "TeslaMateAPICarsChargesV1", jsonData)
 	} else {
-		TeslaMateAPIHandleErrorResponse(c, "something went wrong in TeslaMateAPICarsChargesV1..")
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", "something went wrong")
 	}
 }

@@ -178,13 +178,13 @@ func initDBconnection() {
 	}
 }
 
-func TeslaMateAPIHandleErrorResponse(c *gin.Context, s string) {
-    log.Println("[error] TeslaMateAPICarsChargesDetailsV1 " + c.Request.RequestURI + " error in execution! " + s)
-    c.JSON(http.StatusOK, gin.H{"error": s})
+func TeslaMateAPIHandleErrorResponse(c *gin.Context, s1 string, s2 string) {
+    log.Println("[error] " + s1 + " - " + c.Request.RequestURI + " error in execution! " + s2)
+    c.JSON(http.StatusOK, gin.H{"error": s2})
 }
 
-func TeslaMateAPIHandleSuccessResponse(c *gin.Context, j JSONData) {
-    log.Println("[info] TeslaMateAPICarsChargesDetailsV1 " + c.Request.RequestURI + " executed successful.")
+func TeslaMateAPIHandleSuccessResponse(c *gin.Context, s string, j JSONData) {
+    log.Println("[info] " + s + " - " + c.Request.RequestURI + " executed successful.")
     c.JSON(http.StatusOK, j)
 }
 
