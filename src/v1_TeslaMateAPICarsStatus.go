@@ -33,6 +33,7 @@ type statusInfo struct {
 	MQTTDataLatitude                   float64
 	MQTTDataLongitude                  float64
 	MQTTDataShiftState                 string
+	MQTTDataPower                      int
 	MQTTDataSpeed                      int
 	MQTTDataHeading                    int
 	MQTTDataElevation                  int
@@ -210,6 +211,8 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		stat.MQTTDataLongitude = convertStringToFloat(string(msg.Payload()))
 	} else if MqttTopic == "shift_state" {
 		stat.MQTTDataShiftState = string(msg.Payload())
+	} else if MqttTopic == "power" {
+		stat.MQTTDataPower = convertStringToInteger(string(msg.Payload()))
 	} else if MqttTopic == "speed" {
 		stat.MQTTDataSpeed = convertStringToInteger(string(msg.Payload()))
 	} else if MqttTopic == "heading" {
@@ -363,6 +366,7 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	// DrivingDetails struct - child of MQTTInformation
 	type DrivingDetails struct {
 		ShiftState string `json:"shift_state"` // D - Current/Last Shift State (D/N/R/P)
+		Power      int    `json:"power"`       // -9 Current battery power in watts. Positive value on discharge, negative value on charge
 		Speed      int    `json:"speed"`       // 12 - Current Speed in km/h
 		Heading    int    `json:"heading"`     // 340 - Last reported car direction
 		Elevation  int    `json:"elevation"`   // 70 - Current elevation above sea level in meters
@@ -447,6 +451,7 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	MQTTInformationData.CarGeodata.Latitude = stat.MQTTDataLatitude
 	MQTTInformationData.CarGeodata.Longitude = stat.MQTTDataLongitude
 	MQTTInformationData.DrivingDetails.ShiftState = stat.MQTTDataShiftState
+	MQTTInformationData.DrivingDetails.Power = stat.MQTTDataPower
 	MQTTInformationData.DrivingDetails.Speed = stat.MQTTDataSpeed
 	MQTTInformationData.DrivingDetails.Heading = stat.MQTTDataHeading
 	MQTTInformationData.DrivingDetails.Elevation = stat.MQTTDataElevation
