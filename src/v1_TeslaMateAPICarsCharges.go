@@ -69,7 +69,6 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	// creating required vars
 	var ChargesData []Charges
 	var UnitsLength, UnitsTemperature, CarName string
-	var ValidResponse bool // default is false
 
 	// calculate offset based on page (page 0 is not possible, since first page is minimum 1)
 	if ResultPage > 0 {
@@ -111,13 +110,14 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		LIMIT $2 OFFSET $3;`
 	rows, err := db.Query(query, CarID, ResultShow, ResultPage)
 
-	// checking for errors in query
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	// defer closing rows
 	defer rows.Close()
+
+	// checking for errors in query
+	if err != nil {
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", "Unable to load charges.", err.Error())
+		return
+	}
 
 	// looping through all results
 	for rows.Next() {
@@ -166,23 +166,19 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 
 		// checking for errors after scanning
 		if err != nil {
-			log.Fatal(err)
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", "Unable to load charges.", err.Error())
+			return
 		}
 
 		// appending charge to ChargesData
 		ChargesData = append(ChargesData, charge)
-		ValidResponse = true
 	}
 
 	// checking for errors in the rows result
 	err = rows.Err()
 	if err != nil {
-		log.Fatal(err)
-	}
-	
-	// if no errors, but ChargeData is empty, return a valid response with an empty set
-	if len(ChargesData) == 0 {
-		ValidResponse = true
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", "Unable to load charges.", err.Error())
+		return
 	}
 
 	//
@@ -201,17 +197,6 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		},
 	}
 
-	// print to log about request
-	if gin.IsDebugging() {
-		log.Println("[debug] TeslaMateAPICarsChargesV1 " + c.Request.RequestURI + " returned data:")
-		js, _ := json.Marshal(jsonData)
-		log.Printf("[debug] %s\n", js)
-	}
-
 	// return jsonData
-	if ValidResponse {
-		TeslaMateAPIHandleSuccessResponse(c, "TeslaMateAPICarsChargesV1", jsonData)
-	} else {
-		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", "something went wrong")
-	}
+	TeslaMateAPIHandleSuccessResponse(c, "TeslaMateAPICarsChargesV1", jsonData)
 }
