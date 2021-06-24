@@ -185,6 +185,13 @@ func TeslaMateAPIHandleErrorResponse(c *gin.Context, s1 string, s2 string, s3 st
 }
 
 func TeslaMateAPIHandleSuccessResponse(c *gin.Context, s string, j JSONData) {
+	// print to log about request
+	if gin.IsDebugging() {
+		log.Println("[debug] " + s + " - (" + c.Request.RequestURI + ") returned data:")
+		js, _ := json.Marshal(jsonData)
+		log.Printf("[debug] %s\n", js)
+	}
+	// return successful response
 	log.Println("[info] " + s + " - (" + c.Request.RequestURI + ") executed successfully.")
 	c.JSON(http.StatusOK, j)
 }
