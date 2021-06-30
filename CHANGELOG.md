@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [1.10.0] - 2021-06-30
+
+### Added
+- adding power mqtt value to status endpoint (#74)
+
+### Changed
+- improved log message of convert-functions (#75 by @alecdoconnor)
+- bump various workflow versions (#78, #82, #83 by dependabot)
+- minor code adjustments based on go-staticcheck
+
 ## [1.9.0] - 2021-06-14
 
 ### Added
@@ -207,7 +217,8 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.7.1...v1.8.0
 [1.7.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.7.0...v1.7.1
