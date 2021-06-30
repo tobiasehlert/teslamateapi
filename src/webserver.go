@@ -58,7 +58,7 @@ func main() {
 		log.Fatalf("[error] TeslaMateApi MQTT connection failed: %s", err)
 	}
 
-	if getEnvAsBool("API_TOKEN_DISABLE", false) == true {
+	if getEnvAsBool("API_TOKEN_DISABLE", false) {
 		log.Println("[warning] validateAuthToken - header authorization bearer token disabled. Authorizaiton: Bearer token will not be required for commands.")
 	}
 

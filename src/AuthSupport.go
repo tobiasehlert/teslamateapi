@@ -24,7 +24,7 @@ func initAuthToken() {
 func validateAuthToken(c *gin.Context) (bool, string) {
 
 	// if API_TOKEN_DISABLE is true, skip token validation.
-	if getEnvAsBool("API_TOKEN_DISABLE", false) == true {
+	if getEnvAsBool("API_TOKEN_DISABLE", false) {
 		log.Println("[debug] validateAuthToken - header authorization bearer token disabled.")
 		return true, ""
 	}
