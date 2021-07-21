@@ -129,31 +129,6 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 
 	// looping through all results
 	for rows.Next() {
-		
-		// creating incomplete charge object based on struct
-		// incomplete charges may still be in progress, or a previous charge that failed to complete
-  		if end_date == NULL {
-			incompleteCharge := IncompleteCharges{}
-			
-			err = rows.Scan (
-				&incompleteCharge.ChargeID,
-				&incompleteCharge.StartDate,
-				&incompleteCharge.Address,
-			)
-			
-			// adjusting to timezone differences from UTC to be userspecific
-			incompleteCharge.StartDate = getTimeInTimeZone(incompleteCharge.StartDate)
-			
-			// checking for errors after scanning
-			if err != nil {
-				log.Fatal(err)
-			}
-			
-			// appending charge to ChargesData
-			IncompleteChargesData = append(IncompleteChargesData, incompleteCharge)
-			
-  			break
-  		}
 
 		// creating charge object based on struct
 		charge := Charges{}
@@ -180,6 +155,24 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 			&UnitsTemperature,
 			&CarName,
 		)
+		
+		// creating incomplete charge object based on struct
+		// incomplete charges may still be in progress, or a previous charge that failed to complete
+  		if charge.EndDate == NULL {
+			incompleteCharge := IncompleteCharges{
+				ChargeID: charge.ChargeID, 
+				StartDate: charge.StartDate,
+				Address: charge.Address,
+			}
+			
+			// adjusting to timezone differences from UTC to be userspecific
+			incompleteCharge.StartDate = getTimeInTimeZone(incompleteCharge.StartDate)
+			
+			// appending charge to ChargesData
+			IncompleteChargesData = append(IncompleteChargesData, incompleteCharge)
+			
+  			break
+  		}
 
 		// converting values based of settings UnitsLength
 		if UnitsLength == "mi" {
