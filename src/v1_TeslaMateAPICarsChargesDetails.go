@@ -223,16 +223,15 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 				if err2 != nil {
 					log.Fatal(err2)
 				}
-				// There is a charge available, it's just incomplete
+				// There's a charge available, it's just incomplete
 				incompleteCharge := IncompleteCharge{}
 				incompleteCharge.ChargeID = *(dest)[0].(*int)
 				incompleteCharge.StartDate = *(dest)[1].(*string)
 				incompleteCharge.Address = *(dest)[3].(*string)
 
-				// adjusting to timezone differences from UTC to be userspecific
+				// adjusting to timezone differences from UTC to be user-specific
 				incompleteCharge.StartDate = getTimeInTimeZone(incompleteCharge.StartDate)
 
-				// appending charge to ChargesData
 				IncompleteChargeData = incompleteCharge
 
 				ValidResponse = true
