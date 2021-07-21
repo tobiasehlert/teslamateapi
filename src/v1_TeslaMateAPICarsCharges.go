@@ -182,8 +182,8 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 				new(sql.RawBytes), // UnitsTemperature
 				new(sql.RawBytes), // CarName
 			}
-			var err2 error
-			err2 = rows.Scan(dest...)
+
+			var err2 error = rows.Scan(dest...)
 
 			if dest[0] != nil {
 				if err2 != nil {
