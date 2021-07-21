@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"database/sql"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -87,13 +86,6 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 		OutsideTempAvg    float64         `json:"outside_temp_avg"`    // float64
 		ChargeDetails     []ChargeDetails `json:"charge_details"`      // struct
 	}
-	// Incomplete Charges struct - child of Data
-	type IncompleteCharge struct {
-		ChargeID          int                `json:"charge_id"`           // int
-		StartDate         string             `json:"start_date"`          // string
-		Address           string             `json:"address"`             // string
-		ChargeDetails     []ChargeDetails    `json:"charge_details"`      // struct
-	}
 	// TeslaMateUnits struct - child of Data
 	type TeslaMateUnits struct {
 		UnitsLength      string `json:"unit_of_length"`      // string
@@ -101,10 +93,9 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 	}
 	// Data struct - child of JSONData
 	type Data struct {
-		Car                Car                `json:"car"`
-		Charge             Charge             `json:"charge"`
-		IncompleteCharge   IncompleteCharge   `json:"incomplete_charge"`
-		TeslaMateUnits     TeslaMateUnits     `json:"units"`
+		Car            Car            `json:"car"`
+		Charge         Charge         `json:"charge"`
+		TeslaMateUnits TeslaMateUnits `json:"units"`
 	}
 	// JSONData struct - main
 	type JSONData struct {
@@ -113,7 +104,6 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 
 	// creating required vars
 	var ChargeData Charge
-	var IncompleteChargeData IncompleteCharge
 	var ChargeDetailsData []ChargeDetails
 	var UnitsLength, UnitsTemperature, CarName string
 	var ValidResponse bool // default is false

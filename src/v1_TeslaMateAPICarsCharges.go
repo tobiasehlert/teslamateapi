@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"database/sql"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -64,8 +65,8 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	// Data struct - child of JSONData
 	type Data struct {
 		Car                Car                    `json:"car"`
-		Charges            []Charges              `json:"charges"`
 		IncompleteCharges  []IncompleteCharges    `json:"incomplete_charges"`
+		Charges            []Charges              `json:"charges"`
 		TeslaMateUnits     TeslaMateUnits         `json:"units"`
 	}
 	// JSONData struct - main
@@ -181,6 +182,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 				new(sql.RawBytes), // UnitsTemperature
 				new(sql.RawBytes), // CarName
 			}
+			var err2 error
 			err2 = rows.Scan(dest...)
 			
 			if dest[0] != nil {
@@ -188,11 +190,10 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 					log.Fatal(err2)
 				}
 				// There is a charge available, it's just incomplete
-				incompleteCharge := IncompleteCharges{
-					ChargeID: dest[0], 
-					StartDate: dest[1],
-					Address: dest[3],
-				}
+				incompleteCharge := IncompleteCharges{}
+				incompleteCharge.ChargeID = *(dest)[0].(*int)
+				incompleteCharge.StartDate = *(dest)[1].(*string)
+				incompleteCharge.Address = *(dest)[3].(*string)
 			
 				// adjusting to timezone differences from UTC to be userspecific
 				incompleteCharge.StartDate = getTimeInTimeZone(incompleteCharge.StartDate)
@@ -247,8 +248,8 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 				CarID:   CarID,
 				CarName: CarName,
 			},
-			Charges: ChargesData,
 			IncompleteCharges: IncompleteChargesData,
+			Charges: ChargesData,
 			TeslaMateUnits: TeslaMateUnits{
 				UnitsLength:      UnitsLength,
 				UnitsTemperature: UnitsTemperature,
