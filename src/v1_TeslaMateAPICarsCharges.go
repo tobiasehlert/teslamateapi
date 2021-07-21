@@ -156,23 +156,56 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 			&CarName,
 		)
 		
-		// creating incomplete charge object based on struct
-		// incomplete charges may still be in progress, or a previous charge that failed to complete
-  		if charge.EndDate == nil {
-			incompleteCharge := IncompleteCharges{
-				ChargeID: charge.ChargeID, 
-				StartDate: charge.StartDate,
-				Address: charge.Address,
+		// checking for errors after scanning
+		// Incomplete charges may still be in progress, or a previous charge that failed to finalize
+		if err != nil {
+			// Check if charge is available with incomplete data
+			dest := []interface{}{ // Standard MySQL columns
+				new(int), // ChargeID
+				new(string), // StartDate
+				new(sql.RawBytes), // EndDate
+				new(string), // Address
+				new(sql.RawBytes), // ChargeEnergyAdded
+				new(sql.RawBytes), // ChargeEnergyUsed
+				new(sql.RawBytes), // Cost
+				new(sql.RawBytes), // StartRange
+				new(sql.RawBytes), // EndRange
+				new(sql.RawBytes), // StartRange
+				new(sql.RawBytes), // EndRange
+				new(sql.RawBytes), // StartBatteryLevel
+				new(sql.RawBytes), // EndBatteryLevel
+				new(sql.RawBytes), // DurationMin
+				new(sql.RawBytes), // DurationStr
+				new(sql.RawBytes), // OutsideTempAvg
+				new(sql.RawBytes), // UnitsLength
+				new(sql.RawBytes), // UnitsTemperature
+				new(sql.RawBytes), // CarName
 			}
+			err2 = rows.Scan(dest...)
 			
-			// adjusting to timezone differences from UTC to be userspecific
-			incompleteCharge.StartDate = getTimeInTimeZone(incompleteCharge.StartDate)
+			if dest[0] != nil {
+				if err2 != nil {
+					log.Fatal(err2)
+				}
+				// There is a charge available, it's just incomplete
+				incompleteCharge := IncompleteCharges{
+					ChargeID: dest[0], 
+					StartDate: dest[1],
+					Address: dest[3],
+				}
 			
-			// appending charge to ChargesData
-			IncompleteChargesData = append(IncompleteChargesData, incompleteCharge)
-			
-  			break
-  		}
+				// adjusting to timezone differences from UTC to be userspecific
+				incompleteCharge.StartDate = getTimeInTimeZone(incompleteCharge.StartDate)
+
+				// appending charge to ChargesData
+				IncompleteChargesData = append(IncompleteChargesData, incompleteCharge)
+
+				continue
+				
+			} else {
+				log.Fatal(err)
+			}
+		}
 
 		// converting values based of settings UnitsLength
 		if UnitsLength == "mi" {
@@ -189,11 +222,6 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		// adjusting to timezone differences from UTC to be userspecific
 		charge.StartDate = getTimeInTimeZone(charge.StartDate)
 		charge.EndDate = getTimeInTimeZone(charge.EndDate)
-
-		// checking for errors after scanning
-		if err != nil {
-			log.Fatal(err)
-		}
 
 		// appending charge to ChargesData
 		ChargesData = append(ChargesData, charge)
