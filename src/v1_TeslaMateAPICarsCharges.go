@@ -1,10 +1,10 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
-	"database/sql"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -53,9 +53,9 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	}
 	// Incomplete Charges struct - child of Data
 	type IncompleteCharges struct {
-		ChargeID          int            `json:"charge_id"`           // int
-		StartDate         string         `json:"start_date"`          // string
-		Address           string         `json:"address"`             // string
+		ChargeID  int    `json:"charge_id"`  // int
+		StartDate string `json:"start_date"` // string
+		Address   string `json:"address"`    // string
 	}
 	// TeslaMateUnits struct - child of Data
 	type TeslaMateUnits struct {
@@ -64,10 +64,10 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	}
 	// Data struct - child of JSONData
 	type Data struct {
-		Car                Car                    `json:"car"`
-		IncompleteCharges  []IncompleteCharges    `json:"incomplete_charges"`
-		Charges            []Charges              `json:"charges"`
-		TeslaMateUnits     TeslaMateUnits         `json:"units"`
+		Car               Car                 `json:"car"`
+		IncompleteCharges []IncompleteCharges `json:"incomplete_charges"`
+		Charges           []Charges           `json:"charges"`
+		TeslaMateUnits    TeslaMateUnits      `json:"units"`
 	}
 	// JSONData struct - main
 	type JSONData struct {
@@ -156,16 +156,16 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 			&UnitsTemperature,
 			&CarName,
 		)
-		
+
 		// checking for errors after scanning
 		// Incomplete charges may still be in progress, or a previous charge that failed to finalize
 		if err != nil {
 			// Check if charge is available with incomplete data
 			dest := []interface{}{ // Standard MySQL columns
-				new(int), // ChargeID
-				new(string), // StartDate
+				new(int),          // ChargeID
+				new(string),       // StartDate
 				new(sql.RawBytes), // EndDate
-				new(string), // Address
+				new(string),       // Address
 				new(sql.RawBytes), // ChargeEnergyAdded
 				new(sql.RawBytes), // ChargeEnergyUsed
 				new(sql.RawBytes), // Cost
@@ -184,7 +184,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 			}
 			var err2 error
 			err2 = rows.Scan(dest...)
-			
+
 			if dest[0] != nil {
 				if err2 != nil {
 					log.Fatal(err2)
@@ -194,7 +194,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 				incompleteCharge.ChargeID = *(dest)[0].(*int)
 				incompleteCharge.StartDate = *(dest)[1].(*string)
 				incompleteCharge.Address = *(dest)[3].(*string)
-			
+
 				// adjusting to timezone differences from UTC to be userspecific
 				incompleteCharge.StartDate = getTimeInTimeZone(incompleteCharge.StartDate)
 
@@ -202,7 +202,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 				IncompleteChargesData = append(IncompleteChargesData, incompleteCharge)
 
 				continue
-				
+
 			} else {
 				log.Fatal(err)
 			}
@@ -234,7 +234,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	// if no errors, but ChargeData is empty, return a valid response with an empty set
 	if len(ChargesData) == 0 {
 		ValidResponse = true
@@ -249,7 +249,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 				CarName: CarName,
 			},
 			IncompleteCharges: IncompleteChargesData,
-			Charges: ChargesData,
+			Charges:           ChargesData,
 			TeslaMateUnits: TeslaMateUnits{
 				UnitsLength:      UnitsLength,
 				UnitsTemperature: UnitsTemperature,
