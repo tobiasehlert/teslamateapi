@@ -158,7 +158,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		
 		// creating incomplete charge object based on struct
 		// incomplete charges may still be in progress, or a previous charge that failed to complete
-  		if charge.EndDate == NULL {
+  		if charge.EndDate == nil {
 			incompleteCharge := IncompleteCharges{
 				ChargeID: charge.ChargeID, 
 				StartDate: charge.StartDate,
