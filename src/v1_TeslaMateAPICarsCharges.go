@@ -75,8 +75,8 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	}
 
 	// creating required vars
-	var ChargesData []Charges
-	var IncompleteChargesData []IncompleteCharges
+	ChargesData := make([]Charges, 0)
+	IncompleteChargesData := make([]IncompleteCharges, 0)
 	var UnitsLength, UnitsTemperature, CarName string
 	var ValidResponse bool // default is false
 
