@@ -1,11 +1,10 @@
 # TeslaMateApi
 
 [![GitHub CI](https://github.com/tobiasehlert/teslamateapi/workflows/build/badge.svg?branch=main)](https://github.com/tobiasehlert/teslamateapi/actions?query=workflow%3Abuild)
-![GitHub go.mod version](https://img.shields.io/github/go-mod/go-version/tobiasehlert/teslamateapi)
-[![Docker version](https://img.shields.io/docker/v/tobiasehlert/teslamateapi/latest)](https://microbadger.com/images/tobiasehlert/teslamateapi)
-[![Docker size](https://img.shields.io/docker/image-size/tobiasehlert/teslamateapi/latest)](https://microbadger.com/images/tobiasehlert/teslamateapi)
-[![Docker layers](https://img.shields.io/microbadger/layers/tobiasehlert/teslamateapi/latest)](https://microbadger.com/images/tobiasehlert/teslamateapi)
-[![GitHub license](https://img.shields.io/github/license/tobiasehlert/teslamateapi)](https://microbadger.com/images/tobiasehlert/teslamateapi)
+[![GitHub go.mod version](https://img.shields.io/github/go-mod/go-version/tobiasehlert/teslamateapi)](https://github.com/tobiasehlert/teslamateapi/blob/main/go.mod)
+[![Docker version](https://img.shields.io/docker/v/tobiasehlert/teslamateapi/latest)](https://hub.docker.com/r/tobiasehlert/teslamateapi)
+[![Docker size](https://img.shields.io/docker/image-size/tobiasehlert/teslamateapi/latest)](https://hub.docker.com/r/tobiasehlert/teslamateapi)
+[![GitHub license](https://img.shields.io/github/license/tobiasehlert/teslamateapi)](https://github.com/tobiasehlert/teslamateapi/blob/main/LICENSE)
 [![Docker pulls](https://img.shields.io/docker/pulls/tobiasehlert/teslamateapi)](https://hub.docker.com/r/tobiasehlert/teslamateapi)
 
 TeslaMateApi is a RESTful API to get data collected by self-hosted data logger **[TeslaMate](https://github.com/adriankumpf/teslamate)** in JSON.
