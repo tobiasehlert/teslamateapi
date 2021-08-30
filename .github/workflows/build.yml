@@ -3,9 +3,9 @@ name: build
 on:
   push:
     branches:
-      - '**'
+      - "**"
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   build:
