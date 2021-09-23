@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+
+## [1.10.1] - 2021-09-23
+
+### Changed
+- bump golang from 1.16.5 to 1.17.1 (#90, #96, #103, #104, #107 by dependabot)
+- bump github.com/gin-gonic/gin from 1.7.2 to 1.7.4 (#94, #100 by dependabot)
+- bump github.com/lib/pq from 1.10.2 to 1.10.3 (#105 by dependabot)
+- bump various workflow versions (#85, #86, #87, #89, #91, #101, #102, #106 by dependabot)
+
 ## [1.10.0] - 2021-06-30
 
 ### Added
@@ -217,7 +226,8 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.0...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.1...HEAD
+[1.10.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.0...v1.10.1
 [1.10.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.7.1...v1.8.0
