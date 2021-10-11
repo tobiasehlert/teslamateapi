@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -50,6 +51,12 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		RangeRated        PreferredRange `json:"range_rated"`         // PreferredRange
 		OutsideTempAvg    float64        `json:"outside_temp_avg"`    // float64
 	}
+	// Incomplete Charges struct - child of Data
+	type IncompleteCharges struct {
+		ChargeID  int    `json:"charge_id"`  // int
+		StartDate string `json:"start_date"` // string
+		Address   string `json:"address"`    // string
+	}
 	// TeslaMateUnits struct - child of Data
 	type TeslaMateUnits struct {
 		UnitsLength      string `json:"unit_of_length"`      // string
@@ -57,9 +64,10 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	}
 	// Data struct - child of JSONData
 	type Data struct {
-		Car            Car            `json:"car"`
-		Charges        []Charges      `json:"charges"`
-		TeslaMateUnits TeslaMateUnits `json:"units"`
+		Car               Car                 `json:"car"`
+		IncompleteCharges []IncompleteCharges `json:"incomplete_charges"`
+		Charges           []Charges           `json:"charges"`
+		TeslaMateUnits    TeslaMateUnits      `json:"units"`
 	}
 	// JSONData struct - main
 	type JSONData struct {
@@ -67,7 +75,8 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	}
 
 	// creating required vars
-	var ChargesData []Charges
+	ChargesData := make([]Charges, 0)
+	IncompleteChargesData := make([]IncompleteCharges, 0)
 	var UnitsLength, UnitsTemperature, CarName string
 	var ValidResponse bool // default is false
 
@@ -106,7 +115,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		LEFT JOIN addresses address ON address_id = address.id
 		LEFT JOIN positions position ON position_id = position.id
 		LEFT JOIN geofences geofence ON geofence_id = geofence.id
-		WHERE charging_processes.car_id=$1 AND charging_processes.end_date IS NOT NULL
+		WHERE charging_processes.car_id=$1
 		ORDER BY start_date DESC
 		LIMIT $2 OFFSET $3;`
 	rows, err := db.Query(query, CarID, ResultShow, ResultPage)
@@ -148,6 +157,57 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 			&CarName,
 		)
 
+		// checking for errors after scanning
+		// Incomplete charges may still be in progress, or a previous charge that failed to finalize
+		if err != nil {
+			// Check if charge is available with incomplete data
+			dest := []interface{}{ // Standard MySQL columns
+				new(int),          // ChargeID
+				new(string),       // StartDate
+				new(sql.RawBytes), // EndDate
+				new(string),       // Address
+				new(sql.RawBytes), // ChargeEnergyAdded
+				new(sql.RawBytes), // ChargeEnergyUsed
+				new(sql.RawBytes), // Cost
+				new(sql.RawBytes), // StartRange
+				new(sql.RawBytes), // EndRange
+				new(sql.RawBytes), // StartRange
+				new(sql.RawBytes), // EndRange
+				new(sql.RawBytes), // StartBatteryLevel
+				new(sql.RawBytes), // EndBatteryLevel
+				new(sql.RawBytes), // DurationMin
+				new(sql.RawBytes), // DurationStr
+				new(sql.RawBytes), // OutsideTempAvg
+				new(sql.RawBytes), // UnitsLength
+				new(sql.RawBytes), // UnitsTemperature
+				new(sql.RawBytes), // CarName
+			}
+
+			var err2 error = rows.Scan(dest...)
+
+			if dest[0] != nil {
+				if err2 != nil {
+					log.Fatal(err2)
+				}
+				// There is a charge available, it's just incomplete
+				incompleteCharge := IncompleteCharges{}
+				incompleteCharge.ChargeID = *(dest)[0].(*int)
+				incompleteCharge.StartDate = *(dest)[1].(*string)
+				incompleteCharge.Address = *(dest)[3].(*string)
+
+				// adjusting to timezone differences from UTC to be userspecific
+				incompleteCharge.StartDate = getTimeInTimeZone(incompleteCharge.StartDate)
+
+				// appending charge to ChargesData
+				IncompleteChargesData = append(IncompleteChargesData, incompleteCharge)
+
+				continue
+
+			} else {
+				log.Fatal(err)
+			}
+		}
+
 		// converting values based of settings UnitsLength
 		if UnitsLength == "mi" {
 			charge.RangeIdeal.StartRange = kilometersToMiles(charge.RangeIdeal.StartRange)
@@ -164,11 +224,6 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		charge.StartDate = getTimeInTimeZone(charge.StartDate)
 		charge.EndDate = getTimeInTimeZone(charge.EndDate)
 
-		// checking for errors after scanning
-		if err != nil {
-			log.Fatal(err)
-		}
-
 		// appending charge to ChargesData
 		ChargesData = append(ChargesData, charge)
 		ValidResponse = true
@@ -179,7 +234,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	// if no errors, but ChargeData is empty, return a valid response with an empty set
 	if len(ChargesData) == 0 {
 		ValidResponse = true
@@ -193,7 +248,8 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 				CarID:   CarID,
 				CarName: CarName,
 			},
-			Charges: ChargesData,
+			IncompleteCharges: IncompleteChargesData,
+			Charges:           ChargesData,
 			TeslaMateUnits: TeslaMateUnits{
 				UnitsLength:      UnitsLength,
 				UnitsTemperature: UnitsTemperature,
