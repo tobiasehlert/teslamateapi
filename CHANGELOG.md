@@ -3,6 +3,12 @@
 ## [Unreleased]
 
 
+## [1.10.2] - 2021-10-15
+
+### Changed
+- bump golang from 1.17.1 to 1.17.2 (#108 by dependabot)
+- updating readme with table for variables
+
 ## [1.10.1] - 2021-09-23
 
 ### Changed
@@ -226,7 +232,8 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.1...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.2...HEAD
+[1.10.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.1...v1.10.2
 [1.10.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.0...v1.10.1
 [1.10.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.8.0...v1.9.0
