@@ -90,53 +90,59 @@ Basically the same environment variables for the database, mqqt and timezone nee
 
 **Required** environment variables (even if there are some default values available)
 
-- **DATABASE_USER** string *(default: teslamate)*
-- **DATABASE_PASS** string *(default: secret)*
-- **DATABASE_NAME** string *(default: teslamate)*
-- **DATABASE_HOST** string *(default: database)*
-- **MQTT_HOST** string *(default: mosquitto)*
-- **TZ** string *(default: Europe/Berlin)*
+| Variable | Type | Default |
+|---|---|---|
+| **DATABASE_USER** | string | *teslamate* |
+| **DATABASE_PASS** | string | *secret* |
+| **DATABASE_NAME** | string | *teslamate* |
+| **DATABASE_HOST** | string | *database* |
+| **MQTT_HOST** | string | *mosquitto* |
+| **TZ** | string | *Europe/Berlin* |
 
 **Optional** environment variables
 
-- **TESLAMATE_SSL** boolean *(default: false)*
-- **TESLAMATE_HOST** string *(default: teslamate)*
-- **TESLAMATE_PORT** string *(default: 4000)*
-- **API_TOKEN** string *(default: )*
-- **API_TOKEN_DISABLE** string *(default: false)*
-- **DATABASE_PORT** integer *(default: 5432)*
-- **DATABASE_TIMEOUT** integer *(default: 60000)*
-- **DATABASE_SSL** boolean *(default: true)*
-- **DEBUG_MODE** boolean *(default: false)*
-- **DISABLE_MQTT** boolean *(default: false)*
-- **MQTT_TLS** boolean *(default: false)*
-- **MQTT_PORT** integer *(default: 1883 / default if TLS is true: 8883)*
-- **MQTT_USERNAME** string *(default: )*
-- **MQTT_PASSWORD** string *(default: )*
-- **MQTT_NAMESPACE** string *(default: )*
+| Variable | Type | Default |
+|---|---|---|
+| **TESLAMATE_SSL** | boolean | *false* |
+| **TESLAMATE_HOST** | string | *teslamate* |
+| **TESLAMATE_PORT** | string | *4000* |
+| **API_TOKEN** | string | |
+| **API_TOKEN_DISABLE** | string | *false* |
+| **DATABASE_PORT** | integer | *5432* |
+| **DATABASE_TIMEOUT** | integer | *60000* |
+| **DATABASE_SSL** | boolean | *true* |
+| **DEBUG_MODE** | boolean | *false* |
+| **DISABLE_MQTT** | boolean | *false* |
+| **MQTT_TLS** | boolean | *false* |
+| **MQTT_PORT** | integer | *1883 (if TLS is true: 8883)* |
+| **MQTT_USERNAME** | string | |
+| **MQTT_PASSWORD** | string | |
+| **MQTT_NAMESPACE** | string | |
 
 **Commands** environment variables
 
-- **ENABLE_COMMANDS** boolean *(default: false)*
-- **COMMANDS_ALL** boolean *(default: false)*
-- **COMMANDS_ALLOWLIST** string *(default: allow_list.json)*
-- **COMMANDS_LOGGING** boolean *(deafault: false)*
-- **COMMANDS_WAKE** boolean *(default: false)*
-- **COMMANDS_ALERT** boolean *(default: false)*
-- **COMMANDS_REMOTESTART** boolean *(default: false)*
-- **COMMANDS_HOMELINK** boolean *(default: false)*
-- **COMMANDS_SPEEDLIMIT** boolean *(default: false)*
-- **COMMANDS_VALET** boolean *(default: false)*
-- **COMMANDS_SENTRYMODE** boolean *(default: false)*
-- **COMMANDS_DOORS** boolean *(default: false)*
-- **COMMANDS_TRUNK** boolean *(default: false)*
-- **COMMANDS_WINDOWS** boolean *(default: false)*
-- **COMMANDS_SUNROOF** boolean *(default: false)*
-- **COMMANDS_CHARGING** boolean *(default: false)*
-- **COMMANDS_CLIMATE** boolean *(default: false)*
-- **COMMANDS_MEDIA** boolean *(default: false)*
-- **COMMANDS_SHARING** boolean *(default: false)*
-- **COMMANDS_SOFTWAREUPDATE** boolean *(default: false)*
+| Variable | Type | Default |
+|---|---|---|
+| **ENABLE_COMMANDS** | boolean | *false* |
+| **COMMANDS_ALL** | boolean | *false* |
+| **COMMANDS_ALLOWLIST** | string | *allow_list.json* |
+| **COMMANDS_LOGGING** | boolean | *false* |
+| **COMMANDS_WAKE** | boolean | *false* |
+| **COMMANDS_ALERT** | boolean | *false* |
+| **COMMANDS_REMOTESTART** | boolean | *false* |
+| **COMMANDS_HOMELINK** | boolean | *false* |
+| **COMMANDS_SPEEDLIMIT** | boolean | *false* |
+| **COMMANDS_VALET** | boolean | *false* |
+| **COMMANDS_SENTRYMODE** | boolean | *false* |
+| **COMMANDS_DOORS** | boolean | *false* |
+| **COMMANDS_TRUNK** | boolean | *false* |
+| **COMMANDS_WINDOWS** | boolean | *false* |
+| **COMMANDS_SUNROOF** | boolean | *false* |
+| **COMMANDS_CHARGING** | boolean | *false* |
+| **COMMANDS_CLIMATE** | boolean | *false* |
+| **COMMANDS_MEDIA** | boolean | *false* |
+| **COMMANDS_SHARING** | boolean | *false* |
+| **COMMANDS_SOFTWAREUPDATE** | boolean | *false* |
 
 ## API documentation
 
