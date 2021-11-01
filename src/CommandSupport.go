@@ -95,8 +95,6 @@ func initCommandAllowList() {
 			"/command/charge_port_door_close",
 			"/command/charge_start",
 			"/command/charge_stop",
-			"/command/charge_standard",
-			"/command/charge_max_range",
 			"/command/set_charge_limit",
 			"/command/set_charging_amps")
 	}
