@@ -76,7 +76,7 @@ services:
       - "traefik.http.middlewares.teslamateapi-auth.basicauth.usersfile=/auth/.htpasswd"
       - "traefik.http.routers.teslamateapi-insecure.rule=Host(`${FQDN_TM}`)"
       - "traefik.http.routers.teslamateapi-insecure.middlewares=redirect"
-      - "traefik.http.routers.teslamateapi.rule=Path(`/api`) || PathPrefix(`/api/`)"
+      - "traefik.http.routers.teslamateapi.rule=Host(`${FQDN_TM}`) && (Path(`/api`) || PathPrefix(`/api/`))"
       - "traefik.http.routers.teslamateapi.entrypoints=websecure"
       - "traefik.http.routers.teslamateapi.middlewares=teslamateapi-auth"
       - "traefik.http.routers.teslamateapi.tls.certresolver=tmhttpchallenge"
