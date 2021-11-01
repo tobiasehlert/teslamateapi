@@ -97,7 +97,8 @@ func initCommandAllowList() {
 			"/command/charge_stop",
 			"/command/charge_standard",
 			"/command/charge_max_range",
-			"/command/set_charge_limit")
+			"/command/set_charge_limit",
+			"/command/set_charging_amps")
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/climate
