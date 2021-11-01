@@ -96,7 +96,8 @@ func initCommandAllowList() {
 			"/command/charge_start",
 			"/command/charge_stop",
 			"/command/set_charge_limit",
-			"/command/set_charging_amps")
+			"/command/set_charging_amps",
+			"/command/set_scheduled_charging")
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/climate
@@ -107,7 +108,9 @@ func initCommandAllowList() {
 			"/command/set_temps",
 			"/command/set_preconditioning_max",
 			"/command/remote_seat_heater_request",
-			"/command/remote_steering_wheel_heater_request")
+			"/command/remote_steering_wheel_heater_request",
+			"/command/set_bioweapon_mode",
+			"/command/set_scheduled_departure")
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/media
@@ -124,7 +127,9 @@ func initCommandAllowList() {
 
 	// https://tesla-api.timdorr.com/vehicle/commands/sharing
 	if getEnvAsBool("COMMANDS_SHARING", false) || allowAll {
-		allowList = append(allowList, "/command/share")
+		allowList = append(allowList,
+			"/command/share",
+			"/command/navigation_sc_request")
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/softwareupdate
