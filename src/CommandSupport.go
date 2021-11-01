@@ -139,6 +139,13 @@ func initCommandAllowList() {
 			"/command/cancel_software_update")
 	}
 
+	// not documentet and unsorted new endpoints
+	if getEnvAsBool("COMMANDS_UNKNOWN", false) || allowAll {
+		allowList = append(allowList,
+			"/command/upcoming_calendar_entries",
+			"/command/dashcam_save_clip")
+	}
+
 	// if allowList is empty, read COMMANDS_ALLOWLIST and append to allowList
 	commandAllowListLocation := getEnv("COMMANDS_ALLOWLIST", "allow_list.json")
 	if len(allowList) == 0 {

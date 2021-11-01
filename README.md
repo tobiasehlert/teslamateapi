@@ -143,6 +143,7 @@ Basically the same environment variables for the database, mqqt and timezone nee
 | **COMMANDS_MEDIA** | boolean | *false* |
 | **COMMANDS_SHARING** | boolean | *false* |
 | **COMMANDS_SOFTWAREUPDATE** | boolean | *false* |
+| **COMMANDS_UNKNOWN** | boolean | *false* |
 
 ## API documentation
 
