@@ -1,7 +1,12 @@
 # Changelog
 
-## [Unreleased]
+## [1.11.0] - 2021-11-08
 
+### Added
+* add support for new endpoints with 4.2.2 (#113 by @michaeldyrynda, @tobiasehlert)
+
+### Changed
+* bump docker/metadata-action from 3.5.0 to 3.6.0 (#111 by @dependabot)
 
 ## [1.10.2] - 2021-10-15
 
@@ -232,7 +237,8 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.2...HEAD
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.11.0...HEAD
+[1.11.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.2...v1.11.0
 [1.10.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.1...v1.10.2
 [1.10.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.0...v1.10.1
 [1.10.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.9.0...v1.10.0
