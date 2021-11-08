@@ -97,7 +97,8 @@ func initCommandAllowList() {
 			"/command/charge_stop",
 			"/command/set_charge_limit",
 			"/command/set_charging_amps",
-			"/command/set_scheduled_charging")
+			"/command/set_scheduled_charging",
+			"/command/set_scheduled_departure")
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/climate
@@ -109,8 +110,7 @@ func initCommandAllowList() {
 			"/command/set_preconditioning_max",
 			"/command/remote_seat_heater_request",
 			"/command/remote_steering_wheel_heater_request",
-			"/command/set_bioweapon_mode",
-			"/command/set_scheduled_departure")
+			"/command/set_bioweapon_mode")
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/media
