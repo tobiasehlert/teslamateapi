@@ -95,9 +95,10 @@ func initCommandAllowList() {
 			"/command/charge_port_door_close",
 			"/command/charge_start",
 			"/command/charge_stop",
-			"/command/charge_standard",
-			"/command/charge_max_range",
-			"/command/set_charge_limit")
+			"/command/set_charge_limit",
+			"/command/set_charging_amps",
+			"/command/set_scheduled_charging",
+			"/command/set_scheduled_departure")
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/climate
@@ -108,7 +109,8 @@ func initCommandAllowList() {
 			"/command/set_temps",
 			"/command/set_preconditioning_max",
 			"/command/remote_seat_heater_request",
-			"/command/remote_steering_wheel_heater_request")
+			"/command/remote_steering_wheel_heater_request",
+			"/command/set_bioweapon_mode")
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/media
@@ -125,7 +127,9 @@ func initCommandAllowList() {
 
 	// https://tesla-api.timdorr.com/vehicle/commands/sharing
 	if getEnvAsBool("COMMANDS_SHARING", false) || allowAll {
-		allowList = append(allowList, "/command/share")
+		allowList = append(allowList,
+			"/command/share",
+			"/command/navigation_sc_request")
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/softwareupdate
@@ -133,6 +137,13 @@ func initCommandAllowList() {
 		allowList = append(allowList,
 			"/command/schedule_software_update",
 			"/command/cancel_software_update")
+	}
+
+	// not documentet and unsorted new endpoints
+	if getEnvAsBool("COMMANDS_UNKNOWN", false) || allowAll {
+		allowList = append(allowList,
+			"/command/upcoming_calendar_entries",
+			"/command/dashcam_save_clip")
 	}
 
 	// if allowList is empty, read COMMANDS_ALLOWLIST and append to allowList
