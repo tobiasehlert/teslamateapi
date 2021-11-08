@@ -1,5 +1,5 @@
 # get latest golang container
-FROM golang:1.17.2
+FROM golang:1.17.3
 
 # create and set workingfolder
 WORKDIR /go/src/
