@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.11.1] - 2021-12-23
+
+### Changed
+- bump golang from 1.17.2 to 1.17.5 (#115, #122, #124 by @dependabot)
+- bump github.com/gin-gonic/gin from 1.7.4 to 1.7.7 (#119, #120 by @dependabot)
+- bump github.com/lib/pq from 1.10.3 to 1.10.4 (#116 by @dependabot)
+- bump various workflow versions (#118, #121, #123, #125, #126 by @dependabot)
+- updating build workflow and Dockerfile (by @tobiasehlert)
+
 ## [1.11.0] - 2021-11-08
 
 ### Added
@@ -237,7 +246,10 @@
 
 ## [1.0.0] - 2021-02-15
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.11.0...HEAD
+Initial commit
+
+[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.12.0...HEAD
+[1.12.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.2...v1.11.0
 [1.10.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.1...v1.10.2
 [1.10.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.0...v1.10.1
