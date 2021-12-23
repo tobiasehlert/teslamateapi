@@ -14,7 +14,7 @@ RUN go mod download
 COPY src/ .
 
 # compile the program
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o TeslaMateApi .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
 
 
 # get latest alpine container
@@ -27,10 +27,10 @@ RUN apk --no-cache add ca-certificates tzdata
 WORKDIR /root/
 
 # copy binary from first container
-COPY --from=0 /go/src/TeslaMateApi .
+COPY --from=0 /go/src/app .
 
 # expose port 8080
 EXPOSE 8080
 
 # run application
-CMD ["./TeslaMateApi"]
+CMD ["./app"]
