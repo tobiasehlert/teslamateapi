@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.12.0] - 2021-12-28
+
+### Fixed
+- bug in new installations by changing float64 to NullFloat64 on cars efficiency (#129 by @tobiasehlert)
+
 ## [1.11.1] - 2021-12-23
 
 ### Changed
@@ -249,7 +254,8 @@
 Initial commit
 
 [Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.12.0...HEAD
-[1.12.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.11.0...v1.12.0
+[1.12.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.11.1...v1.12.0
+[1.11.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.11.0...v1.11.1
 [1.11.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.2...v1.11.0
 [1.10.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.1...v1.10.2
 [1.10.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.0...v1.10.1
