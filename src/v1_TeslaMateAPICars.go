@@ -22,12 +22,12 @@ func TeslaMateAPICarsV1(c *gin.Context) {
 	// creating structs for /cars
 	// CarDetails struct - child of Cars
 	type CarDetails struct {
-		EID         int64      `json:"eid"`          // bigint
-		VID         int64      `json:"vid"`          // bigint
-		Vin         string     `json:"vin"`          // text
-		Model       string     `json:"model"`        // character varying(255)
-		TrimBadging NullString `json:"trim_badging"` // text
-		Efficiency  float64    `json:"efficiency"`   // double precision
+		EID         int64       `json:"eid"`          // bigint
+		VID         int64       `json:"vid"`          // bigint
+		Vin         string      `json:"vin"`          // text
+		Model       string      `json:"model"`        // character varying(255)
+		TrimBadging NullString  `json:"trim_badging"` // text
+		Efficiency  NullFloat64 `json:"efficiency"`   // double precision
 	}
 	// CarExterior struct - child of Cars
 	type CarExterior struct {
