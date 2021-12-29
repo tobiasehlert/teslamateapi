@@ -7,10 +7,11 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const CarsDrivesError1 = "Unable to load drives."
-
 // TeslaMateAPICarsDrivesV1 func
 func TeslaMateAPICarsDrivesV1(c *gin.Context) {
+
+	// define error messages
+	var CarsDrivesError1 = "Unable to load drives."
 
 	// getting CarID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))

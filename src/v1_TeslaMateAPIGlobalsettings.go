@@ -7,10 +7,11 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const CarsGlobalsettingsError1 = "Unable to load settings."
-
 // TeslaMateAPIGlobalsettingsV1 func
 func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
+
+	// define error messages
+	var CarsGlobalsettingsError1 = "Unable to load settings."
 
 	// creating structs for /globalsettings
 	// AccountInfo struct - child of GlobalSettings

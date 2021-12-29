@@ -7,10 +7,11 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const CarsError1 = "Unable to load cars."
-
 // TeslaMateAPICarsV1 func
 func TeslaMateAPICarsV1(c *gin.Context) {
+
+	// define error messages
+	var CarsError1 = "Unable to load cars."
 
 	// getting CarID param from URL
 	ParamCarID := c.Param("CarID")
