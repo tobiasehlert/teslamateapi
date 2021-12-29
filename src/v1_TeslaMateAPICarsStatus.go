@@ -281,9 +281,8 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 // TeslaMateAPICarsStatusV1 func
 func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	if s.mqttDisabled {
-		// TODO: use TeslaMateAPIHandleErrorResponse
 		log.Println("[notice] TeslaMateAPICarsStatusV1 DISABLE_MQTT is set to true.. can not return status for car without mqtt!")
-		c.JSON(http.StatusNotImplemented, gin.H{"error": "mqtt disabled.. status not accessible!"})
+		TeslaMateAPIHandleSuccessResponse(c, http.StatusNotImplemented, "TeslaMateAPICarsStatusV1", gin.H{"error": "mqtt disabled.. status not accessible!"})
 		return
 	}
 
@@ -296,8 +295,8 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	s.mu.Unlock()
 
 	if stat == nil {
-		// TODO: use TeslaMateAPIHandleErrorResponse
-		c.JSON(http.StatusNoContent, gin.H{"error": "no info on this car ID"})
+		// or should it be http.StatusNoContent instead?
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsStatusV1", "no info on this car ID", "-")
 		return
 	}
 
