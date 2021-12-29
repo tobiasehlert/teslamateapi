@@ -137,14 +137,14 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 		ORDER BY start_date DESC;`
 	rows, err := db.Query(query, CarID, ChargeID)
 
-	// defer closing rows
-	defer rows.Close()
-
 	// checking for errors in query
 	if err != nil {
 		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", "Unable to load charge.", err.Error())
 		return
 	}
+
+	// defer closing rows
+	defer rows.Close()
 
 	// looping through all results
 	for rows.Next() {
@@ -229,14 +229,14 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 			ORDER BY id ASC;`
 		rows, err = db.Query(query, ChargeID)
 
-		// defer closing rows
-		defer rows.Close()
-
 		// checking for errors in query
 		if err != nil {
 			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", "Unable to load charge details.", err.Error())
 			return
 		}
+
+		// defer closing rows
+		defer rows.Close()
 
 		// looping through all results
 		for rows.Next() {

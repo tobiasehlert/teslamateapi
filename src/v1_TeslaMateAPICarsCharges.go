@@ -108,14 +108,14 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		LIMIT $2 OFFSET $3;`
 	rows, err := db.Query(query, CarID, ResultShow, ResultPage)
 
-	// defer closing rows
-	defer rows.Close()
-
 	// checking for errors in query
 	if err != nil {
 		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", "Unable to load charges.", err.Error())
 		return
 	}
+
+	// defer closing rows
+	defer rows.Close()
 
 	// looping through all results
 	for rows.Next() {

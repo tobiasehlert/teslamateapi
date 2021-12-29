@@ -67,14 +67,14 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 		LIMIT 1;`
 	rows, err := db.Query(query)
 
-	// defer closing rows
-	defer rows.Close()
-
 	// checking for errors in query
 	if err != nil {
 		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPIGlobalsettingsV1", "Unable to load settings.", err.Error())
 		return
 	}
+
+	// defer closing rows
+	defer rows.Close()
 
 	// looping through all results
 	for rows.Next() {
