@@ -516,5 +516,5 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	}
 
 	// return jsonData
-	TeslaMateAPIHandleSuccessResponse(c, "TeslaMateAPICarsStatusV1", jsonData)
+	TeslaMateAPIHandleSuccessResponse(c, http.StatusOK, "TeslaMateAPICarsStatusV1", jsonData)
 }

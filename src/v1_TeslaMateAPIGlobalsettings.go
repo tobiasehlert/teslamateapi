@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -123,5 +125,5 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 	}
 
 	// return jsonData
-	TeslaMateAPIHandleSuccessResponse(c, "TeslaMateAPIGlobalsettingsV1", jsonData)
+	TeslaMateAPIHandleSuccessResponse(c, http.StatusOK, "TeslaMateAPIGlobalsettingsV1", jsonData)
 }
