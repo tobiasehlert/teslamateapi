@@ -184,17 +184,23 @@ func TeslaMateAPIHandleErrorResponse(c *gin.Context, s1 string, s2 string, s3 st
 	c.JSON(http.StatusOK, gin.H{"error": s2})
 }
 
-func TeslaMateAPIHandleSuccessResponse(c *gin.Context, httpCode int, s string, j interface{}) {
+func TeslaMateAPIHandleOtherResponse(c *gin.Context, httpCode int, s string, j interface{}) {
+	// return successful response
+	log.Println("[info] " + s + " - (" + c.Request.RequestURI + ") executed successfully.")
+	c.JSON(httpCode, j)
+}
 
+func TeslaMateAPIHandleSuccessResponse(c *gin.Context, s string, j interface{}) {
 	// print to log about request
 	if gin.IsDebugging() {
 		log.Println("[debug] " + s + " - (" + c.Request.RequestURI + ") returned data:")
 		js, _ := json.Marshal(j)
 		log.Printf("[debug] %s\n", js)
 	}
+
 	// return successful response
 	log.Println("[info] " + s + " - (" + c.Request.RequestURI + ") executed successfully.")
-	c.JSON(httpCode, j)
+	c.JSON(http.StatusOK, j)
 }
 
 func getTimeInTimeZone(datestring string) string {
