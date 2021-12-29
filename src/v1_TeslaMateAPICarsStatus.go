@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -282,6 +281,7 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 // TeslaMateAPICarsStatusV1 func
 func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	if s.mqttDisabled {
+		// TODO: use TeslaMateAPIHandleErrorResponse
 		log.Println("[notice] TeslaMateAPICarsStatusV1 DISABLE_MQTT is set to true.. can not return status for car without mqtt!")
 		c.JSON(http.StatusNotImplemented, gin.H{"error": "mqtt disabled.. status not accessible!"})
 		return
@@ -296,6 +296,7 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	s.mu.Unlock()
 
 	if stat == nil {
+		// TODO: use TeslaMateAPIHandleErrorResponse
 		c.JSON(http.StatusNoContent, gin.H{"error": "no info on this car ID"})
 		return
 	}
@@ -412,7 +413,6 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	var CarData Car
 	var MQTTInformationData MQTTInformation
 	var UnitsLength, UnitsTemperature string
-	var ValidResponse bool // default is false
 
 	// getting data from database (assume that carID is unique!)
 	query := `
@@ -431,7 +431,8 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 
 	// checking for errors in query (this will include no rows found)
 	if err != nil {
-		log.Fatal(err)
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsStatusV1", "Unable to load cars.", err.Error())
+		return
 	}
 
 	// setting data from MQTT into data fields to return
@@ -501,9 +502,6 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	MQTTInformationData.StateSince = getTimeInTimeZone(MQTTInformationData.StateSince)
 	MQTTInformationData.ChargingDetails.ScheduledChargingStartTime = getTimeInTimeZone(MQTTInformationData.ChargingDetails.ScheduledChargingStartTime)
 
-	// setting response as valid
-	ValidResponse = true
-
 	//
 	// build the data-blob
 	jsonData := JSONData{
@@ -517,19 +515,6 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 		},
 	}
 
-	// print to log about request
-	if gin.IsDebugging() {
-		log.Println("[debug] TeslaMateAPICarsStatusV1 " + c.Request.RequestURI + " returned data:")
-		js, _ := json.Marshal(jsonData)
-		log.Printf("[debug] %s\n", js)
-	}
-
 	// return jsonData
-	if ValidResponse {
-		log.Println("[info] TeslaMateAPICarsStatusV1 " + c.Request.RequestURI + " executed successful.")
-		c.JSON(http.StatusOK, jsonData)
-	} else {
-		log.Println("[error] TeslaMateAPICarsStatusV1 " + c.Request.RequestURI + " error in execution!")
-		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICarsStatusV1.."})
-	}
+	TeslaMateAPIHandleSuccessResponse(c, "TeslaMateAPICarsStatusV1", jsonData)
 }

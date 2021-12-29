@@ -1,10 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"log"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -84,7 +80,6 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 	// creating required vars
 	var DrivesData []Drives
 	var UnitsLength, UnitsTemperature, CarName string
-	var ValidResponse bool // default is false
 
 	// calculate offset based on page (page 0 is not possible, since first page is minimum 1)
 	if ResultPage > 0 {
@@ -141,13 +136,14 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 		LIMIT $2 OFFSET $3;`
 	rows, err := db.Query(query, CarID, ResultShow, ResultPage)
 
-	// checking for errors in query
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	// defer closing rows
 	defer rows.Close()
+
+	// checking for errors in query
+	if err != nil {
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesV1", "Unable to load drives.", err.Error())
+		return
+	}
 
 	// looping through all results
 	for rows.Next() {
@@ -216,23 +212,19 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 
 		// checking for errors after scanning
 		if err != nil {
-			log.Fatal(err)
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesV1", "Unable to load drives.", err.Error())
+			return
 		}
 
 		// appending drive to DrivesData
 		DrivesData = append(DrivesData, drive)
-		ValidResponse = true
 	}
 
 	// checking for errors in the rows result
 	err = rows.Err()
 	if err != nil {
-		log.Fatal(err)
-	}
-	
-	// if no errors, but DrivesData is empty, return a valid response with an empty set
-	if len(DrivesData) == 0 {
-		ValidResponse = true
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesV1", "Unable to load drives.", err.Error())
+		return
 	}
 
 	//
@@ -251,19 +243,6 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 		},
 	}
 
-	// print to log about request
-	if gin.IsDebugging() {
-		log.Println("[debug] TeslaMateAPICarsDrivesV1 " + c.Request.RequestURI + " returned data:")
-		js, _ := json.Marshal(jsonData)
-		log.Printf("[debug] %s\n", js)
-	}
-
 	// return jsonData
-	if ValidResponse {
-		log.Println("[info] TeslaMateAPICarsDrivesV1 " + c.Request.RequestURI + " executed successful.")
-		c.JSON(http.StatusOK, jsonData)
-	} else {
-		log.Println("[error] TeslaMateAPICarsDrivesV1 " + c.Request.RequestURI + " error in execution!")
-		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICarsDrivesV1.."})
-	}
+	TeslaMateAPIHandleSuccessResponse(c, "TeslaMateAPICarsDrivesV1", jsonData)
 }

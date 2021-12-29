@@ -1,10 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"log"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -75,7 +71,6 @@ func TeslaMateAPICarsV1(c *gin.Context) {
 
 	// creating required vars
 	var CarsData []Cars
-	var ValidResponse bool // default is false
 
 	// getting data from database
 	query := `
@@ -108,7 +103,8 @@ func TeslaMateAPICarsV1(c *gin.Context) {
 
 	// checking for errors in query
 	if err != nil {
-		log.Fatal(err)
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsV1", "Unable to load cars.", err.Error())
+		return
 	}
 
 	// defer closing rows
@@ -147,7 +143,8 @@ func TeslaMateAPICarsV1(c *gin.Context) {
 
 		// checking for errors after scanning
 		if err != nil {
-			log.Fatal(err)
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsV1", "Unable to load cars.", err.Error())
+			return
 		}
 
 		// appending car to CarsData if CarID is 0 or is CarID matches car.CarID
@@ -158,14 +155,14 @@ func TeslaMateAPICarsV1(c *gin.Context) {
 			car.TeslaMateDetails.UpdatedAt = getTimeInTimeZone(car.TeslaMateDetails.UpdatedAt)
 
 			CarsData = append(CarsData, car)
-			ValidResponse = true
 		}
 	}
 
 	// checking for errors in the rows result
 	err = rows.Err()
 	if err != nil {
-		log.Fatal(err)
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsV1", "Unable to load cars.", err.Error())
+		return
 	}
 
 	//
@@ -176,20 +173,7 @@ func TeslaMateAPICarsV1(c *gin.Context) {
 		},
 	}
 
-	// print to log about request
-	if gin.IsDebugging() && ValidResponse {
-		log.Println("[debug] TeslaMateAPICarsV1 " + c.Request.RequestURI + " returned data:")
-		js, _ := json.Marshal(jsonData)
-		log.Printf("[debug] %s\n", js)
-	}
-
 	// return jsonData
-	if ValidResponse {
-		log.Println("[info] TeslaMateAPICarsV1 " + c.Request.RequestURI + " executed successful.")
-		c.JSON(http.StatusOK, jsonData)
-	} else {
-		log.Println("[error] TeslaMateAPICarsV1 " + c.Request.RequestURI + " error in execution!")
-		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICarsV1.."})
-	}
+	TeslaMateAPIHandleSuccessResponse(c, "TeslaMateAPICarsV1", jsonData)
 
 }
