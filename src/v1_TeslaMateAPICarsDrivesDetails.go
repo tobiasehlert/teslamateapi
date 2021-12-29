@@ -7,6 +7,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
+const CarsDrivesDetailsError1 = "Unable to load drive."
+const CarsDrivesDetailsError2 = "Unable to load drive details."
+
 // TeslaMateAPICarsDrivesDetailsV1 func
 func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 
@@ -165,7 +168,7 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 
 	// checking for errors in query
 	if err != nil {
-		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", "Unable to load drive.", err.Error())
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", CarsDrivesDetailsError1, err.Error())
 		return
 	}
 
@@ -238,7 +241,7 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 
 		// checking for errors after scanning
 		if err != nil {
-			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", "Unable to load drive.", err.Error())
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", CarsDrivesDetailsError1, err.Error())
 			return
 		}
 
@@ -279,7 +282,7 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 
 		// checking for errors in query
 		if err != nil {
-			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", "Unable to load drive details.", err.Error())
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", CarsDrivesDetailsError2, err.Error())
 			return
 		}
 
@@ -340,7 +343,7 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 
 			// checking for errors after scanning
 			if err != nil {
-				TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", "Unable to load drive details.", err.Error())
+				TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", CarsDrivesDetailsError2, err.Error())
 				return
 			}
 
@@ -352,7 +355,7 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 		// checking for errors in the rows result
 		err = rows.Err()
 		if err != nil {
-			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", "Unable to load drive details.", err.Error())
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", CarsDrivesDetailsError2, err.Error())
 			return
 		}
 
@@ -361,7 +364,7 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 	// checking for errors in the rows result
 	err = rows.Err()
 	if err != nil {
-		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", "Unable to load drive details.", err.Error())
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", CarsDrivesDetailsError2, err.Error())
 		return
 	}
 

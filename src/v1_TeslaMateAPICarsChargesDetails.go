@@ -7,6 +7,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
+const CarsChargesDetailsError1 = "Unable to load charge."
+const CarsChargesDetailsError2 = "Unable to load charge details."
+
 // TeslaMateAPICarsChargesDetailsV1 func
 func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 
@@ -139,7 +142,7 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 
 	// checking for errors in query
 	if err != nil {
-		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", "Unable to load charge.", err.Error())
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError1, err.Error())
 		return
 	}
 
@@ -193,7 +196,7 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 
 		// checking for errors after scanning
 		if err != nil {
-			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", "Unable to load charge.", err.Error())
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError1, err.Error())
 			return
 		}
 
@@ -231,7 +234,7 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 
 		// checking for errors in query
 		if err != nil {
-			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", "Unable to load charge details.", err.Error())
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError2, err.Error())
 			return
 		}
 
@@ -284,7 +287,7 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 
 			// checking for errors after scanning
 			if err != nil {
-				TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", "Unable to load charge details.", err.Error())
+				TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError2, err.Error())
 				return
 			}
 
@@ -297,7 +300,7 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 	// checking for errors in the rows result
 	err = rows.Err()
 	if err != nil {
-		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", "Unable to load charge details.", err.Error())
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError2, err.Error())
 		return
 	}
 

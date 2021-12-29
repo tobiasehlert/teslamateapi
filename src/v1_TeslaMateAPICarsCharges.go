@@ -7,6 +7,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
+const CarsChargesError1 = "Unable to load charges."
+
 // TeslaMateAPICarsChargesV1 func
 func TeslaMateAPICarsChargesV1(c *gin.Context) {
 
@@ -110,7 +112,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 
 	// checking for errors in query
 	if err != nil {
-		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", "Unable to load charges.", err.Error())
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", CarsChargesError1, err.Error())
 		return
 	}
 
@@ -164,7 +166,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 
 		// checking for errors after scanning
 		if err != nil {
-			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", "Unable to load charges.", err.Error())
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", CarsChargesError1, err.Error())
 			return
 		}
 
@@ -175,7 +177,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	// checking for errors in the rows result
 	err = rows.Err()
 	if err != nil {
-		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", "Unable to load charges.", err.Error())
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", CarsChargesError1, err.Error())
 		return
 	}
 

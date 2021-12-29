@@ -7,6 +7,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
+const CarsGlobalsettingsError1 = "Unable to load settings."
+
 // TeslaMateAPIGlobalsettingsV1 func
 func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 
@@ -69,7 +71,7 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 
 	// checking for errors in query
 	if err != nil {
-		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPIGlobalsettingsV1", "Unable to load settings.", err.Error())
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPIGlobalsettingsV1", CarsGlobalsettingsError1, err.Error())
 		return
 	}
 
@@ -97,7 +99,7 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 
 		// checking for errors after scanning
 		if err != nil {
-			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPIGlobalsettingsV1", "Unable to load settings.", err.Error())
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPIGlobalsettingsV1", CarsGlobalsettingsError1, err.Error())
 			return
 		}
 
@@ -112,7 +114,7 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 	// checking for errors in the rows result
 	err = rows.Err()
 	if err != nil {
-		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPIGlobalsettingsV1", "Unable to load settings.", err.Error())
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPIGlobalsettingsV1", CarsGlobalsettingsError1, err.Error())
 		return
 	}
 
