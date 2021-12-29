@@ -66,7 +66,7 @@ func main() {
 
 	// root endpoint telling API is running
 	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi container runnnig..", "path": "/"})
+		c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi container runnnig..", "path": r.BasePath()})
 	})
 
 	// TeslaMateApi /api endpoints
@@ -74,7 +74,7 @@ func main() {
 	{
 		// TeslaMateApi /api root
 		api.GET("/", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi container runnnig..", "path": "/api"})
+			c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi container runnnig..", "path": api.BasePath()})
 		})
 
 		// TeslaMateApi /api/v1 endpoints
@@ -82,7 +82,7 @@ func main() {
 		{
 			// TeslaMateApi /api/v1 root
 			v1.GET("/", func(c *gin.Context) {
-				c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi v1 runnnig..", "path": "/api/v1"})
+				c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi v1 runnnig..", "path": v1.BasePath()})
 			})
 
 			// v1 /api/v1/cars endpoints
@@ -124,15 +124,16 @@ func main() {
 	}
 
 	// TeslaMateApi endpoints (before versioning)
-	r.GET("/cars", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/api/v1"+c.Request.RequestURI) })
-	r.GET("/cars/:CarID", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/api/v1"+c.Request.RequestURI) })
-	r.GET("/cars/:CarID/charges", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/api/v1"+c.Request.RequestURI) })
-	r.GET("/cars/:CarID/charges/:ChargeID", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/api/v1"+c.Request.RequestURI) })
-	r.GET("/cars/:CarID/drives", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/api/v1"+c.Request.RequestURI) })
-	r.GET("/cars/:CarID/drives/:DriveID", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/api/v1"+c.Request.RequestURI) })
-	r.GET("/cars/:CarID/status", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/api/v1"+c.Request.RequestURI) })
-	r.GET("/cars/:CarID/updates", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/api/v1"+c.Request.RequestURI) })
-	r.GET("/globalsettings", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, "/api/v1"+c.Request.RequestURI) })
+	BasePathV1 := api.BasePath() + "/v1"
+	r.GET("/cars", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, BasePathV1+c.Request.RequestURI) })
+	r.GET("/cars/:CarID", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, BasePathV1+c.Request.RequestURI) })
+	r.GET("/cars/:CarID/charges", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, BasePathV1+c.Request.RequestURI) })
+	r.GET("/cars/:CarID/charges/:ChargeID", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, BasePathV1+c.Request.RequestURI) })
+	r.GET("/cars/:CarID/drives", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, BasePathV1+c.Request.RequestURI) })
+	r.GET("/cars/:CarID/drives/:DriveID", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, BasePathV1+c.Request.RequestURI) })
+	r.GET("/cars/:CarID/status", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, BasePathV1+c.Request.RequestURI) })
+	r.GET("/cars/:CarID/updates", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, BasePathV1+c.Request.RequestURI) })
+	r.GET("/globalsettings", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, BasePathV1+c.Request.RequestURI) })
 
 	// run this and serve on 0.0.0.0:8080
 	r.Run(":8080")
