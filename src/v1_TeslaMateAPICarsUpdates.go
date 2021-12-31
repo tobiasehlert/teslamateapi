@@ -1,16 +1,15 @@
 package main
 
 import (
-	"encoding/json"
-	"log"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
 // TeslaMateAPICarsUpdatesV1 func
 func TeslaMateAPICarsUpdatesV1(c *gin.Context) {
+
+	// define error messages
+	var CarsUpdatesError1 = "Unable to load updates."
 
 	// getting CarID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))
@@ -44,7 +43,6 @@ func TeslaMateAPICarsUpdatesV1(c *gin.Context) {
 	// creating required vars
 	var UpdatesData []Updates
 	var CarData Car
-	var ValidResponse bool // default is false
 
 	// calculate offset based on page (page 0 is not possible, since first page is minimum 1)
 	if ResultPage > 0 {
@@ -71,7 +69,9 @@ func TeslaMateAPICarsUpdatesV1(c *gin.Context) {
 
 	// checking for errors in query
 	if err != nil {
-		log.Fatal(err)
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsUpdatesV1", CarsUpdatesError1, err.Error())
+		return
+
 	}
 
 	// defer closing rows
@@ -94,7 +94,8 @@ func TeslaMateAPICarsUpdatesV1(c *gin.Context) {
 
 		// checking for errors after scanning
 		if err != nil {
-			log.Fatal(err)
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsUpdatesV1", CarsUpdatesError1, err.Error())
+			return
 		}
 
 		// adjusting to timezone differences from UTC to be userspecific
@@ -104,18 +105,13 @@ func TeslaMateAPICarsUpdatesV1(c *gin.Context) {
 		// appending update to UpdatesData
 		UpdatesData = append(UpdatesData, update)
 		CarData.CarID = CarID
-		ValidResponse = true
 	}
 
 	// checking for errors in the rows result
 	err = rows.Err()
 	if err != nil {
-		log.Fatal(err)
-	}
-	
-	// if no errors, but UpdatesData is empty, return a valid response with an empty set
-	if len(UpdatesData) == 0 {
-		ValidResponse = true
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsUpdatesV1", CarsUpdatesError1, err.Error())
+		return
 	}
 
 	//
@@ -127,19 +123,6 @@ func TeslaMateAPICarsUpdatesV1(c *gin.Context) {
 		},
 	}
 
-	// print to log about request
-	if gin.IsDebugging() {
-		log.Println("[debug] TeslaMateAPICarsUpdatesV1 " + c.Request.RequestURI + " returned data:")
-		js, _ := json.Marshal(jsonData)
-		log.Printf("[debug] %s\n", js)
-	}
-
 	// return jsonData
-	if ValidResponse {
-		log.Println("[info] TeslaMateAPICarsUpdatesV1 " + c.Request.RequestURI + " executed successful.")
-		c.JSON(http.StatusOK, jsonData)
-	} else {
-		log.Println("[error] TeslaMateAPICarsUpdatesV1 " + c.Request.RequestURI + " error in execution!")
-		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICarsUpdatesV1.."})
-	}
+	TeslaMateAPIHandleSuccessResponse(c, "TeslaMateAPICarsUpdatesV1", jsonData)
 }

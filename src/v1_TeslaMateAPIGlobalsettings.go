@@ -1,16 +1,15 @@
 package main
 
 import (
-	"encoding/json"
-	"log"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
 // TeslaMateAPIGlobalsettingsV1 func
 func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
+
+	// define error messages
+	var CarsGlobalsettingsError1 = "Unable to load settings."
 
 	// creating structs for /globalsettings
 	// AccountInfo struct - child of GlobalSettings
@@ -52,7 +51,6 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 
 	// creating required vars
 	var GlobalSettingData GlobalSettings
-	var ValidResponse bool // default is false
 
 	// getting data from database
 	query := `
@@ -72,7 +70,8 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 
 	// checking for errors in query
 	if err != nil {
-		log.Fatal(err)
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPIGlobalsettingsV1", CarsGlobalsettingsError1, err.Error())
+		return
 	}
 
 	// defer closing rows
@@ -99,7 +98,8 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 
 		// checking for errors after scanning
 		if err != nil {
-			log.Fatal(err)
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPIGlobalsettingsV1", CarsGlobalsettingsError1, err.Error())
+			return
 		}
 
 		// adjusting to timezone differences from UTC to be userspecific
@@ -108,13 +108,13 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 
 		// setting response to valid
 		GlobalSettingData = GlobalSetting
-		ValidResponse = true
 	}
 
 	// checking for errors in the rows result
 	err = rows.Err()
 	if err != nil {
-		log.Fatal(err)
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPIGlobalsettingsV1", CarsGlobalsettingsError1, err.Error())
+		return
 	}
 
 	//
@@ -125,19 +125,6 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 		},
 	}
 
-	// print to log about request
-	if gin.IsDebugging() {
-		log.Println("[debug] TeslaMateAPIGlobalsettingsV1 " + c.Request.RequestURI + " returned data:")
-		js, _ := json.Marshal(jsonData)
-		log.Printf("[debug] %s\n", js)
-	}
-
 	// return jsonData
-	if ValidResponse {
-		log.Println("[info] TeslaMateAPIGlobalsettingsV1 " + c.Request.RequestURI + " executed successful.")
-		c.JSON(http.StatusOK, jsonData)
-	} else {
-		log.Println("[error] TeslaMateAPIGlobalsettingsV1 " + c.Request.RequestURI + " error in execution!")
-		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPIGlobalsettingsV1.."})
-	}
+	TeslaMateAPIHandleSuccessResponse(c, "TeslaMateAPIGlobalsettingsV1", jsonData)
 }

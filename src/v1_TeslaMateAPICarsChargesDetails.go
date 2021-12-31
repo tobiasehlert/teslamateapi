@@ -1,16 +1,16 @@
 package main
 
 import (
-	"encoding/json"
-	"log"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
 // TeslaMateAPICarsChargesDetailsV1 func
 func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
+
+	// define error messages
+	var CarsChargesDetailsError1 = "Unable to load charge."
+	var CarsChargesDetailsError2 = "Unable to load charge details."
 
 	// getting CarID and ChargeID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))
@@ -106,7 +106,6 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 	var ChargeData Charge
 	var ChargeDetailsData []ChargeDetails
 	var UnitsLength, UnitsTemperature, CarName string
-	var ValidResponse bool // default is false
 
 	// getting data from database
 	query := `
@@ -142,7 +141,8 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 
 	// checking for errors in query
 	if err != nil {
-		log.Fatal(err)
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError1, err.Error())
+		return
 	}
 
 	// defer closing rows
@@ -195,12 +195,12 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 
 		// checking for errors after scanning
 		if err != nil {
-			log.Fatal(err)
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError1, err.Error())
+			return
 		}
 
 		// appending charge to ChargeData
 		ChargeData = charge
-		ValidResponse = true
 
 		// getting detailed charge data from database
 		query = `
@@ -233,7 +233,8 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 
 		// checking for errors in query
 		if err != nil {
-			log.Fatal(err)
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError2, err.Error())
+			return
 		}
 
 		// defer closing rows
@@ -285,7 +286,8 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 
 			// checking for errors after scanning
 			if err != nil {
-				log.Fatal(err)
+				TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError2, err.Error())
+				return
 			}
 
 			// appending drive to ChargeData
@@ -297,7 +299,8 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 	// checking for errors in the rows result
 	err = rows.Err()
 	if err != nil {
-		log.Fatal(err)
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError2, err.Error())
+		return
 	}
 
 	//
@@ -316,19 +319,6 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 		},
 	}
 
-	// print to log about request
-	if gin.IsDebugging() {
-		log.Println("[debug] TeslaMateAPICarsChargesDetailsV1 " + c.Request.RequestURI + " returned data:")
-		js, _ := json.Marshal(jsonData)
-		log.Printf("[debug] %s\n", js)
-	}
-
 	// return jsonData
-	if ValidResponse {
-		log.Println("[info] TeslaMateAPICarsChargesDetailsV1 " + c.Request.RequestURI + " executed successful.")
-		c.JSON(http.StatusOK, jsonData)
-	} else {
-		log.Println("[error] TeslaMateAPICarsChargesDetailsV1 " + c.Request.RequestURI + " error in execution!")
-		c.JSON(http.StatusNotFound, gin.H{"error": "something went wrong in TeslaMateAPICarsChargesDetailsV1.."})
-	}
+	TeslaMateAPIHandleSuccessResponse(c, "TeslaMateAPICarsChargesDetailsV1", jsonData)
 }

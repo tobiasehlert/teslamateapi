@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -21,34 +22,28 @@ func TeslaMateAPICarsLoggingV1(c *gin.Context) {
 	// check if commands are enabled.. if not we need to abort
 	if !getEnvAsBool("ENABLE_COMMANDS", false) {
 		log.Println("[warning] TeslaMateAPICarsLoggingV1 ENABLE_COMMANDS is not true.. returning 403 forbidden.")
-		c.JSON(http.StatusForbidden, gin.H{"error": "You are not allowed to access logging commands"})
+		TeslaMateAPIHandleOtherResponse(c, http.StatusForbidden, "TeslaMateAPICarsLoggingV1", gin.H{"error": "You are not allowed to access logging commands"})
 		return
 	}
 
 	// if request method is GET return list of commands
 	if c.Request.Method == http.MethodGet {
-		c.JSON(http.StatusOK, gin.H{"enabled_commands": allowList})
+		TeslaMateAPIHandleSuccessResponse(c, "TeslaMateAPICarsLoggingV1", gin.H{"enabled_commands": allowList})
 		return
 	}
 
 	// authentication for the endpoint
 	validToken, errorMessage := validateAuthToken(c)
 	if !validToken {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": errorMessage})
+		TeslaMateAPIHandleOtherResponse(c, http.StatusUnauthorized, "TeslaMateAPICarsLoggingV1", gin.H{"error": errorMessage})
 		return
 	}
 
-	// getting CarID param from URL
-	ParamCarID := c.Param("CarID")
-	var CarID int
-	if ParamCarID != "" {
-		CarID = convertStringToInteger(ParamCarID)
-	}
-
-	// validating that CarID is not zero
+	// getting CarID param from URL and validating that it's not zero
+	CarID := convertStringToInteger(c.Param("CarID"))
 	if CarID == 0 {
 		log.Println("[error] TeslaMateAPICarsLoggingV1 CarID is invalid (zero)!")
-		c.JSON(http.StatusBadRequest, gin.H{"error": "CarID invalid"})
+		TeslaMateAPIHandleOtherResponse(c, http.StatusBadRequest, "TeslaMateAPICarsLoggingV1", gin.H{"error": "CarID invalid"})
 		return
 	}
 
@@ -56,7 +51,7 @@ func TeslaMateAPICarsLoggingV1(c *gin.Context) {
 	reqBody, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		log.Println("[error] TeslaMateAPICarsLoggingV1 error in first ioutil.ReadAll", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal"})
+		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsLoggingV1", gin.H{"error": "internal ioutil reading error"})
 		return
 	}
 
@@ -66,7 +61,7 @@ func TeslaMateAPICarsLoggingV1(c *gin.Context) {
 
 	if !checkArrayContainsString(allowList, command) {
 		log.Print("[warning] TeslaMateAPICarsLoggingV1 command: " + command + " not allowed")
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		TeslaMateAPIHandleOtherResponse(c, http.StatusUnauthorized, "TeslaMateAPICarsLoggingV1", gin.H{"error": "unauthorized"})
 		return
 	}
 
@@ -77,7 +72,7 @@ func TeslaMateAPICarsLoggingV1(c *gin.Context) {
 	} else {
 		putURL = "http://"
 	}
-	putURL = putURL + getEnv("TESLAMATE_HOST", "teslamate") + ":" + getEnv("TESLAMATE_PORT", "4000") + "/api/car/" + ParamCarID + command
+	putURL = putURL + getEnv("TESLAMATE_HOST", "teslamate") + ":" + getEnv("TESLAMATE_PORT", "4000") + "/api/car/" + strconv.Itoa(CarID) + command
 	req, _ := http.NewRequest(http.MethodPut, putURL, strings.NewReader(string(reqBody)))
 	req.Header.Set("User-Agent", "TeslaMateApi/"+apiVersion+" https://github.com/tobiasehlert/teslamateapi")
 	resp, err := client.Do(req)
@@ -85,7 +80,7 @@ func TeslaMateAPICarsLoggingV1(c *gin.Context) {
 	// check response error
 	if err != nil {
 		log.Println("[error] TeslaMateAPICarsLoggingV1 error in http request to http://teslamate:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal"})
+		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsLoggingV1", gin.H{"error": "internal http request error"})
 		return
 	}
 
@@ -95,22 +90,12 @@ func TeslaMateAPICarsLoggingV1(c *gin.Context) {
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Println("[error] TeslaMateAPICarsLoggingV1 error in second ioutil.ReadAll:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal"})
+		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsLoggingV1", gin.H{"error": "internal ioutil reading error"})
 		return
 	}
 	json.Unmarshal([]byte(respBody), &jsonData)
 
-	// print to log about request
-	if gin.IsDebugging() {
-		log.Println("[debug] TeslaMateAPICarsLoggingV1 " + c.Request.RequestURI + " returned data:")
-		js, _ := json.Marshal(jsonData)
-		log.Printf("[debug] %s\n", js)
-	}
-
-	if resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusNoContent {
-		log.Println("[info] TeslaMateAPICarsLoggingV1 " + c.Request.RequestURI + " executed successful.")
-	} else {
-		log.Println("[error] TeslaMateAPICarsLoggingV1 " + c.Request.RequestURI + " error in execution!")
-	}
-	c.JSON(resp.StatusCode, jsonData)
+	// return jsonData
+	// use TeslaMateAPIHandleOtherResponse since we use the statusCode from Tesla API
+	TeslaMateAPIHandleOtherResponse(c, resp.StatusCode, "TeslaMateAPICarsLoggingV1", jsonData)
 }
