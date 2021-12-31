@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.12.1] - 2021-12-31
+
+### Changed
+- using of BasePath function in output and redirect ([#130](https://github.com/tobiasehlert/teslamateapi/pull/130) by [tobiasehlert](https://github.com/tobiasehlert))
+- updating build workflow with enhancements ([#131](https://github.com/tobiasehlert/teslamateapi/pull/131) by [tobiasehlert](https://github.com/tobiasehlert))
+
 ## [1.12.0] - 2021-12-28
 
 ### Fixed
@@ -253,7 +259,7 @@
 
 Initial commit
 
-[Unreleased]: https://github.com/tobiasehlert/teslamateapi/compare/v1.12.0...HEAD
+[1.12.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.12.0...v1.12.1
 [1.12.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.11.1...v1.12.0
 [1.11.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.11.0...v1.11.1
 [1.11.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.10.2...v1.11.0
