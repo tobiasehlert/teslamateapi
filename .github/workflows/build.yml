@@ -75,4 +75,4 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           build-args: |
-            apiVersion=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+            apiVersion=${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.version'] }}
