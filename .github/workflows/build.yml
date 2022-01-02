@@ -30,6 +30,7 @@ jobs:
             ghcr.io/tobiasehlert/teslamateapi
           tags: |
             type=edge
+            type=ref,event=branch
             type=semver,pattern=v{{version}}
             type=semver,pattern=v{{major}}.{{minor}}
 
