@@ -30,7 +30,7 @@ jobs:
             ghcr.io/tobiasehlert/teslamateapi
           tags: |
             type=edge
-            type=ref,event=branch
+            type=ref,event=branch,enable=${{ (github.ref != 'refs/heads/main') }}
             type=semver,pattern=v{{version}}
             type=semver,pattern=v{{major}}.{{minor}}
 
@@ -63,15 +63,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Configure build information
-        id: build_information
-        run: |
-          if  [[ ${{ github.ref_type }} == "tag" ]]; then
-            echo "::set-output name=release_name::$( echo ${{ github.ref_name }} )"
-          else
-            echo "::set-output name=release_name::$( echo unknown )"
-          fi
-
       - name: Build and push
         uses: docker/build-push-action@v2.7.0
         with:
@@ -84,4 +75,4 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           build-args: |
-            apiVersion=${{ steps.build_information.outputs.release_name }}
+            apiVersion=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
