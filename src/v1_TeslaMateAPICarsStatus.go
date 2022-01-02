@@ -178,103 +178,103 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 	}
 
 	// running if-else statements to collect data and put into overall vars..
-	if MqttTopic == "display_name" {
+	switch MqttTopic {
+	case "display_name":
 		stat.MQTTDataDisplayName = string(msg.Payload())
-	} else if MqttTopic == "state" {
+	case "state":
 		stat.MQTTDataState = string(msg.Payload())
-	} else if MqttTopic == "since" {
+	case "since":
 		stat.MQTTDataStateSince = string(msg.Payload())
-	} else if MqttTopic == "healthy" {
+	case "healthy":
 		stat.MQTTDataHealthy = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "version" {
+	case "version":
 		stat.MQTTDataVersion = string(msg.Payload())
-	} else if MqttTopic == "update_available" {
+	case "update_available":
 		stat.MQTTDataUpdateAvailable = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "update_version" {
+	case "update_version":
 		stat.MQTTDataUpdateVersion = string(msg.Payload())
-	} else if MqttTopic == "model" {
+	case "model":
 		stat.MQTTDataModel = string(msg.Payload())
-	} else if MqttTopic == "trim_badging" {
+	case "trim_badging":
 		stat.MQTTDataTrimBadging = string(msg.Payload())
-	} else if MqttTopic == "exterior_color" {
+	case "exterior_color":
 		stat.MQTTDataExteriorColor = string(msg.Payload())
-	} else if MqttTopic == "wheel_type" {
+	case "wheel_type":
 		stat.MQTTDataWheelType = string(msg.Payload())
-	} else if MqttTopic == "spoiler_type" {
+	case "spoiler_type":
 		stat.MQTTDataSpoilerType = string(msg.Payload())
-	} else if MqttTopic == "geofence" {
+	case "geofence":
 		stat.MQTTDataGeofence = string(msg.Payload())
-	} else if MqttTopic == "latitude" {
+	case "latitude":
 		stat.MQTTDataLatitude = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "longitude" {
+	case "longitude":
 		stat.MQTTDataLongitude = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "shift_state" {
+	case "shift_state":
 		stat.MQTTDataShiftState = string(msg.Payload())
-	} else if MqttTopic == "power" {
+	case "power":
 		stat.MQTTDataPower = convertStringToInteger(string(msg.Payload()))
-	} else if MqttTopic == "speed" {
+	case "speed":
 		stat.MQTTDataSpeed = convertStringToInteger(string(msg.Payload()))
-	} else if MqttTopic == "heading" {
+	case "heading":
 		stat.MQTTDataHeading = convertStringToInteger(string(msg.Payload()))
-	} else if MqttTopic == "elevation" {
+	case "elevation":
 		stat.MQTTDataElevation = convertStringToInteger(string(msg.Payload()))
-	} else if MqttTopic == "locked" {
+	case "locked":
 		stat.MQTTDataLocked = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "sentry_mode" {
+	case "sentry_mode":
 		stat.MQTTDataSentryMode = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "windows_open" {
+	case "windows_open":
 		stat.MQTTDataWindowsOpen = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "doors_open" {
+	case "doors_open":
 		stat.MQTTDataDoorsOpen = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "trunk_open" {
+	case "trunk_open":
 		stat.MQTTDataTrunkOpen = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "frunk_open" {
+	case "frunk_open":
 		stat.MQTTDataFrunkOpen = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "is_user_present" {
+	case "is_user_present":
 		stat.MQTTDataIsUserPresent = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "is_climate_on" {
+	case "is_climate_on":
 		stat.MQTTDataIsClimateOn = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "inside_temp" {
+	case "inside_temp":
 		stat.MQTTDataInsideTemp = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "outside_temp" {
+	case "outside_temp":
 		stat.MQTTDataOutsideTemp = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "is_preconditioning" {
+	case "is_preconditioning":
 		stat.MQTTDataIsPreconditioning = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "odometer" {
+	case "odometer":
 		stat.MQTTDataOdometer = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "est_battery_range_km" {
+	case "est_battery_range_km":
 		stat.MQTTDataEstBatteryRange = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "rated_battery_range_km" {
+	case "rated_battery_range_km":
 		stat.MQTTDataRatedBatteryRange = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "ideal_battery_range_km" {
+	case "ideal_battery_range_km":
 		stat.MQTTDataIdealBatteryRange = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "battery_level" {
+	case "battery_level":
 		stat.MQTTDataBatteryLevel = convertStringToInteger(string(msg.Payload()))
-	} else if MqttTopic == "usable_battery_level" {
+	case "usable_battery_level":
 		stat.MQTTDataUsableBatteryLevel = convertStringToInteger(string(msg.Payload()))
-	} else if MqttTopic == "plugged_in" {
+	case "plugged_in":
 		stat.MQTTDataPluggedIn = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "charge_energy_added" {
+	case "charge_energy_added":
 		stat.MQTTDataChargeEnergyAdded = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "charge_limit_soc" {
+	case "charge_limit_soc":
 		stat.MQTTDataChargeLimitSoc = convertStringToInteger(string(msg.Payload()))
-	} else if MqttTopic == "charge_port_door_open" {
+	case "charge_port_door_open":
 		stat.MQTTDataChargePortDoorOpen = convertStringToBool(string(msg.Payload()))
-	} else if MqttTopic == "charger_actual_current" {
+	case "charger_actual_current":
 		stat.MQTTDataChargerActualCurrent = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "charger_phases" {
+	case "charger_phases":
 		stat.MQTTDataChargerPhases = convertStringToInteger(string(msg.Payload()))
-	} else if MqttTopic == "charger_power" {
+	case "charger_power":
 		stat.MQTTDataChargerPower = convertStringToFloat(string(msg.Payload()))
-	} else if MqttTopic == "charger_voltage" {
+	case "charger_voltage":
 		stat.MQTTDataChargerVoltage = convertStringToInteger(string(msg.Payload()))
-	} else if MqttTopic == "scheduled_charging_start_time" {
+	case "scheduled_charging_start_time":
 		stat.MQTTDataScheduledChargingStartTime = string(msg.Payload())
-	} else if MqttTopic == "time_to_full_charge" {
+	case "time_to_full_charge":
 		stat.MQTTDataTimeToFullCharge = convertStringToFloat(string(msg.Payload()))
-	} else {
+	default:
 		log.Printf("[warning] TeslaMateAPICarsStatusV1 mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
-		return
 	}
 }
 
