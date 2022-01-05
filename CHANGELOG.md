@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.13.0] - 2022-01-05
+
+### Changed
+- simplified response handler for communication ([#110](https://github.com/tobiasehlert/teslamateapi/pull/110) by [tobiasehlert](https://github.com/tobiasehlert)))
+
 ## [1.12.1] - 2021-12-31
 
 ### Changed
@@ -259,6 +264,7 @@
 
 Initial commit
 
+[1.13.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.12.1...v1.13.0
 [1.12.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.12.0...v1.12.1
 [1.12.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.11.1...v1.12.0
 [1.11.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.11.0...v1.11.1
