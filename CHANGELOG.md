@@ -3,7 +3,7 @@
 ## [1.13.0] - 2022-01-05
 
 ### Changed
-- simplified response handler for communication ([#110](https://github.com/tobiasehlert/teslamateapi/pull/110) by [tobiasehlert](https://github.com/tobiasehlert)))
+- simplified response handler for communication ([#110](https://github.com/tobiasehlert/teslamateapi/pull/110) by [alecdoconnor](https://github.com/alecdoconnor), [tobiasehlert](https://github.com/tobiasehlert))
 
 ## [1.12.1] - 2021-12-31
 
