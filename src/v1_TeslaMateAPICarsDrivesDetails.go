@@ -116,7 +116,7 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 	}
 
 	// creating required vars
-	var DriveData Drive
+	var drive Drive
 	var DriveDetailsData []DriveDetails
 	var UnitsLength, UnitsTemperature, CarName string
 
@@ -244,9 +244,6 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 			return
 		}
 
-		// appending drive to DriveData
-		DriveData = drive
-
 		// getting detailed drive data from database
 		query = `
 		 			SELECT
@@ -346,9 +343,9 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 				return
 			}
 
-			// appending drive to DriveData
+			// appending drive to drive
 			DriveDetailsData = append(DriveDetailsData, drivedetails)
-			DriveData.DriveDetails = DriveDetailsData
+			drive.DriveDetails = DriveDetailsData
 		}
 
 		// checking for errors in the rows result
@@ -375,7 +372,7 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 				CarID:   CarID,
 				CarName: CarName,
 			},
-			Drive: DriveData,
+			Drive: drive,
 			TeslaMateUnits: TeslaMateUnits{
 				UnitsLength:      UnitsLength,
 				UnitsTemperature: UnitsTemperature,

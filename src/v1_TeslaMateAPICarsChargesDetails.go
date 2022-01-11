@@ -103,7 +103,7 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 	}
 
 	// creating required vars
-	var ChargeData Charge
+	var charge Charge
 	var ChargeDetailsData []ChargeDetails
 	var UnitsLength, UnitsTemperature, CarName string
 
@@ -151,9 +151,6 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 	// looping through all results
 	for rows.Next() {
 
-		// creating charge object based on struct
-		charge := Charge{}
-
 		// scanning row and putting values into the charge
 		err = rows.Scan(
 			&charge.ChargeID,
@@ -198,9 +195,6 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError1, err.Error())
 			return
 		}
-
-		// appending charge to ChargeData
-		ChargeData = charge
 
 		// getting detailed charge data from database
 		query = `
@@ -292,7 +286,7 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 
 			// appending drive to ChargeData
 			ChargeDetailsData = append(ChargeDetailsData, chargedetails)
-			ChargeData.ChargeDetails = ChargeDetailsData
+			charge.ChargeDetails = ChargeDetailsData
 		}
 	}
 
@@ -311,7 +305,7 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 				CarID:   CarID,
 				CarName: CarName,
 			},
-			Charge: ChargeData,
+			Charge: charge,
 			TeslaMateUnits: TeslaMateUnits{
 				UnitsLength:      UnitsLength,
 				UnitsTemperature: UnitsTemperature,

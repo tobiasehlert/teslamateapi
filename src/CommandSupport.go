@@ -13,137 +13,140 @@ import (
 // initCommandAllowList func
 func initCommandAllowList() {
 
-	// allow all commands available below
-	allowAll := getEnvAsBool("COMMANDS_ALL", false)
+	// generate map of all available commands
+	CommandList := make(map[string][]string)
 
 	// https://github.com/adriankumpf/teslamate/discussions/1433
-	if getEnvAsBool("COMMANDS_LOGGING", false) || allowAll {
-		allowList = append(allowList,
-			"/logging/resume",
-			"/logging/suspend")
+	CommandList["COMMANDS_LOGGING"] = []string{
+		"/logging/resume",
+		"/logging/suspend",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/wake
-	if getEnvAsBool("COMMANDS_WAKE", false) || allowAll {
-		allowList = append(allowList, "/wake_up")
+	CommandList["COMMANDS_WAKE"] = []string{
+		"/wake_up",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/alerts
-	if getEnvAsBool("COMMANDS_ALERT", false) || allowAll {
-		allowList = append(allowList,
-			"/command/honk_horn",
-			"/command/flash_lights")
+	CommandList["COMMANDS_ALERT"] = []string{
+		"/command/honk_horn",
+		"/command/flash_lights",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/remotestart
-	if getEnvAsBool("COMMANDS_REMOTESTART", false) || allowAll {
-		allowList = append(allowList, "/command/remote_start_drive")
+	CommandList["COMMANDS_REMOTESTART"] = []string{
+		"/command/remote_start_drive",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/homelink
-	if getEnvAsBool("COMMANDS_HOMELINK", false) || allowAll {
-		allowList = append(allowList, "/command/trigger_homelink")
+	CommandList["COMMANDS_HOMELINK"] = []string{
+		"/command/trigger_homelink",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/speedlimit
-	if getEnvAsBool("COMMANDS_SPEEDLIMIT", false) || allowAll {
-		allowList = append(allowList,
-			"/command/speed_limit_set_limit",
-			"/command/speed_limit_activate",
-			"/command/speed_limit_deactivate",
-			"/command/speed_limit_clear_pin")
+	CommandList["COMMANDS_SPEEDLIMIT"] = []string{
+		"/command/speed_limit_set_limit",
+		"/command/speed_limit_activate",
+		"/command/speed_limit_deactivate",
+		"/command/speed_limit_clear_pin",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/valet
-	if getEnvAsBool("COMMANDS_VALET", false) || allowAll {
-		allowList = append(allowList,
-			"/command/set_valet_mode",
-			"/command/reset_valet_pin")
+	CommandList["COMMANDS_VALET"] = []string{
+		"/command/set_valet_mode",
+		"/command/reset_valet_pin",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/sentrymode
-	if getEnvAsBool("COMMANDS_SENTRYMODE", false) || allowAll {
-		allowList = append(allowList, "/command/set_sentry_mode")
+	CommandList["COMMANDS_SENTRYMODE"] = []string{
+		"/command/set_sentry_mode",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/doors
-	if getEnvAsBool("COMMANDS_DOORS", false) || allowAll {
-		allowList = append(allowList,
-			"/command/door_unlock",
-			"/command/door_lock")
+	CommandList["COMMANDS_DOORS"] = []string{
+		"/command/door_unlock",
+		"/command/door_lock",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/trunk
-	if getEnvAsBool("COMMANDS_TRUNK", false) || allowAll {
-		allowList = append(allowList, "/command/actuate_trunk")
+	CommandList["COMMANDS_TRUNK"] = []string{
+		"/command/actuate_trunk",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/windows
-	if getEnvAsBool("COMMANDS_WINDOWS", false) || allowAll {
-		allowList = append(allowList, "/command/window_control")
+	CommandList["COMMANDS_WINDOWS"] = []string{
+		"/command/window_control",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/sunroof
-	if getEnvAsBool("COMMANDS_SUNROOF", false) || allowAll {
-		allowList = append(allowList, "/command/sun_roof_control")
+	CommandList["COMMANDS_SUNROOF"] = []string{
+		"/command/sun_roof_control",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/charging
-	if getEnvAsBool("COMMANDS_CHARGING", false) || allowAll {
-		allowList = append(allowList,
-			"/command/charge_port_door_open",
-			"/command/charge_port_door_close",
-			"/command/charge_start",
-			"/command/charge_stop",
-			"/command/set_charge_limit",
-			"/command/set_charging_amps",
-			"/command/set_scheduled_charging",
-			"/command/set_scheduled_departure")
+	CommandList["COMMANDS_CHARGING"] = []string{
+		"/command/charge_port_door_open",
+		"/command/charge_port_door_close",
+		"/command/charge_start",
+		"/command/charge_stop",
+		"/command/set_charge_limit",
+		"/command/set_charging_amps",
+		"/command/set_scheduled_charging",
+		"/command/set_scheduled_departure",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/climate
-	if getEnvAsBool("COMMANDS_CLIMATE", false) || allowAll {
-		allowList = append(allowList,
-			"/command/auto_conditioning_start",
-			"/command/auto_conditioning_stop",
-			"/command/set_temps",
-			"/command/set_preconditioning_max",
-			"/command/remote_seat_heater_request",
-			"/command/remote_steering_wheel_heater_request",
-			"/command/set_bioweapon_mode")
+	CommandList["COMMANDS_CLIMATE"] = []string{
+		"/command/auto_conditioning_start",
+		"/command/auto_conditioning_stop",
+		"/command/set_temps",
+		"/command/set_preconditioning_max",
+		"/command/remote_seat_heater_request",
+		"/command/remote_steering_wheel_heater_request",
+		"/command/set_bioweapon_mode",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/media
-	if getEnvAsBool("COMMANDS_MEDIA", false) || allowAll {
-		allowList = append(allowList,
-			"/command/media_toggle_playback",
-			"/command/media_next_track",
-			"/command/media_prev_track",
-			"/command/media_next_fav",
-			"/command/media_prev_fav",
-			"/command/media_volume_up",
-			"/command/media_volume_down")
+	CommandList["COMMANDS_MEDIA"] = []string{
+		"/command/media_toggle_playback",
+		"/command/media_next_track",
+		"/command/media_prev_track",
+		"/command/media_next_fav",
+		"/command/media_prev_fav",
+		"/command/media_volume_up",
+		"/command/media_volume_down",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/sharing
-	if getEnvAsBool("COMMANDS_SHARING", false) || allowAll {
-		allowList = append(allowList,
-			"/command/share",
-			"/command/navigation_sc_request")
+	CommandList["COMMANDS_SHARING"] = []string{
+		"/command/share",
+		"/command/navigation_sc_request",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/softwareupdate
-	if getEnvAsBool("COMMANDS_SOFTWAREUPDATE", false) || allowAll {
-		allowList = append(allowList,
-			"/command/schedule_software_update",
-			"/command/cancel_software_update")
+	CommandList["COMMANDS_SOFTWAREUPDATE"] = []string{
+		"/command/schedule_software_update",
+		"/command/cancel_software_update",
 	}
 
 	// not documentet and unsorted new endpoints
-	if getEnvAsBool("COMMANDS_UNKNOWN", false) || allowAll {
-		allowList = append(allowList,
-			"/command/upcoming_calendar_entries",
-			"/command/dashcam_save_clip")
+	CommandList["COMMANDS_UNKNOWN"] = []string{
+		"/command/upcoming_calendar_entries",
+		"/command/dashcam_save_clip",
+	}
+
+	// allow all commands available below
+	allowAll := getEnvAsBool("COMMANDS_ALL", false)
+
+	// looping over CommandList to generate allowList
+	for key := range CommandList {
+		// checking if env is set from key or if all should be allowed
+		if getEnvAsBool(key, false) || allowAll {
+			// looping over all values and appending to allowList
+			for _, values := range CommandList[key] {
+				allowList = append(allowList, string(values))
+			}
+		}
 	}
 
 	// if allowList is empty, read COMMANDS_ALLOWLIST and append to allowList
