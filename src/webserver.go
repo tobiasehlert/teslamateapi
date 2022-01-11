@@ -281,31 +281,31 @@ func getEnvAsInt(name string, defaultVal int) int {
 
 // convertStringToBool func
 func convertStringToBool(data string) bool {
-	if value, err := strconv.ParseBool(data); err == nil {
+	value, err := strconv.ParseBool(data)
+	if err == nil {
 		return value
 	}
-	// else..
-	log.Println("[warning] convertStringToBool error could not return value (" + data + ") correctly.. returning false")
+	log.Printf("[warning] convertStringToBool error when converting value correctly.. returning false. Error: %s", err)
 	return false
 }
 
 // convertStringToFloat func
 func convertStringToFloat(data string) float64 {
-	if value, err := strconv.ParseFloat(data, 64); err == nil {
+	value, err := strconv.ParseFloat(data, 64)
+	if err == nil {
 		return value
 	}
-	// else..
-	log.Println("[warning] convertStringToFloat error could not return value (" + data + ") correctly.. returning 0.0")
+	log.Printf("[warning] convertStringToFloat error when converting value correctly.. returning 0.0. Error: %s", err)
 	return 0.0
 }
 
 // convertStringToInteger func
 func convertStringToInteger(data string) int {
-	if value, err := strconv.Atoi(data); err == nil {
+	value, err := strconv.Atoi(data)
+	if err == nil {
 		return value
 	}
-	// else..
-	log.Println("[warning] convertStringToInteger error could not return value (" + data + ") correctly.. returning 0")
+	log.Printf("[warning] convertStringToInteger error when converting value correctly.. returning 0. Error: %s", err)
 	return 0
 }
 
