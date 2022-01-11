@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -50,7 +52,7 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 	}
 
 	// creating required vars
-	var GlobalSettingData GlobalSettings
+	var GlobalSetting GlobalSettings
 
 	// getting data from database
 	query := `
@@ -66,62 +68,42 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 			grafana_url
 		FROM settings
 		LIMIT 1;`
-	rows, err := db.Query(query)
+	row := db.QueryRow(query)
 
-	// checking for errors in query
-	if err != nil {
+	// scanning row and putting values into the GlobalSetting
+	err := row.Scan(
+		&GlobalSetting.SettingID,
+		&GlobalSetting.AccountInfo.InsertedAt,
+		&GlobalSetting.AccountInfo.UpdatedAt,
+		&GlobalSetting.TeslaMateUnits.UnitsLength,
+		&GlobalSetting.TeslaMateUnits.UnitsTemperature,
+		&GlobalSetting.TeslaMateGUI.PreferredRange,
+		&GlobalSetting.TeslaMateGUI.Language,
+		&GlobalSetting.TeslaMateURLs.BaseURL,
+		&GlobalSetting.TeslaMateURLs.GrafanaURL,
+	)
+
+	switch err {
+	case sql.ErrNoRows:
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPIGlobalsettingsV1", "No rows were returned!", err.Error())
+		return
+	case nil:
+		// nothing wrong.. continuing
+		break
+	default:
 		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPIGlobalsettingsV1", CarsGlobalsettingsError1, err.Error())
 		return
 	}
 
-	// defer closing rows
-	defer rows.Close()
-
-	// looping through all results
-	for rows.Next() {
-
-		// creating GlobalSetting object based on struct
-		GlobalSetting := GlobalSettings{}
-
-		// scanning row and putting values into the GlobalSetting
-		err = rows.Scan(
-			&GlobalSetting.SettingID,
-			&GlobalSetting.AccountInfo.InsertedAt,
-			&GlobalSetting.AccountInfo.UpdatedAt,
-			&GlobalSetting.TeslaMateUnits.UnitsLength,
-			&GlobalSetting.TeslaMateUnits.UnitsTemperature,
-			&GlobalSetting.TeslaMateGUI.PreferredRange,
-			&GlobalSetting.TeslaMateGUI.Language,
-			&GlobalSetting.TeslaMateURLs.BaseURL,
-			&GlobalSetting.TeslaMateURLs.GrafanaURL,
-		)
-
-		// checking for errors after scanning
-		if err != nil {
-			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPIGlobalsettingsV1", CarsGlobalsettingsError1, err.Error())
-			return
-		}
-
-		// adjusting to timezone differences from UTC to be userspecific
-		GlobalSetting.AccountInfo.InsertedAt = getTimeInTimeZone(GlobalSetting.AccountInfo.InsertedAt)
-		GlobalSetting.AccountInfo.UpdatedAt = getTimeInTimeZone(GlobalSetting.AccountInfo.UpdatedAt)
-
-		// setting response to valid
-		GlobalSettingData = GlobalSetting
-	}
-
-	// checking for errors in the rows result
-	err = rows.Err()
-	if err != nil {
-		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPIGlobalsettingsV1", CarsGlobalsettingsError1, err.Error())
-		return
-	}
+	// adjusting to timezone differences from UTC to be userspecific
+	GlobalSetting.AccountInfo.InsertedAt = getTimeInTimeZone(GlobalSetting.AccountInfo.InsertedAt)
+	GlobalSetting.AccountInfo.UpdatedAt = getTimeInTimeZone(GlobalSetting.AccountInfo.UpdatedAt)
 
 	//
 	// build the data-blob
 	jsonData := JSONData{
 		Data{
-			GlobalSettings: GlobalSettingData,
+			GlobalSettings: GlobalSetting,
 		},
 	}
 
