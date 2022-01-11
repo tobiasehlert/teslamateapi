@@ -168,7 +168,7 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 	row := db.QueryRow(query, CarID, DriveID)
 
 	// scanning row and putting values into the drive
-	err = rows.Scan(
+	err := row.Scan(
 		&drive.DriveID,
 		&drive.StartDate,
 		&drive.EndDate,
@@ -213,9 +213,6 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", CarsDrivesDetailsError1, err.Error())
 		return
 	}
-
-	// creating drive object based on struct
-	drive := Drive{}
 
 	// converting values based of settings UnitsLength
 	if UnitsLength == "mi" {
