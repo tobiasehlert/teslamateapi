@@ -58,10 +58,10 @@ func TeslaMateAPICarsLoggingV1(c *gin.Context) {
 	// getting :Command
 	command := ("/logging/" + c.Param("Command"))
 	escapedCommand := strings.Replace(strings.Replace(command, "\n", "", -1), "\r", "", -1)
-	log.Println("[debug] TeslaMateAPICarsLoggingV1 command received:", escapedCommand)
+	log.Printf("[debug] TeslaMateAPICarsLoggingV1 command received: %s", escapedCommand)
 
 	if !checkArrayContainsString(allowList, command) {
-		log.Print("[warning] TeslaMateAPICarsLoggingV1 command: " + escapedCommand + " not allowed")
+		log.Printf("[warning] TeslaMateAPICarsLoggingV1 command: %s not allowed", escapedCommand)
 		TeslaMateAPIHandleOtherResponse(c, http.StatusUnauthorized, "TeslaMateAPICarsLoggingV1", gin.H{"error": "unauthorized"})
 		return
 	}
