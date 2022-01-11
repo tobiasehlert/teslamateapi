@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -137,67 +139,61 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 		LEFT JOIN charges ON charging_processes.id = charges.id
 		WHERE charging_processes.car_id=$1 AND charging_processes.id=$2 AND charging_processes.end_date IS NOT NULL
 		ORDER BY start_date DESC;`
-	rows, err := db.Query(query, CarID, ChargeID)
+	row := db.QueryRow(query, CarID, ChargeID)
 
-	// checking for errors in query
-	if err != nil {
+	// scanning row and putting values into the charge
+	err := row.Scan(
+		&charge.ChargeID,
+		&charge.StartDate,
+		&charge.EndDate,
+		&charge.Address,
+		&charge.ChargeEnergyAdded,
+		&charge.ChargeEnergyUsed,
+		&charge.Cost,
+		&charge.RangeIdeal.StartRange,
+		&charge.RangeIdeal.EndRange,
+		&charge.RangeRated.StartRange,
+		&charge.RangeRated.EndRange,
+		&charge.BatteryDetails.StartBatteryLevel,
+		&charge.BatteryDetails.EndBatteryLevel,
+		&charge.DurationMin,
+		&charge.DurationStr,
+		&charge.OutsideTempAvg,
+		&UnitsLength,
+		&UnitsTemperature,
+		&CarName,
+	)
+
+	switch err {
+	case sql.ErrNoRows:
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", "No rows were returned!", err.Error())
+		return
+	case nil:
+		// nothing wrong.. continuing
+		break
+	default:
 		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError1, err.Error())
 		return
 	}
 
-	// defer closing rows
-	defer rows.Close()
+	// converting values based of settings UnitsLength
+	if UnitsLength == "mi" {
+		charge.RangeIdeal.StartRange = kilometersToMiles(charge.RangeIdeal.StartRange)
+		charge.RangeIdeal.EndRange = kilometersToMiles(charge.RangeIdeal.EndRange)
+		charge.RangeRated.StartRange = kilometersToMiles(charge.RangeRated.StartRange)
+		charge.RangeRated.EndRange = kilometersToMiles(charge.RangeRated.EndRange)
+	}
+	// converting values based of settings UnitsTemperature
+	if UnitsTemperature == "F" {
+		charge.OutsideTempAvg = celsiusToFahrenheit(charge.OutsideTempAvg)
+	}
 
-	// looping through all results
-	for rows.Next() {
+	// adjusting to timezone differences from UTC to be userspecific
+	charge.StartDate = getTimeInTimeZone(charge.StartDate)
+	charge.EndDate = getTimeInTimeZone(charge.EndDate)
 
-		// scanning row and putting values into the charge
-		err = rows.Scan(
-			&charge.ChargeID,
-			&charge.StartDate,
-			&charge.EndDate,
-			&charge.Address,
-			&charge.ChargeEnergyAdded,
-			&charge.ChargeEnergyUsed,
-			&charge.Cost,
-			&charge.RangeIdeal.StartRange,
-			&charge.RangeIdeal.EndRange,
-			&charge.RangeRated.StartRange,
-			&charge.RangeRated.EndRange,
-			&charge.BatteryDetails.StartBatteryLevel,
-			&charge.BatteryDetails.EndBatteryLevel,
-			&charge.DurationMin,
-			&charge.DurationStr,
-			&charge.OutsideTempAvg,
-			&UnitsLength,
-			&UnitsTemperature,
-			&CarName,
-		)
-
-		// converting values based of settings UnitsLength
-		if UnitsLength == "mi" {
-			charge.RangeIdeal.StartRange = kilometersToMiles(charge.RangeIdeal.StartRange)
-			charge.RangeIdeal.EndRange = kilometersToMiles(charge.RangeIdeal.EndRange)
-			charge.RangeRated.StartRange = kilometersToMiles(charge.RangeRated.StartRange)
-			charge.RangeRated.EndRange = kilometersToMiles(charge.RangeRated.EndRange)
-		}
-		// converting values based of settings UnitsTemperature
-		if UnitsTemperature == "F" {
-			charge.OutsideTempAvg = celsiusToFahrenheit(charge.OutsideTempAvg)
-		}
-
-		// adjusting to timezone differences from UTC to be userspecific
-		charge.StartDate = getTimeInTimeZone(charge.StartDate)
-		charge.EndDate = getTimeInTimeZone(charge.EndDate)
-
-		// checking for errors after scanning
-		if err != nil {
-			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError1, err.Error())
-			return
-		}
-
-		// getting detailed charge data from database
-		query = `
+	// getting detailed charge data from database
+	query = `
  			SELECT
 				id AS detail_id,
 				date,
@@ -223,71 +219,70 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 			FROM charges
 			WHERE charging_process_id=$1
 			ORDER BY id ASC;`
-		rows, err = db.Query(query, ChargeID)
+	rows, err := db.Query(query, ChargeID)
 
-		// checking for errors in query
+	// checking for errors in query
+	if err != nil {
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError2, err.Error())
+		return
+	}
+
+	// defer closing rows
+	defer rows.Close()
+
+	// looping through all results
+	for rows.Next() {
+
+		// creating chargedetails object based on struct
+		chargedetails := ChargeDetails{}
+
+		// scanning row and putting values into the drive
+		err = rows.Scan(
+			&chargedetails.DetailID,
+			&chargedetails.Date,
+			&chargedetails.BatteryLevel,
+			&chargedetails.UsableBatteryLevel,
+			&chargedetails.ChargeEnergyAdded,
+			&chargedetails.NotEnoughPowerToHeat,
+			&chargedetails.ChargerDetails.ChargerActualCurrent,
+			&chargedetails.ChargerDetails.ChargerPhases,
+			&chargedetails.ChargerDetails.ChargerPilotCurrent,
+			&chargedetails.ChargerDetails.ChargerPower,
+			&chargedetails.ChargerDetails.ChargerVoltage,
+			&chargedetails.BatteryInfo.IdealBatteryRange,
+			&chargedetails.BatteryInfo.RatedBatteryRange,
+			&chargedetails.BatteryInfo.BatteryHeater,
+			&chargedetails.BatteryInfo.BatteryHeaterOn,
+			&chargedetails.BatteryInfo.BatteryHeaterNoPower,
+			&chargedetails.ConnChargeCable,
+			&chargedetails.FastChargerInfo.FastChargerPresent,
+			&chargedetails.FastChargerInfo.FastChargerBrand,
+			&chargedetails.FastChargerInfo.FastChargerType,
+			&chargedetails.OutsideTemp,
+		)
+
+		// converting values based of settings UnitsLength
+		if UnitsLength == "mi" {
+			chargedetails.BatteryInfo.IdealBatteryRange = kilometersToMiles(chargedetails.BatteryInfo.IdealBatteryRange)
+			chargedetails.BatteryInfo.RatedBatteryRange = kilometersToMiles(chargedetails.BatteryInfo.RatedBatteryRange)
+
+		}
+		// converting values based of settings UnitsTemperature
+		if UnitsTemperature == "F" {
+			chargedetails.OutsideTemp = celsiusToFahrenheit(chargedetails.OutsideTemp)
+		}
+		// adjusting to timezone differences from UTC to be userspecific
+		chargedetails.Date = getTimeInTimeZone(chargedetails.Date)
+
+		// checking for errors after scanning
 		if err != nil {
 			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError2, err.Error())
 			return
 		}
 
-		// defer closing rows
-		defer rows.Close()
-
-		// looping through all results
-		for rows.Next() {
-
-			// creating chargedetails object based on struct
-			chargedetails := ChargeDetails{}
-
-			// scanning row and putting values into the drive
-			err = rows.Scan(
-				&chargedetails.DetailID,
-				&chargedetails.Date,
-				&chargedetails.BatteryLevel,
-				&chargedetails.UsableBatteryLevel,
-				&chargedetails.ChargeEnergyAdded,
-				&chargedetails.NotEnoughPowerToHeat,
-				&chargedetails.ChargerDetails.ChargerActualCurrent,
-				&chargedetails.ChargerDetails.ChargerPhases,
-				&chargedetails.ChargerDetails.ChargerPilotCurrent,
-				&chargedetails.ChargerDetails.ChargerPower,
-				&chargedetails.ChargerDetails.ChargerVoltage,
-				&chargedetails.BatteryInfo.IdealBatteryRange,
-				&chargedetails.BatteryInfo.RatedBatteryRange,
-				&chargedetails.BatteryInfo.BatteryHeater,
-				&chargedetails.BatteryInfo.BatteryHeaterOn,
-				&chargedetails.BatteryInfo.BatteryHeaterNoPower,
-				&chargedetails.ConnChargeCable,
-				&chargedetails.FastChargerInfo.FastChargerPresent,
-				&chargedetails.FastChargerInfo.FastChargerBrand,
-				&chargedetails.FastChargerInfo.FastChargerType,
-				&chargedetails.OutsideTemp,
-			)
-
-			// converting values based of settings UnitsLength
-			if UnitsLength == "mi" {
-				chargedetails.BatteryInfo.IdealBatteryRange = kilometersToMiles(chargedetails.BatteryInfo.IdealBatteryRange)
-				chargedetails.BatteryInfo.RatedBatteryRange = kilometersToMiles(chargedetails.BatteryInfo.RatedBatteryRange)
-
-			}
-			// converting values based of settings UnitsTemperature
-			if UnitsTemperature == "F" {
-				chargedetails.OutsideTemp = celsiusToFahrenheit(chargedetails.OutsideTemp)
-			}
-			// adjusting to timezone differences from UTC to be userspecific
-			chargedetails.Date = getTimeInTimeZone(chargedetails.Date)
-
-			// checking for errors after scanning
-			if err != nil {
-				TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError2, err.Error())
-				return
-			}
-
-			// appending drive to ChargeData
-			ChargeDetailsData = append(ChargeDetailsData, chargedetails)
-			charge.ChargeDetails = ChargeDetailsData
-		}
+		// appending drive to ChargeData
+		ChargeDetailsData = append(ChargeDetailsData, chargedetails)
+		charge.ChargeDetails = ChargeDetailsData
 	}
 
 	// checking for errors in the rows result
