@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.13.1] - 2022-01-12
+
+### Changed
+* bump golang from 1.17.5 to 1.17.6 ([#133](https://github.com/tobiasehlert/teslamateapi/pull/133) by [dependabot](https://github.com/dependabot))
+* removing code smell from SonarCloud ([#132](https://github.com/tobiasehlert/teslamateapi/pull/132) by [tobiasehlert](https://github.com/tobiasehlert))
+
 ## [1.13.0] - 2022-01-05
 
 ### Changed
@@ -264,6 +270,7 @@
 
 Initial commit
 
+[1.13.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.13.0...v1.13.1
 [1.13.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.12.1...v1.13.0
 [1.12.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.12.0...v1.12.1
 [1.12.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.11.1...v1.12.0
