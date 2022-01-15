@@ -41,8 +41,10 @@ func TeslaMateAPICarsUpdatesV1(c *gin.Context) {
 	}
 
 	// creating required vars
-	var UpdatesData []Updates
-	var CarData Car
+	var (
+		UpdatesData []Updates
+		CarData     Car
+	)
 
 	// calculate offset based on page (page 0 is not possible, since first page is minimum 1)
 	if ResultPage > 0 {

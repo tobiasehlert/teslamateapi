@@ -11,8 +11,10 @@ import (
 func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 
 	// define error messages
-	var CarsChargesDetailsError1 = "Unable to load charge."
-	var CarsChargesDetailsError2 = "Unable to load charge details."
+	var (
+		CarsChargesDetailsError1 = "Unable to load charge."
+		CarsChargesDetailsError2 = "Unable to load charge details."
+	)
 
 	// getting CarID and ChargeID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))
@@ -105,9 +107,11 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 	}
 
 	// creating required vars
-	var charge Charge
-	var ChargeDetailsData []ChargeDetails
-	var UnitsLength, UnitsTemperature, CarName string
+	var (
+		charge                                 Charge
+		ChargeDetailsData                      []ChargeDetails
+		UnitsLength, UnitsTemperature, CarName string
+	)
 
 	// getting data from database
 	query := `

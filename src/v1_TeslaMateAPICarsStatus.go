@@ -160,8 +160,10 @@ func startMQTT() (*statusCache, error) {
 // newMessage - called by mqtt package when new message received
 func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 	// topic is in the format teslamateMQTT_NAMESPACE/cars/carID/display_name
-	var carID int
-	var MqttTopic string
+	var (
+		carID     int
+		MqttTopic string
+	)
 	_, err := fmt.Sscanf(msg.Topic(), s.topicScan, &carID, &MqttTopic)
 	if err != nil {
 		log.Printf("[warning] TeslaMateAPICarsStatusV1 unexpected topic format (%s) - ignoring message: %v", msg.Topic(), err)
@@ -409,9 +411,11 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	}
 
 	// creating required vars
-	var CarData Car
-	var MQTTInformationData MQTTInformation
-	var UnitsLength, UnitsTemperature string
+	var (
+		CarData                       Car
+		MQTTInformationData           MQTTInformation
+		UnitsLength, UnitsTemperature string
+	)
 
 	// getting data from database (assume that carID is unique!)
 	query := `
