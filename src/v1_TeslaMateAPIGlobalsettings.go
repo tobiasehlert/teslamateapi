@@ -52,7 +52,7 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 	}
 
 	// creating required vars
-	var GlobalSetting GlobalSettings
+	var globalSetting GlobalSettings
 
 	// getting data from database
 	query := `
@@ -70,17 +70,17 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 		LIMIT 1;`
 	row := db.QueryRow(query)
 
-	// scanning row and putting values into the GlobalSetting
+	// scanning row and putting values into the globalSetting
 	err := row.Scan(
-		&GlobalSetting.SettingID,
-		&GlobalSetting.AccountInfo.InsertedAt,
-		&GlobalSetting.AccountInfo.UpdatedAt,
-		&GlobalSetting.TeslaMateUnits.UnitsLength,
-		&GlobalSetting.TeslaMateUnits.UnitsTemperature,
-		&GlobalSetting.TeslaMateGUI.PreferredRange,
-		&GlobalSetting.TeslaMateGUI.Language,
-		&GlobalSetting.TeslaMateURLs.BaseURL,
-		&GlobalSetting.TeslaMateURLs.GrafanaURL,
+		&globalSetting.SettingID,
+		&globalSetting.AccountInfo.InsertedAt,
+		&globalSetting.AccountInfo.UpdatedAt,
+		&globalSetting.TeslaMateUnits.UnitsLength,
+		&globalSetting.TeslaMateUnits.UnitsTemperature,
+		&globalSetting.TeslaMateGUI.PreferredRange,
+		&globalSetting.TeslaMateGUI.Language,
+		&globalSetting.TeslaMateURLs.BaseURL,
+		&globalSetting.TeslaMateURLs.GrafanaURL,
 	)
 
 	switch err {
@@ -96,14 +96,14 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 	}
 
 	// adjusting to timezone differences from UTC to be userspecific
-	GlobalSetting.AccountInfo.InsertedAt = getTimeInTimeZone(GlobalSetting.AccountInfo.InsertedAt)
-	GlobalSetting.AccountInfo.UpdatedAt = getTimeInTimeZone(GlobalSetting.AccountInfo.UpdatedAt)
+	globalSetting.AccountInfo.InsertedAt = getTimeInTimeZone(globalSetting.AccountInfo.InsertedAt)
+	globalSetting.AccountInfo.UpdatedAt = getTimeInTimeZone(globalSetting.AccountInfo.UpdatedAt)
 
 	//
 	// build the data-blob
 	jsonData := JSONData{
 		Data{
-			GlobalSettings: GlobalSetting,
+			GlobalSettings: globalSetting,
 		},
 	}
 
