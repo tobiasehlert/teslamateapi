@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -9,8 +11,10 @@ import (
 func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 
 	// define error messages
-	var CarsDrivesDetailsError1 = "Unable to load drive."
-	var CarsDrivesDetailsError2 = "Unable to load drive details."
+	var (
+		CarsDrivesDetailsError1 = "Unable to load drive."
+		CarsDrivesDetailsError2 = "Unable to load drive details."
+	)
 
 	// getting CarID and DriveID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))
@@ -116,9 +120,11 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 	}
 
 	// creating required vars
-	var drive Drive
-	var DriveDetailsData []DriveDetails
-	var UnitsLength, UnitsTemperature, CarName string
+	var (
+		drive                                  Drive
+		DriveDetailsData                       []DriveDetails
+		UnitsLength, UnitsTemperature, CarName string
+	)
 
 	// getting data from database
 	query := `
@@ -163,89 +169,80 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 		LEFT JOIN geofences start_geofence ON start_geofence_id = start_geofence.id
 		LEFT JOIN geofences end_geofence ON end_geofence_id = end_geofence.id
 		WHERE drives.car_id=$1 AND end_date IS NOT NULL AND drives.id = $2;`
-	rows, err := db.Query(query, CarID, DriveID)
+	row := db.QueryRow(query, CarID, DriveID)
 
-	// checking for errors in query
-	if err != nil {
+	// scanning row and putting values into the drive
+	err := row.Scan(
+		&drive.DriveID,
+		&drive.StartDate,
+		&drive.EndDate,
+		&drive.StartAddress,
+		&drive.EndAddress,
+		&drive.OdometerDetails.OdometerStart,
+		&drive.OdometerDetails.OdometerEnd,
+		&drive.OdometerDetails.OdometerDistance,
+		&drive.DurationMin,
+		&drive.DurationStr,
+		&drive.SpeedMax,
+		&drive.SpeedAvg,
+		&drive.PowerMax,
+		&drive.PowerMin,
+		&drive.BatteryDetails.StartUsableBatteryLevel,
+		&drive.BatteryDetails.StartBatteryLevel,
+		&drive.BatteryDetails.EndUsableBatteryLevel,
+		&drive.BatteryDetails.EndBatteryLevel,
+		&drive.BatteryDetails.ReducedRange,
+		&drive.BatteryDetails.IsSufficientlyPrecise,
+		&drive.RangeIdeal.StartRange,
+		&drive.RangeIdeal.EndRange,
+		&drive.RangeIdeal.RangeDiff,
+		&drive.RangeRated.StartRange,
+		&drive.RangeRated.EndRange,
+		&drive.RangeRated.RangeDiff,
+		&drive.OutsideTempAvg,
+		&drive.InsideTempAvg,
+		&UnitsLength,
+		&UnitsTemperature,
+		&CarName,
+	)
+
+	switch err {
+	case sql.ErrNoRows:
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", "No rows were returned!", err.Error())
+		return
+	case nil:
+		// nothing wrong.. continuing
+		break
+	default:
 		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", CarsDrivesDetailsError1, err.Error())
 		return
 	}
 
-	// defer closing rows
-	defer rows.Close()
+	// converting values based of settings UnitsLength
+	if UnitsLength == "mi" {
+		drive.OdometerDetails.OdometerStart = kilometersToMiles(drive.OdometerDetails.OdometerStart)
+		drive.OdometerDetails.OdometerEnd = kilometersToMiles(drive.OdometerDetails.OdometerEnd)
+		drive.OdometerDetails.OdometerDistance = kilometersToMiles(drive.OdometerDetails.OdometerDistance)
+		drive.SpeedMax = int(kilometersToMiles(float64(drive.SpeedMax)))
+		drive.SpeedAvg = kilometersToMiles(drive.SpeedAvg)
+		drive.RangeIdeal.StartRange = kilometersToMiles(drive.RangeIdeal.StartRange)
+		drive.RangeIdeal.EndRange = kilometersToMiles(drive.RangeIdeal.EndRange)
+		drive.RangeIdeal.RangeDiff = kilometersToMiles(drive.RangeIdeal.RangeDiff)
+		drive.RangeRated.StartRange = kilometersToMiles(drive.RangeRated.StartRange)
+		drive.RangeRated.EndRange = kilometersToMiles(drive.RangeRated.EndRange)
+		drive.RangeRated.RangeDiff = kilometersToMiles(drive.RangeRated.RangeDiff)
+	}
+	// converting values based of settings UnitsTemperature
+	if UnitsTemperature == "F" {
+		drive.OutsideTempAvg = celsiusToFahrenheit(drive.OutsideTempAvg)
+		drive.InsideTempAvg = celsiusToFahrenheit(drive.InsideTempAvg)
+	}
+	// adjusting to timezone differences from UTC to be userspecific
+	drive.StartDate = getTimeInTimeZone(drive.StartDate)
+	drive.EndDate = getTimeInTimeZone(drive.EndDate)
 
-	// looping through all results
-	for rows.Next() {
-
-		// creating drive object based on struct
-		drive := Drive{}
-
-		// scanning row and putting values into the drive
-		err = rows.Scan(
-			&drive.DriveID,
-			&drive.StartDate,
-			&drive.EndDate,
-			&drive.StartAddress,
-			&drive.EndAddress,
-			&drive.OdometerDetails.OdometerStart,
-			&drive.OdometerDetails.OdometerEnd,
-			&drive.OdometerDetails.OdometerDistance,
-			&drive.DurationMin,
-			&drive.DurationStr,
-			&drive.SpeedMax,
-			&drive.SpeedAvg,
-			&drive.PowerMax,
-			&drive.PowerMin,
-			&drive.BatteryDetails.StartUsableBatteryLevel,
-			&drive.BatteryDetails.StartBatteryLevel,
-			&drive.BatteryDetails.EndUsableBatteryLevel,
-			&drive.BatteryDetails.EndBatteryLevel,
-			&drive.BatteryDetails.ReducedRange,
-			&drive.BatteryDetails.IsSufficientlyPrecise,
-			&drive.RangeIdeal.StartRange,
-			&drive.RangeIdeal.EndRange,
-			&drive.RangeIdeal.RangeDiff,
-			&drive.RangeRated.StartRange,
-			&drive.RangeRated.EndRange,
-			&drive.RangeRated.RangeDiff,
-			&drive.OutsideTempAvg,
-			&drive.InsideTempAvg,
-			&UnitsLength,
-			&UnitsTemperature,
-			&CarName,
-		)
-
-		// converting values based of settings UnitsLength
-		if UnitsLength == "mi" {
-			drive.OdometerDetails.OdometerStart = kilometersToMiles(drive.OdometerDetails.OdometerStart)
-			drive.OdometerDetails.OdometerEnd = kilometersToMiles(drive.OdometerDetails.OdometerEnd)
-			drive.OdometerDetails.OdometerDistance = kilometersToMiles(drive.OdometerDetails.OdometerDistance)
-			drive.SpeedMax = int(kilometersToMiles(float64(drive.SpeedMax)))
-			drive.SpeedAvg = kilometersToMiles(drive.SpeedAvg)
-			drive.RangeIdeal.StartRange = kilometersToMiles(drive.RangeIdeal.StartRange)
-			drive.RangeIdeal.EndRange = kilometersToMiles(drive.RangeIdeal.EndRange)
-			drive.RangeIdeal.RangeDiff = kilometersToMiles(drive.RangeIdeal.RangeDiff)
-			drive.RangeRated.StartRange = kilometersToMiles(drive.RangeRated.StartRange)
-			drive.RangeRated.EndRange = kilometersToMiles(drive.RangeRated.EndRange)
-			drive.RangeRated.RangeDiff = kilometersToMiles(drive.RangeRated.RangeDiff)
-		}
-		// converting values based of settings UnitsTemperature
-		if UnitsTemperature == "F" {
-			drive.OutsideTempAvg = celsiusToFahrenheit(drive.OutsideTempAvg)
-			drive.InsideTempAvg = celsiusToFahrenheit(drive.InsideTempAvg)
-		}
-		// adjusting to timezone differences from UTC to be userspecific
-		drive.StartDate = getTimeInTimeZone(drive.StartDate)
-		drive.EndDate = getTimeInTimeZone(drive.EndDate)
-
-		// checking for errors after scanning
-		if err != nil {
-			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", CarsDrivesDetailsError1, err.Error())
-			return
-		}
-
-		// getting detailed drive data from database
-		query = `
+	// getting detailed drive data from database
+	query = `
 		 			SELECT
 						id AS detail_id,
 						date,
@@ -274,87 +271,78 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 		 			FROM positions
 		 			WHERE drive_id = $1
 		 			ORDER BY id ASC;`
-		rows, err = db.Query(query, DriveID)
+	rows, err := db.Query(query, DriveID)
 
-		// checking for errors in query
+	// checking for errors in query
+	if err != nil {
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", CarsDrivesDetailsError2, err.Error())
+		return
+	}
+
+	// defer closing rows
+	defer rows.Close()
+
+	// looping through all results
+	for rows.Next() {
+
+		// creating drivedetails object based on struct
+		drivedetails := DriveDetails{}
+
+		// scanning row and putting values into the drive
+		err = rows.Scan(
+			&drivedetails.DetailID,
+			&drivedetails.Date,
+			&drivedetails.Latitude,
+			&drivedetails.Longitude,
+			&drivedetails.Speed,
+			&drivedetails.Power,
+			&drivedetails.Odometer,
+			&drivedetails.BatteryLevel,
+			&drivedetails.UsableBatteryLevel,
+			&drivedetails.Elevation,
+			&drivedetails.ClimateInfo.InsideTemp,
+			&drivedetails.ClimateInfo.OutsideTemp,
+			&drivedetails.ClimateInfo.IsClimateOn,
+			&drivedetails.ClimateInfo.FanStatus,
+			&drivedetails.ClimateInfo.DriverTempSetting,
+			&drivedetails.ClimateInfo.PassengerTempSetting,
+			&drivedetails.ClimateInfo.IsRearDefrosterOn,
+			&drivedetails.ClimateInfo.IsFrontDefrosterOn,
+			&drivedetails.BatteryInfo.EstBatteryRange,
+			&drivedetails.BatteryInfo.IdealBatteryRange,
+			&drivedetails.BatteryInfo.RatedBatteryRange,
+			&drivedetails.BatteryInfo.BatteryHeater,
+			&drivedetails.BatteryInfo.BatteryHeaterOn,
+			&drivedetails.BatteryInfo.BatteryHeaterNoPower,
+		)
+
+		// converting values based of settings UnitsLength
+		if UnitsLength == "mi" {
+			drivedetails.Odometer = kilometersToMiles(drivedetails.Odometer)
+			drivedetails.Speed = int(kilometersToMiles(float64(drivedetails.Speed)))
+			drivedetails.BatteryInfo.EstBatteryRange = kilometersToMilesNilSupport(drivedetails.BatteryInfo.EstBatteryRange)
+			drivedetails.BatteryInfo.IdealBatteryRange = kilometersToMilesNilSupport(drivedetails.BatteryInfo.IdealBatteryRange)
+			drivedetails.BatteryInfo.RatedBatteryRange = kilometersToMilesNilSupport(drivedetails.BatteryInfo.RatedBatteryRange)
+		}
+		// converting values based of settings UnitsTemperature
+		if UnitsTemperature == "F" {
+			drivedetails.ClimateInfo.InsideTemp = celsiusToFahrenheitNilSupport(drivedetails.ClimateInfo.InsideTemp)
+			drivedetails.ClimateInfo.OutsideTemp = celsiusToFahrenheitNilSupport(drivedetails.ClimateInfo.OutsideTemp)
+			drivedetails.ClimateInfo.DriverTempSetting = celsiusToFahrenheitNilSupport(drivedetails.ClimateInfo.DriverTempSetting)
+			drivedetails.ClimateInfo.PassengerTempSetting = celsiusToFahrenheitNilSupport(drivedetails.ClimateInfo.PassengerTempSetting)
+		}
+		// adjusting to timezone differences from UTC to be userspecific
+		drivedetails.Date = getTimeInTimeZone(drivedetails.Date)
+
+		// checking for errors after scanning
 		if err != nil {
 			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", CarsDrivesDetailsError2, err.Error())
 			return
 		}
 
-		// defer closing rows
-		defer rows.Close()
-
-		// looping through all results
-		for rows.Next() {
-
-			// creating drivedetails object based on struct
-			drivedetails := DriveDetails{}
-
-			// scanning row and putting values into the drive
-			err = rows.Scan(
-				&drivedetails.DetailID,
-				&drivedetails.Date,
-				&drivedetails.Latitude,
-				&drivedetails.Longitude,
-				&drivedetails.Speed,
-				&drivedetails.Power,
-				&drivedetails.Odometer,
-				&drivedetails.BatteryLevel,
-				&drivedetails.UsableBatteryLevel,
-				&drivedetails.Elevation,
-				&drivedetails.ClimateInfo.InsideTemp,
-				&drivedetails.ClimateInfo.OutsideTemp,
-				&drivedetails.ClimateInfo.IsClimateOn,
-				&drivedetails.ClimateInfo.FanStatus,
-				&drivedetails.ClimateInfo.DriverTempSetting,
-				&drivedetails.ClimateInfo.PassengerTempSetting,
-				&drivedetails.ClimateInfo.IsRearDefrosterOn,
-				&drivedetails.ClimateInfo.IsFrontDefrosterOn,
-				&drivedetails.BatteryInfo.EstBatteryRange,
-				&drivedetails.BatteryInfo.IdealBatteryRange,
-				&drivedetails.BatteryInfo.RatedBatteryRange,
-				&drivedetails.BatteryInfo.BatteryHeater,
-				&drivedetails.BatteryInfo.BatteryHeaterOn,
-				&drivedetails.BatteryInfo.BatteryHeaterNoPower,
-			)
-
-			// converting values based of settings UnitsLength
-			if UnitsLength == "mi" {
-				drivedetails.Odometer = kilometersToMiles(drivedetails.Odometer)
-				drivedetails.Speed = int(kilometersToMiles(float64(drivedetails.Speed)))
-				drivedetails.BatteryInfo.EstBatteryRange = kilometersToMilesNilSupport(drivedetails.BatteryInfo.EstBatteryRange)
-				drivedetails.BatteryInfo.IdealBatteryRange = kilometersToMilesNilSupport(drivedetails.BatteryInfo.IdealBatteryRange)
-				drivedetails.BatteryInfo.RatedBatteryRange = kilometersToMilesNilSupport(drivedetails.BatteryInfo.RatedBatteryRange)
-			}
-			// converting values based of settings UnitsTemperature
-			if UnitsTemperature == "F" {
-				drivedetails.ClimateInfo.InsideTemp = celsiusToFahrenheitNilSupport(drivedetails.ClimateInfo.InsideTemp)
-				drivedetails.ClimateInfo.OutsideTemp = celsiusToFahrenheitNilSupport(drivedetails.ClimateInfo.OutsideTemp)
-				drivedetails.ClimateInfo.DriverTempSetting = celsiusToFahrenheitNilSupport(drivedetails.ClimateInfo.DriverTempSetting)
-				drivedetails.ClimateInfo.PassengerTempSetting = celsiusToFahrenheitNilSupport(drivedetails.ClimateInfo.PassengerTempSetting)
-			}
-			// adjusting to timezone differences from UTC to be userspecific
-			drivedetails.Date = getTimeInTimeZone(drivedetails.Date)
-
-			// checking for errors after scanning
-			if err != nil {
-				TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", CarsDrivesDetailsError2, err.Error())
-				return
-			}
-
-			// appending drive to drive
-			DriveDetailsData = append(DriveDetailsData, drivedetails)
-			drive.DriveDetails = DriveDetailsData
-		}
-
-		// checking for errors in the rows result
-		err = rows.Err()
-		if err != nil {
-			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesDetailsV1", CarsDrivesDetailsError2, err.Error())
-			return
-		}
-
+		// appending drive to drive
+		DriveDetailsData = append(DriveDetailsData, drivedetails)
+		drive.DriveDetails = DriveDetailsData
 	}
 
 	// checking for errors in the rows result

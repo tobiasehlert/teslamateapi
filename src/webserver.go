@@ -14,17 +14,19 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// setting TeslaMateApi version number
-var apiVersion = "unspecified"
+var (
+	// setting TeslaMateApi version number
+	apiVersion = "unspecified"
 
-// defining db var
-var db *sql.DB
+	// defining db var
+	db *sql.DB
 
-// defining envToken that contains API_TOKEN value
-var envToken string
+	// defining envToken that contains API_TOKEN value
+	envToken string
 
-// list of allowed commands
-var allowList []string
+	// list of allowed commands
+	allowList []string
+)
 
 // main function
 func main() {

@@ -16,8 +16,10 @@ import (
 func TeslaMateAPICarsLoggingV1(c *gin.Context) {
 
 	// creating required vars
-	var jsonData map[string]interface{}
-	var err error
+	var (
+		jsonData map[string]interface{}
+		err      error
+	)
 
 	// check if commands are enabled.. if not we need to abort
 	if !getEnvAsBool("ENABLE_COMMANDS", false) {

@@ -142,10 +142,8 @@ func initCommandAllowList() {
 	for key := range CommandList {
 		// checking if env is set from key or if all should be allowed
 		if getEnvAsBool(key, false) || allowAll {
-			// looping over all values and appending to allowList
-			for _, values := range CommandList[key] {
-				allowList = append(allowList, string(values))
-			}
+			// appending to allowList
+			allowList = append(allowList, strings.Join(CommandList[key], " "))
 		}
 	}
 

@@ -15,9 +15,11 @@ import (
 func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	// creating required vars
-	var TeslaAccessToken, TeslaVehicleID string
-	var jsonData map[string]interface{}
-	var err error
+	var (
+		TeslaAccessToken, TeslaVehicleID string
+		jsonData                         map[string]interface{}
+		err                              error
+	)
 
 	// check if commands are enabled.. if not we need to abort
 	if !getEnvAsBool("ENABLE_COMMANDS", false) {
