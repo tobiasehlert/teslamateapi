@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.13.2] - 2022-01-21
+
+### Changed
+* bump docker/build-push-action from 2.7.0 to 2.8.0 ([#135](https://github.com/tobiasehlert/teslamateapi/pull/135) by [dependabot](https://github.com/dependabot))
+
+### Fixed
+* slimming down on the codebase and fixing bug with drivedetails view ([#134](https://github.com/tobiasehlert/teslamateapi/pull/134) by [tobiasehlert](https://github.com/tobiasehlert))
+
 ## [1.13.1] - 2022-01-12
 
 ### Changed
@@ -270,6 +278,7 @@
 
 Initial commit
 
+[1.13.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.13.1...v1.13.2
 [1.13.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.13.0...v1.13.1
 [1.13.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.12.1...v1.13.0
 [1.12.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.12.0...v1.12.1
