@@ -143,7 +143,7 @@ func initCommandAllowList() {
 		// checking if env is set from key or if all should be allowed
 		if getEnvAsBool(key, false) || allowAll {
 			// appending to allowList
-			allowList = append(allowList, strings.Join(CommandList[key], " "))
+			allowList = append(allowList, CommandList[key]...)
 		}
 	}
 
