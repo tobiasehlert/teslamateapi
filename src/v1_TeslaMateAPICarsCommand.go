@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -16,6 +17,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	// creating required vars
 	var (
+		CarsCommandsError1               = "Unable to load cars."
 		TeslaAccessToken, TeslaVehicleID string
 		jsonData                         map[string]interface{}
 		err                              error
@@ -78,24 +80,23 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 		FROM cars
 		WHERE id = $1
 		LIMIT 1;`
-	rows, err := db.Query(query, CarID)
+	row := db.QueryRow(query, CarID)
 
-	// checking for errors in query
-	if err != nil {
-		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsCommandV1", "Unable to load cars.", err.Error())
+	err = row.Scan(
+		&TeslaVehicleID,
+		&TeslaAccessToken,
+	)
+
+	switch err {
+	case sql.ErrNoRows:
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsCommandV1", "No rows were returned!", err.Error())
 		return
-	}
-
-	// defer closing rows
-	defer rows.Close()
-
-	// looping through all results (even if it's only one..)
-	for rows.Next() {
-		// scanning row and putting values into the drive
-		err = rows.Scan(
-			&TeslaVehicleID,
-			&TeslaAccessToken,
-		)
+	case nil:
+		// nothing wrong.. continuing
+		break
+	default:
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsCommandV1", CarsCommandsError1, err.Error())
+		return
 	}
 
 	// checking for errors in query when doing scan action
