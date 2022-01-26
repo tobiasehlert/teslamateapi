@@ -99,12 +99,16 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 		return
 	}
 
-	// checking for errors in query when doing scan action
-	if err != nil {
-		log.Println("[error] TeslaMateAPICarsCommandV1 error in sql query:", err)
-		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsCommandV1", gin.H{"error": "internal sql query error"})
+	// load ENCRYPTION_KEY environment variable
+	teslaMateEncryptionKey := getEnv("ENCRYPTION_KEY", "")
+	if teslaMateEncryptionKey == "" {
+		log.Println("[error] TeslaMateAPICarsCommandV1 can't get ENCRYPTION_KEY.. will fail to perform command.")
+		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsCommandV1", gin.H{"error": "missing ENCRYPTION_KEY env variable"})
 		return
 	}
+
+	// decrypt access token
+	TeslaAccessToken = decryptAccessToken(TeslaAccessToken, teslaMateEncryptionKey)
 
 	client := &http.Client{}
 	req, _ := http.NewRequest(http.MethodPost, "https://owner-api.teslamotors.com/api/1/vehicles/"+TeslaVehicleID+command, strings.NewReader(string(reqBody)))
