@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.13.3] - 2022-01-27
+
+### Fixed
+* fix append of commands to allowList ([#142](https://github.com/tobiasehlert/teslamateapi/pull/142) by [tobiasehlert](https://github.com/tobiasehlert))
+
 ## [1.13.2] - 2022-01-21
 
 ### Changed
@@ -278,6 +283,7 @@
 
 Initial commit
 
+[1.13.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.13.2...v1.13.3
 [1.13.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.13.1...v1.13.2
 [1.13.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.13.0...v1.13.1
 [1.13.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.12.1...v1.13.0
