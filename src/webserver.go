@@ -71,6 +71,11 @@ func main() {
 	// gin middleware to enable GZIP support
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 
+	// set 404 not found page
+	r.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
+	})
+
 	// root endpoint telling API is running
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi container runnnig..", "path": r.BasePath()})
