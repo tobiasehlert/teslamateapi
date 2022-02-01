@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -66,6 +67,9 @@ func main() {
 
 	// kicking off Gin in value r
 	r := gin.Default()
+
+	// gin middleware to enable GZIP support
+	r.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	// root endpoint telling API is running
 	r.GET("/", func(c *gin.Context) {
