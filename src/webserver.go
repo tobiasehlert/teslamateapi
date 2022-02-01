@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"strconv"
 	"time"
 
@@ -138,8 +139,33 @@ func main() {
 	r.GET("/cars/:CarID/updates", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, BasePathV1+c.Request.RequestURI) })
 	r.GET("/globalsettings", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, BasePathV1+c.Request.RequestURI) })
 
-	// run this and serve on 0.0.0.0:8080
-	r.Run(":8080")
+	// build the http server
+	server := &http.Server{
+		Addr:    ":8080", // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+		Handler: r,
+	}
+
+	// graceful shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+
+	// we run a go routine that will receive the shutdown input
+	go func() {
+		<-quit
+		log.Println("[info] TeslaMateAPI received shutdown input")
+		if err := server.Close(); err != nil {
+			log.Fatal("[error] TeslaMateAPI server close error:", err)
+		}
+	}()
+
+	// run the server
+	if err := server.ListenAndServe(); err != nil {
+		if err == http.ErrServerClosed {
+			log.Println("[info] TeslaMateAPI server gracefully shut down")
+		} else {
+			log.Fatal("[error] TeslaMateAPI server closed unexpectedly")
+		}
+	}
 }
 
 // initDBconnection func
