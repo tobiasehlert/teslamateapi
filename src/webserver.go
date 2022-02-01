@@ -76,6 +76,9 @@ func main() {
 		c.JSON(http.StatusNotFound, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
 	})
 
+	// disable proxy feature of gin
+	_ = r.SetTrustedProxies(nil)
+
 	// root endpoint telling API is running
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi container runnnig..", "path": r.BasePath()})
