@@ -61,6 +61,8 @@ type statusInfo struct {
 	MQTTDataChargerPhases              int
 	MQTTDataChargerPower               float64
 	MQTTDataChargerVoltage             int
+	MQTTDataChargeCurrentRequest       int
+	MQTTDataChargeCurrentRequestMax    int
 	MQTTDataScheduledChargingStartTime string
 	MQTTDataTimeToFullCharge           float64
 }
@@ -271,6 +273,10 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		stat.MQTTDataChargerPower = convertStringToFloat(string(msg.Payload()))
 	case "charger_voltage":
 		stat.MQTTDataChargerVoltage = convertStringToInteger(string(msg.Payload()))
+	case "charge_current_request":
+		stat.MQTTDataChargeCurrentRequest = convertStringToInteger(string(msg.Payload()))
+	case "charge_current_request_max":
+		stat.MQTTDataChargeCurrentRequestMax = convertStringToInteger(string(msg.Payload()))
 	case "scheduled_charging_start_time":
 		stat.MQTTDataScheduledChargingStartTime = string(msg.Payload())
 	case "time_to_full_charge":
@@ -355,6 +361,8 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 		ChargerPhases              int     `json:"charger_phases"`                // 3 - Number of charger power phases (1-3)
 		ChargerPower               float64 `json:"charger_power"`                 // 48.9 - Charger Power
 		ChargerVoltage             int     `json:"charger_voltage"`               // 240 - Charger Voltage
+		ChargeCurrentRequest       int     `json:"charge_current_request"`        // 40 - How many amps the car wants
+		ChargeCurrentRequestMax    int     `json:"charge_current_request_max"`    // 40 - How many amps the car can have
 		ScheduledChargingStartTime string  `json:"scheduled_charging_start_time"` // 2019-02-29T23:00:07Z - Start time of the scheduled charge
 		TimeToFullCharge           float64 `json:"time_to_full_charge"`           // 1.83 - Hours remaining to full charge
 	}
@@ -484,6 +492,8 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	MQTTInformationData.ChargingDetails.ChargerPhases = stat.MQTTDataChargerPhases
 	MQTTInformationData.ChargingDetails.ChargerPower = stat.MQTTDataChargerPower
 	MQTTInformationData.ChargingDetails.ChargerVoltage = stat.MQTTDataChargerVoltage
+	MQTTInformationData.ChargingDetails.ChargeCurrentRequest = stat.MQTTDataChargeCurrentRequest
+	MQTTInformationData.ChargingDetails.ChargeCurrentRequestMax = stat.MQTTDataChargeCurrentRequestMax
 	MQTTInformationData.ChargingDetails.ScheduledChargingStartTime = stat.MQTTDataScheduledChargingStartTime
 	MQTTInformationData.ChargingDetails.TimeToFullCharge = stat.MQTTDataTimeToFullCharge
 
