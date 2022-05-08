@@ -8,7 +8,7 @@ import (
 )
 
 // decryptAccessToken funct to decrypt tokens from database
-func decryptAccessToken(data string, encryption_key string) string {
+func decryptAccessToken(data string, encryptionKey string) string {
 
 	/*
 	   From Adrian....
@@ -32,7 +32,7 @@ func decryptAccessToken(data string, encryption_key string) string {
 	*/
 
 	h := sha256.New()
-	h.Write([]byte(encryption_key))
+	h.Write([]byte(encryptionKey))
 	fmt.Printf("key: %x \n", h.Sum(nil))
 
 	key := h.Sum(nil)
@@ -42,13 +42,13 @@ func decryptAccessToken(data string, encryption_key string) string {
 	}
 
 	// first byte
-	key_type := int([]rune(data)[0])
+	keyType := int([]rune(data)[0])
 	// second byte
-	key_len := int([]rune(data)[1])
-	key_tag := data[2 : 2+key_len]
-	fmt.Printf("Type: %d \n", key_type)
-	fmt.Printf("Length: %d \n", key_len)
-	fmt.Printf("Key Tag: %s \n", key_tag)
+	keyLen := int([]rune(data)[1])
+	keyTag := data[2 : 2+keyLen]
+	fmt.Printf("Type: %d \n", keyType)
+	fmt.Printf("Length: %d \n", keyLen)
+	fmt.Printf("Key Tag: %s \n", keyTag)
 
 	/*
 	   With AES.GCM, 12-byte IV length is necessary for interoperability reasons.
@@ -57,10 +57,10 @@ func decryptAccessToken(data string, encryption_key string) string {
 	   https://medium.com/@fridakahsas/salt-nonces-and-ivs-whats-the-difference-d7a44724a447#:~:text=IV%20and%20nonce%20are%20often,an%20IV%20must%20be%20random.
 	*/
 
-	nonce := data[2+key_len : 2+key_len+12]
+	nonce := data[2+keyLen : 2+keyLen+12]
 	fmt.Printf("IV (hex): %x \n", nonce)
 
-	ciphertag := data[2+key_len+12 : 2+key_len+12+16]
+	ciphertag := data[2+keyLen+12 : 2+keyLen+12+16]
 	fmt.Printf("Ciphertag (hex): %x \n", ciphertag)
 
 	aesgcm, err := cipher.NewGCMWithTagSize(block, 16)
@@ -70,10 +70,10 @@ func decryptAccessToken(data string, encryption_key string) string {
 
 	// https://stackoverflow.com/a/68353192
 	// golang aes expects cipertag to append ciphertext....
-	ciphertext_tag := data[2+key_len+12+16:] + data[2+key_len+12:2+key_len+12+16]
+	ciphertextTag := data[2+keyLen+12+16:] + data[2+keyLen+12:2+keyLen+12+16]
 
 	// AES256GCM -- Additional Authenticated Data (AAD)
-	plaintext, err := aesgcm.Open(nil, []byte(nonce), []byte(ciphertext_tag), []byte("AES256GCM"))
+	plaintext, err := aesgcm.Open(nil, []byte(nonce), []byte(ciphertextTag), []byte("AES256GCM"))
 	if err != nil {
 		panic(err.Error())
 	}
