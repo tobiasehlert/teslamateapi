@@ -4,7 +4,9 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/sha256"
-	"fmt"
+	"log"
+
+	"github.com/gin-gonic/gin"
 )
 
 // decryptAccessToken funct to decrypt tokens from database
@@ -33,7 +35,9 @@ func decryptAccessToken(data string, encryptionKey string) string {
 
 	h := sha256.New()
 	h.Write([]byte(encryptionKey))
-	fmt.Printf("key: %x \n", h.Sum(nil))
+	if gin.IsDebugging() {
+		log.Printf("[debug] decryptAccessToken - Key: %x \n", h.Sum(nil))
+	}
 
 	key := h.Sum(nil)
 	block, err := aes.NewCipher(key)
@@ -46,9 +50,11 @@ func decryptAccessToken(data string, encryptionKey string) string {
 	// second byte
 	keyLen := int([]rune(data)[1])
 	keyTag := data[2 : 2+keyLen]
-	fmt.Printf("Type: %d \n", keyType)
-	fmt.Printf("Length: %d \n", keyLen)
-	fmt.Printf("Key Tag: %s \n", keyTag)
+	if gin.IsDebugging() {
+		log.Printf("[debug] decryptAccessToken - Type: %d \n", keyType)
+		log.Printf("[debug] decryptAccessToken - Length: %d \n", keyLen)
+		log.Printf("[debug] decryptAccessToken - Key Tag: %s \n", keyTag)
+	}
 
 	/*
 	   With AES.GCM, 12-byte IV length is necessary for interoperability reasons.
@@ -58,10 +64,12 @@ func decryptAccessToken(data string, encryptionKey string) string {
 	*/
 
 	nonce := data[2+keyLen : 2+keyLen+12]
-	fmt.Printf("IV (hex): %x \n", nonce)
+	if gin.IsDebugging() {
+		log.Printf("[debug] decryptAccessToken - IV (hex): %x \n", nonce)
 
-	ciphertag := data[2+keyLen+12 : 2+keyLen+12+16]
-	fmt.Printf("Ciphertag (hex): %x \n", ciphertag)
+		ciphertag := data[2+keyLen+12 : 2+keyLen+12+16]
+		log.Printf("[debug] decryptAccessToken - Ciphertag (hex): %x \n", ciphertag)
+	}
 
 	aesgcm, err := cipher.NewGCMWithTagSize(block, 16)
 	if err != nil {
@@ -78,7 +86,9 @@ func decryptAccessToken(data string, encryptionKey string) string {
 		panic(err.Error())
 	}
 
-	fmt.Printf("Decrypted: %s\n", plaintext)
+	if gin.IsDebugging() {
+		// fmt.Printf("[debug] decryptAccessToken - Decrypted: %s\n", plaintext)
+	}
 
 	return string(plaintext)
 }
