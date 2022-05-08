@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.14.0] - 2022-05-08
+
+### Added
+* adding gzip compression ([#143](https://github.com/tobiasehlert/teslamateapi/pull/143) by [tobiasehlert](https://github.com/tobiasehlert))
+* adding 404 for not found endpoints ([#144](https://github.com/tobiasehlert/teslamateapi/pull/144) by [tobiasehlert](https://github.com/tobiasehlert))
+* disabling proxy feature of gin ([#145](https://github.com/tobiasehlert/teslamateapi/pull/145) by [tobiasehlert](https://github.com/tobiasehlert))
+* adding graceful shutdown to gin ([#146](https://github.com/tobiasehlert/teslamateapi/pull/146) by [tobiasehlert](https://github.com/tobiasehlert))
+
+### Changed
+* adding two new fields in status endpoint ([#148](https://github.com/tobiasehlert/teslamateapi/pull/148) by [tobiasehlert](https://github.com/tobiasehlert))
+* bump golang from 1.17.6 to 1.18.1 ([#150](https://github.com/tobiasehlert/teslamateapi/pull/150), [#157](https://github.com/tobiasehlert/teslamateapi/pull/157), [#161](https://github.com/tobiasehlert/teslamateapi/pull/161), [#165](https://github.com/tobiasehlert/teslamateapi/pull/165) by [dependabot](https://github.com/dependabot))
+* bump github.com/lib/pq from 1.10.4 to 1.10.5 ([#164](https://github.com/tobiasehlert/teslamateapi/pull/164) by [dependabot](https://github.com/dependabot))
+* bump github/codeql-action from 1 to 2 ([#166](https://github.com/tobiasehlert/teslamateapi/pull/166) by [dependabot](https://github.com/dependabot))
+* bump various workflow versions ([#147](https://github.com/tobiasehlert/teslamateapi/pull/147), [#152](https://github.com/tobiasehlert/teslamateapi/pull/152), [#154](https://github.com/tobiasehlert/teslamateapi/pull/154), [#155](https://github.com/tobiasehlert/teslamateapi/pull/155), [#159](https://github.com/tobiasehlert/teslamateapi/pull/159), [#162](https://github.com/tobiasehlert/teslamateapi/pull/162), [#163](https://github.com/tobiasehlert/teslamateapi/pull/163), [#167](https://github.com/tobiasehlert/teslamateapi/pull/167), [#168](https://github.com/tobiasehlert/teslamateapi/pull/168), [#170](https://github.com/tobiasehlert/teslamateapi/pull/170), [#171](https://github.com/tobiasehlert/teslamateapi/pull/171), [#172](https://github.com/tobiasehlert/teslamateapi/pull/172), [#173](https://github.com/tobiasehlert/teslamateapi/pull/173), [#174](https://github.com/tobiasehlert/teslamateapi/pull/174) by [dependabot](https://github.com/dependabot))
+
+### Fixed
+* updating getEnv function log ([#156](https://github.com/tobiasehlert/teslamateapi/pull/156) by [tobiasehlert](https://github.com/tobiasehlert))
+
 ## [1.13.3] - 2022-01-27
 
 ### Fixed
@@ -283,6 +301,7 @@
 
 Initial commit
 
+[1.14.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.13.3...v1.14.0
 [1.13.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.13.2...v1.13.3
 [1.13.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.13.1...v1.13.2
 [1.13.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.13.0...v1.13.1
