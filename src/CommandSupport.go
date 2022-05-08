@@ -154,20 +154,23 @@ func initCommandAllowList() {
 		commandAllowListFile, err := os.Open(commandAllowListLocation)
 		if err != nil {
 			log.Println("[error] getAllowList error with COMMANDS_ALLOWLIST: " + commandAllowListLocation + " not found and will be ignored")
-		} else {
-			defer commandAllowListFile.Close()
-			byteValue, err := ioutil.ReadAll(commandAllowListFile)
-			if err != nil {
-				log.Println("[error] getAllowList error while reading COMMANDS_ALLOWLIST: " + commandAllowListLocation + " it will be ignored")
-			} else {
-				err = json.Unmarshal(byteValue, &allowListFile)
-				if err != nil {
-					log.Println("[error] getAllowList error while parsing JSON.. COMMANDS_ALLOWLIST: " + commandAllowListLocation + " it will be ignored")
-				} else {
-					allowList = append(allowList, allowListFile...)
-				}
-			}
+			return
 		}
+
+		defer commandAllowListFile.Close()
+		byteValue, err := ioutil.ReadAll(commandAllowListFile)
+		if err != nil {
+			log.Println("[error] getAllowList error while reading COMMANDS_ALLOWLIST: " + commandAllowListLocation + " it will be ignored")
+			return
+		}
+
+		err = json.Unmarshal(byteValue, &allowListFile)
+		if err != nil {
+			log.Println("[error] getAllowList error while parsing JSON.. COMMANDS_ALLOWLIST: " + commandAllowListLocation + " it will be ignored")
+			return
+		}
+
+		allowList = append(allowList, allowListFile...)
 	} else {
 		log.Print("[info] getAllowList COMMANDS from environment variables set, " + commandAllowListLocation + " will be ignored.")
 	}
