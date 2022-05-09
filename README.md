@@ -96,6 +96,7 @@ Basically the same environment variables for the database, mqqt and timezone nee
 | **DATABASE_PASS** | string | *secret* |
 | **DATABASE_NAME** | string | *teslamate* |
 | **DATABASE_HOST** | string | *database* |
+| **ENCRYPTION_KEY** | string | |
 | **MQTT_HOST** | string | *mosquitto* |
 | **TZ** | string | *Europe/Berlin* |
 
