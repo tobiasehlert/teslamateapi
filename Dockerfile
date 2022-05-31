@@ -1,4 +1,4 @@
-# get latest golang container
+# get golang container
 FROM golang:1.18.2
 
 # get args
