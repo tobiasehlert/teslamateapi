@@ -3,7 +3,7 @@ module github.com/tobiasehlert/teslamateapi
 go 1.18
 
 require (
-	github.com/eclipse/paho.mqtt.golang v1.3.5
+	github.com/eclipse/paho.mqtt.golang v1.4.1
 	github.com/gin-gonic/gin v1.8.0
 	github.com/lib/pq v1.10.6
 	github.com/thanhpk/randstr v1.0.4
@@ -12,6 +12,7 @@ require (
 require (
 	github.com/goccy/go-json v0.9.7 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
