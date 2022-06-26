@@ -19,6 +19,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	var (
 		CarsCommandsError1               = "Unable to load cars."
 		TeslaAccessToken, TeslaVehicleID string
+		EndpointUrl                      string
 		jsonData                         map[string]interface{}
 		err                              error
 	)
@@ -110,8 +111,16 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	// decrypt access token
 	TeslaAccessToken = decryptAccessToken(TeslaAccessToken, teslaMateEncryptionKey)
 
+	region := GetCarRegion(TeslaAccessToken)
+	switch region {
+	case China:
+		EndpointUrl = "https://owner-api.vn.cloud.tesla.cn"
+	default:
+		EndpointUrl = "https://owner-api.teslamotors.com"
+	}
+
 	client := &http.Client{}
-	req, _ := http.NewRequest(http.MethodPost, "https://owner-api.teslamotors.com/api/1/vehicles/"+TeslaVehicleID+command, strings.NewReader(string(reqBody)))
+	req, _ := http.NewRequest(http.MethodPost, EndpointUrl+"/api/1/vehicles/"+TeslaVehicleID+command, strings.NewReader(string(reqBody)))
 	req.Header.Set("Authorization", "Bearer "+TeslaAccessToken)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", "TeslaMateApi/"+apiVersion+" (+https://github.com/tobiasehlert/teslamateapi)")
@@ -119,7 +128,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	// check response error
 	if err != nil {
-		log.Println("[error] TeslaMateAPICarsCommandV1 error in http request to https://owner-api.teslamotors.com:", err)
+		log.Println("[error] TeslaMateAPICarsCommandV1 error in http request to "+EndpointUrl, err)
 		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsCommandV1", gin.H{"error": "internal http request error"})
 		return
 	}
