@@ -42,6 +42,7 @@ services:
     depends_on:
       - database
     environment:
+      - ENCRYPTION_KEY=MySuperSecretEncryptionKey
       - DATABASE_USER=teslamate
       - DATABASE_PASS=secret
       - DATABASE_NAME=teslamate
@@ -62,6 +63,7 @@ services:
     depends_on:
       - database
     environment:
+      - ENCRYPTION_KEY=${TM_ENCRYPTION_KEY}
       - DATABASE_USER=${TM_DB_USER}
       - DATABASE_PASS=${TM_DB_PASS}
       - DATABASE_NAME=${TM_DB_NAME}
