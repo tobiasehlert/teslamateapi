@@ -13,11 +13,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Region string
+type CarRegionAPI string
 
 const (
-	China  Region = "China"
-	Global        = "Global"
+	ChinaAPI  CarRegionAPI = "China"
+	GlobalAPI              = "Global"
 )
 
 // decryptAccessToken funct to decrypt tokens from database
@@ -104,26 +104,26 @@ func decryptAccessToken(data string, encryptionKey string) string {
 	return string(plaintext)
 }
 
-// getCarRegion function to get URL from iis in accessToken
-func getCarRegion(accessToken string) Region {
+// getCarRegionAPI function to get URL from iis in accessToken
+func getCarRegionAPI(accessToken string) CarRegionAPI {
 	payload := strings.Split(accessToken, ".")
 	if len(payload) != 3 {
-		return Global
+		return GlobalAPI
 	}
 	decodedStr, err := base64.RawStdEncoding.DecodeString(payload[1])
 	if err != nil {
-		return Global
+		return GlobalAPI
 	}
 	var result map[string]interface{}
 	if err = json.Unmarshal(decodedStr, &result); err != nil {
-		return Global
+		return GlobalAPI
 	}
 	issUrl, err := url.Parse(result["iss"].(string))
 	if err != nil {
-		return Global
+		return GlobalAPI
 	}
 	if strings.HasSuffix(issUrl.Host, ".cn") {
-		return China
+		return ChinaAPI
 	}
-	return Global
+	return GlobalAPI
 }

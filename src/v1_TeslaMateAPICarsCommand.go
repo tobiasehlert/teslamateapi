@@ -110,8 +110,8 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	// decrypt access token
 	TeslaAccessToken = decryptAccessToken(TeslaAccessToken, teslaMateEncryptionKey)
 
-	switch getCarRegion(TeslaAccessToken) {
-	case China:
+	switch getCarRegionAPI(TeslaAccessToken) {
+	case ChinaAPI:
 		TeslaEndpointUrl = "https://owner-api.vn.cloud.tesla.cn"
 	default:
 		TeslaEndpointUrl = "https://owner-api.teslamotors.com"
