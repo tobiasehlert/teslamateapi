@@ -89,6 +89,8 @@ func initCommandAllowList() {
 		"/command/charge_port_door_close",
 		"/command/charge_start",
 		"/command/charge_stop",
+		"/command/charge_standard",
+		"/command/charge_max_range",
 		"/command/set_charge_limit",
 		"/command/set_charging_amps",
 		"/command/set_scheduled_charging",
@@ -102,8 +104,11 @@ func initCommandAllowList() {
 		"/command/set_temps",
 		"/command/set_preconditioning_max",
 		"/command/remote_seat_heater_request",
+		"/command/remote_seat_cooler_request",
 		"/command/remote_steering_wheel_heater_request",
 		"/command/set_bioweapon_mode",
+		"/command/set_climate_keeper_mode",
+		"/command/remote_auto_seat_climate_request",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/media
