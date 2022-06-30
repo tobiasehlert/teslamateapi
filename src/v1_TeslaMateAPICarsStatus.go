@@ -65,6 +65,10 @@ type statusInfo struct {
 	MQTTDataChargeCurrentRequestMax    int
 	MQTTDataScheduledChargingStartTime string
 	MQTTDataTimeToFullCharge           float64
+	MQTTDataTpmsPressureFL             float64
+	MQTTDataTpmsPressureFR             float64
+	MQTTDataTpmsPressureRL             float64
+	MQTTDataTpmsPressureRR             float64
 }
 
 type statusCache struct {
@@ -281,6 +285,14 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		stat.MQTTDataScheduledChargingStartTime = string(msg.Payload())
 	case "time_to_full_charge":
 		stat.MQTTDataTimeToFullCharge = convertStringToFloat(string(msg.Payload()))
+	case "tpms_pressure_fl":
+		stat.MQTTDataTpmsPressureFL = convertStringToFloat(string(msg.Payload()))
+	case "tpms_pressure_fr":
+		stat.MQTTDataTpmsPressureFR = convertStringToFloat(string(msg.Payload()))
+	case "tpms_pressure_rl":
+		stat.MQTTDataTpmsPressureRL = convertStringToFloat(string(msg.Payload()))
+	case "tpms_pressure_rr":
+		stat.MQTTDataTpmsPressureRR = convertStringToFloat(string(msg.Payload()))
 	default:
 		log.Printf("[warning] TeslaMateAPICarsStatusV1 mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
 	}
@@ -381,6 +393,13 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 		Heading    int    `json:"heading"`     // 340 - Last reported car direction
 		Elevation  int    `json:"elevation"`   // 70 - Current elevation above sea level in meters
 	}
+	// TpmsDetails struct - child of MQTTInformatiojn
+	type TpmsDetails struct {
+		TpmsPressureFL float64 `json:"tpms_pressure_fl"` // 2.9 - Tire pressure measure in BAR, front left tire
+		TpmsPressureFR float64 `json:"tpms_pressure_fr"` // 2.8 - Tire pressure measure in BAR, front right tire
+		TpmsPressureRL float64 `json:"tpms_pressure_rl"` // 2.9 - Tire pressure measure in BAR, rear left tire
+		TpmsPressureRR float64 `json:"tpms_pressure_rr"` // 2.8 - Tire pressure measure in BAR, rear right tire
+	}
 	// MQTTInformation struct - child of Cars
 	type MQTTInformation struct {
 		DisplayName     string          `json:"display_name"`     // Blue Thunder - Vehicle Name
@@ -396,6 +415,7 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 		ClimateDetails  ClimateDetails  `json:"climate_details"`  // struct
 		BatteryDetails  BatteryDetails  `json:"battery_details"`  // struct
 		ChargingDetails ChargingDetails `json:"charging_details"` // struct
+		TpmsDetails     TpmsDetails     `json:"tpms_details"`     // struct
 	}
 	// Cars struct - child of Data
 	type Car struct {
@@ -496,6 +516,10 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	MQTTInformationData.ChargingDetails.ChargeCurrentRequestMax = stat.MQTTDataChargeCurrentRequestMax
 	MQTTInformationData.ChargingDetails.ScheduledChargingStartTime = stat.MQTTDataScheduledChargingStartTime
 	MQTTInformationData.ChargingDetails.TimeToFullCharge = stat.MQTTDataTimeToFullCharge
+	MQTTInformationData.TpmsDetails.TpmsPressureFL = stat.MQTTDataTpmsPressureFL
+	MQTTInformationData.TpmsDetails.TpmsPressureFR = stat.MQTTDataTpmsPressureFR
+	MQTTInformationData.TpmsDetails.TpmsPressureRL = stat.MQTTDataTpmsPressureRL
+	MQTTInformationData.TpmsDetails.TpmsPressureRR = stat.MQTTDataTpmsPressureRR
 
 	// converting values based of settings UnitsLength
 	if UnitsLength == "mi" {
