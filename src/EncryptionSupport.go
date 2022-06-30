@@ -104,9 +104,8 @@ func decryptAccessToken(data string, encryptionKey string) string {
 	return string(plaintext)
 }
 
-// Get tesla web API endpoint url from iss in accessToken
-// AccessToken is a JWT
-func GetCarRegion(accessToken string) Region {
+// getCarRegion function to get URL from iis in accessToken
+func getCarRegion(accessToken string) Region {
 	payload := strings.Split(accessToken, ".")
 	if len(payload) != 3 {
 		return Global
