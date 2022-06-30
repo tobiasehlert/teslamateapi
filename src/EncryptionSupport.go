@@ -4,9 +4,20 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/sha256"
+	"encoding/base64"
+	"encoding/json"
 	"log"
+	"net/url"
+	"strings"
 
 	"github.com/gin-gonic/gin"
+)
+
+type CarRegionAPI string
+
+const (
+	ChinaAPI  CarRegionAPI = "China"
+	GlobalAPI              = "Global"
 )
 
 // decryptAccessToken funct to decrypt tokens from database
@@ -91,4 +102,28 @@ func decryptAccessToken(data string, encryptionKey string) string {
 	}
 
 	return string(plaintext)
+}
+
+// getCarRegionAPI function to get URL from iis in accessToken
+func getCarRegionAPI(accessToken string) CarRegionAPI {
+	payload := strings.Split(accessToken, ".")
+	if len(payload) != 3 {
+		return GlobalAPI
+	}
+	decodedStr, err := base64.RawStdEncoding.DecodeString(payload[1])
+	if err != nil {
+		return GlobalAPI
+	}
+	var result map[string]interface{}
+	if err = json.Unmarshal(decodedStr, &result); err != nil {
+		return GlobalAPI
+	}
+	issUrl, err := url.Parse(result["iss"].(string))
+	if err != nil {
+		return GlobalAPI
+	}
+	if strings.HasSuffix(issUrl.Host, ".cn") {
+		return ChinaAPI
+	}
+	return GlobalAPI
 }

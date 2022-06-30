@@ -17,10 +17,10 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	// creating required vars
 	var (
-		CarsCommandsError1               = "Unable to load cars."
-		TeslaAccessToken, TeslaVehicleID string
-		jsonData                         map[string]interface{}
-		err                              error
+		CarsCommandsError1                                 = "Unable to load cars."
+		TeslaAccessToken, TeslaVehicleID, TeslaEndpointUrl string
+		jsonData                                           map[string]interface{}
+		err                                                error
 	)
 
 	// check if commands are enabled.. if not we need to abort
@@ -110,8 +110,15 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 	// decrypt access token
 	TeslaAccessToken = decryptAccessToken(TeslaAccessToken, teslaMateEncryptionKey)
 
+	switch getCarRegionAPI(TeslaAccessToken) {
+	case ChinaAPI:
+		TeslaEndpointUrl = "https://owner-api.vn.cloud.tesla.cn"
+	default:
+		TeslaEndpointUrl = "https://owner-api.teslamotors.com"
+	}
+
 	client := &http.Client{}
-	req, _ := http.NewRequest(http.MethodPost, "https://owner-api.teslamotors.com/api/1/vehicles/"+TeslaVehicleID+command, strings.NewReader(string(reqBody)))
+	req, _ := http.NewRequest(http.MethodPost, TeslaEndpointUrl+"/api/1/vehicles/"+TeslaVehicleID+command, strings.NewReader(string(reqBody)))
 	req.Header.Set("Authorization", "Bearer "+TeslaAccessToken)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", "TeslaMateApi/"+apiVersion+" (+https://github.com/tobiasehlert/teslamateapi)")
@@ -119,7 +126,7 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	// check response error
 	if err != nil {
-		log.Println("[error] TeslaMateAPICarsCommandV1 error in http request to https://owner-api.teslamotors.com:", err)
+		log.Println("[error] TeslaMateAPICarsCommandV1 error in http request to "+TeslaEndpointUrl, err)
 		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsCommandV1", gin.H{"error": "internal http request error"})
 		return
 	}
