@@ -31,8 +31,8 @@ jobs:
           tags: |
             type=edge
             type=ref,event=branch,enable=${{ (github.ref != 'refs/heads/main') }}
-            type=semver,pattern=v{{version}}
-            type=semver,pattern=v{{major}}.{{minor}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
