@@ -13,11 +13,10 @@ require (
 	github.com/goccy/go-json v0.9.7 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 require (
-	github.com/gin-contrib/gzip v0.0.5
+	github.com/gin-contrib/gzip v0.0.6
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
