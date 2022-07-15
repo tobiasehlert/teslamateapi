@@ -1,7 +1,12 @@
 # Changelog
 
 ## [1.15.0] - 2022-07-15
-**🔓 Encryption of API tokens** was added in [1.27.0](https://github.com/adriankumpf/teslamate/releases/tag/v1.27.0) of TeslaMate and needs adjustment in the TeslaMateApi deployment as well.
+
+### Information
+🔓 **Encryption of API tokens** was added in [1.27.0](https://github.com/adriankumpf/teslamate/releases/tag/v1.27.0) of TeslaMate.
+You therefore need to adjust your TeslaMateApi deployment with the new added environment variables `ENCRYPTION_KEY`.
+The `ENCRYPTION_KEY` needs to have the same value as the key in the environment variables of your TeslaMate.
+
 
 ### Added
 * TeslaMate encryption of API tokens ([#141](https://github.com/tobiasehlert/teslamateapi/pull/141) by [LelandSindt](https://github.com/LelandSindt), [tobiasehlert](https://github.com/tobiasehlert))
