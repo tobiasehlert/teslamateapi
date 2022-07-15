@@ -4,7 +4,7 @@
 **🔓 Encryption of API tokens** was added in [1.27.0](https://github.com/adriankumpf/teslamate/releases/tag/v1.27.0) of TeslaMate and needs adjustment in the TeslaMateApi deployment as well.
 
 ### Added
-* teslaMate encryption of API tokens ([#141](https://github.com/tobiasehlert/teslamateapi/pull/141) by [LelandSindt](https://github.com/LelandSindt), [tobiasehlert](https://github.com/tobiasehlert))
+* TeslaMate encryption of API tokens ([#141](https://github.com/tobiasehlert/teslamateapi/pull/141) by [LelandSindt](https://github.com/LelandSindt), [tobiasehlert](https://github.com/tobiasehlert))
 * support execute commands for China region cars ([#184](https://github.com/tobiasehlert/teslamateapi/pull/184) by [richard1122](https://github.com/richard1122))
 * support for tire pressure metrics from MQTT ([#186](https://github.com/tobiasehlert/teslamateapi/pull/186) by [tobiasehlert](https://github.com/tobiasehlert))
 * support for new commands ([#187](https://github.com/tobiasehlert/teslamateapi/pull/187) by [tobiasehlert](https://github.com/tobiasehlert))
