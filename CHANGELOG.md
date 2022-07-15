@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.15.0] - 2022-07-15
+**🔓 Encryption of API tokens** was added in [1.27.0](https://github.com/adriankumpf/teslamate/releases/tag/v1.27.0) of TeslaMate and needs adjustment in the TeslaMateApi deployment as well.
+
+### Added
+* teslaMate encryption of API tokens ([#141](https://github.com/tobiasehlert/teslamateapi/pull/141) by [LelandSindt](https://github.com/LelandSindt), [tobiasehlert](https://github.com/tobiasehlert))
+* support execute commands for China region cars ([#184](https://github.com/tobiasehlert/teslamateapi/pull/184) by [richard1122](https://github.com/richard1122))
+* support for tire pressure metrics from MQTT ([#186](https://github.com/tobiasehlert/teslamateapi/pull/186) by [tobiasehlert](https://github.com/tobiasehlert))
+* support for new commands ([#187](https://github.com/tobiasehlert/teslamateapi/pull/187) by [tobiasehlert](https://github.com/tobiasehlert))
+
+### Changed
+* removing **v** in container image tag ([#188](https://github.com/tobiasehlert/teslamateapi/pull/188) by [tobiasehlert](https://github.com/tobiasehlert))
+* bump golang from 1.18.1 to 1.18.3 ([#177](https://github.com/tobiasehlert/teslamateapi/pull/177), [#181](https://github.com/tobiasehlert/teslamateapi/pull/181) by [dependabot](https://github.com/dependabot))
+* bump github.com/eclipse/paho.mqtt.golang from 1.3.5 to 1.4.1 ([#182](https://github.com/tobiasehlert/teslamateapi/pull/182) by [dependabot](https://github.com/dependabot))
+* bump github.com/gin-contrib/gzip from 0.0.5 to 0.0.6 ([#189](https://github.com/tobiasehlert/teslamateapi/pull/189) by [dependabot](https://github.com/dependabot))
+* bump github.com/gin-gonic/gin from 1.7.7 to 1.8.1 ([#179](https://github.com/tobiasehlert/teslamateapi/pull/179), [#183](https://github.com/tobiasehlert/teslamateapi/pull/183) by [dependabot](https://github.com/dependabot))
+* bump github.com/lib/pq from 1.10.5 to 1.10.6 ([#178](https://github.com/tobiasehlert/teslamateapi/pull/178) by [dependabot](https://github.com/dependabot))
+* some go mod and workflow build updates ([#180](https://github.com/tobiasehlert/teslamateapi/pull/180) by [dependabot](https://github.com/dependabot))
+
 ## [1.14.0] - 2022-05-08
 
 ### Added
@@ -301,6 +319,7 @@
 
 Initial commit
 
+[1.15.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.14.0...v1.15.0
 [1.14.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.13.3...v1.14.0
 [1.13.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.13.2...v1.13.3
 [1.13.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.13.1...v1.13.2
