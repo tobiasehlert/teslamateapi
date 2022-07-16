@@ -18,6 +18,9 @@ import (
 )
 
 var (
+	// application readyz endpoint value for k8s
+	isReady *atomic.Value
+
 	// setting TeslaMateApi version number
 	apiVersion = "unspecified"
 
@@ -34,7 +37,7 @@ var (
 // main function
 func main() {
 	// setup of readyness endpoint code
-	isReady := &atomic.Value{}
+	isReady = &atomic.Value{}
 	isReady.Store(false)
 
 	// setting log parameters
@@ -61,7 +64,7 @@ func main() {
 	initCommandAllowList()
 
 	// Connect to the MQTT broker
-	statusCache, err := startMQTT(isReady)
+	statusCache, err := startMQTT()
 	if err != nil {
 		log.Fatalf("[error] TeslaMateApi MQTT connection failed: %s", err)
 	}
@@ -144,9 +147,7 @@ func main() {
 
 		// health endpoints for kubernetes
 		api.GET("/healthz", healthz)
-		api.GET("/readyz", func(c *gin.Context) {
-			readyz(isReady, c)
-		})
+		api.GET("/readyz", readyz)
 
 	}
 
@@ -429,13 +430,13 @@ func checkArrayContainsString(s []string, e string) bool {
 	return false
 }
 
-// healthz is a liveness probe.
+// healthz is a k8s liveness probe
 func healthz(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusText(http.StatusOK)})
 }
 
-// readyz is a readiness probe.
-func readyz(isReady *atomic.Value, c *gin.Context) {
+// readyz is a k8s readiness probe
+func readyz(c *gin.Context) {
 	if isReady == nil || !isReady.Load().(bool) {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": http.StatusText(http.StatusServiceUnavailable)})
 		return

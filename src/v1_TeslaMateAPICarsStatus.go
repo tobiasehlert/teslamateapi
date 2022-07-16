@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"sync"
-	"sync/atomic"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -81,7 +80,7 @@ type statusCache struct {
 	mu    sync.Mutex
 }
 
-func startMQTT(isReady *atomic.Value) (*statusCache, error) {
+func startMQTT() (*statusCache, error) {
 	s := statusCache{
 		cache: make(map[int]*statusInfo),
 	}
