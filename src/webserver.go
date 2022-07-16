@@ -430,7 +430,7 @@ func checkArrayContainsString(s []string, e string) bool {
 
 // healthz is a liveness probe.
 func healthz(c *gin.Context) {
-	c.JSON(http.StatusServiceUnavailable, gin.H{"status": http.StatusText(http.StatusOK)})
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusText(http.StatusOK)})
 }
 
 // readyz is a readiness probe.
