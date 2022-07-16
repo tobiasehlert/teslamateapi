@@ -141,6 +141,13 @@ func main() {
 
 		// /api/ping endpoint
 		api.GET("/ping", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "pong"}) })
+
+		// health endpoints for kubernetes
+		api.GET("/healthz", healthz)
+		api.GET("/readyz", func(c *gin.Context) {
+			readyz(isReady, c)
+		})
+
 	}
 
 	// TeslaMateApi endpoints (before versioning)
@@ -154,12 +161,6 @@ func main() {
 	r.GET("/cars/:CarID/status", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, BasePathV1+c.Request.RequestURI) })
 	r.GET("/cars/:CarID/updates", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, BasePathV1+c.Request.RequestURI) })
 	r.GET("/globalsettings", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, BasePathV1+c.Request.RequestURI) })
-
-	// health endpoints for kubernetes
-	r.GET("/healthz", healthz)
-	r.GET("/readyz", func(c *gin.Context) {
-		readyz(isReady, c)
-	})
 
 	// build the http server
 	server := &http.Server{
