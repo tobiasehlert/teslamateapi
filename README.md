@@ -171,7 +171,9 @@ More detailed documentation of every endpoint will come..
 - GET `/api/v1/cars/:CarID/updates`
 - POST `/api/v1/cars/:CarID/wake_up`
 - GET `/api/v1/globalsettings`
+- GET `/api/healthz`
 - GET `/api/ping`
+- GET `/api/readyz`
 
 ### Authentication
 

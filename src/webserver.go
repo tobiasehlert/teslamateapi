@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"sync/atomic"
 	"time"
 
 	"github.com/gin-contrib/gzip"
@@ -17,6 +18,9 @@ import (
 )
 
 var (
+	// application readyz endpoint value for k8s
+	isReady *atomic.Value
+
 	// setting TeslaMateApi version number
 	apiVersion = "unspecified"
 
@@ -32,6 +36,9 @@ var (
 
 // main function
 func main() {
+	// setup of readyness endpoint code
+	isReady := &atomic.Value{}
+	isReady.Store(false)
 
 	// setting log parameters
 	log.SetFlags(log.Ldate | log.Lmicroseconds)
@@ -141,6 +148,10 @@ func main() {
 
 		// /api/ping endpoint
 		api.GET("/ping", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "pong"}) })
+
+		// health endpoints for kubernetes
+		api.GET("/healthz", healthz)
+		api.GET("/readyz", readyz)
 	}
 
 	// TeslaMateApi endpoints (before versioning)
@@ -159,6 +170,11 @@ func main() {
 	server := &http.Server{
 		Addr:    ":8080", // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 		Handler: r,
+	}
+
+	// setting readyz endpoint to true (if not using MQTT)
+	if getEnvAsBool("DISABLE_MQTT", false) {
+		isReady.Store(true)
 	}
 
 	// graceful shutdown
@@ -427,4 +443,18 @@ func checkArrayContainsString(s []string, e string) bool {
 		}
 	}
 	return false
+}
+
+// healthz is a liveness probe.
+func healthz(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusText(http.StatusOK)})
+}
+
+// readyz is a readiness probe.
+func readyz(c *gin.Context) {
+	if isReady == nil || !isReady.Load().(bool) {
+		c.JSON(http.StatusServiceUnavailable, gin.H{"error": http.StatusText(http.StatusServiceUnavailable)})
+		return
+	}
+	TeslaMateAPIHandleSuccessResponse(c, "webserver", gin.H{"status": http.StatusText(http.StatusOK)})
 }
