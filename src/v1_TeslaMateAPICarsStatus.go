@@ -159,6 +159,9 @@ func startMQTT() (*statusCache, error) {
 	}
 	s.topicScan = fmt.Sprintf("teslamate%s/cars/%%d/%%s", MQTTNameSpace)
 
+	// setting readyz endpoint to true (when using MQTT)
+	isReady.Store(true)
+
 	// Thats all - newMessage will be called when something new arrives
 	return &s, nil
 }
