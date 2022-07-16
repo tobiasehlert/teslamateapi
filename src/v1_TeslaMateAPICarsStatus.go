@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -80,7 +81,7 @@ type statusCache struct {
 	mu    sync.Mutex
 }
 
-func startMQTT() (*statusCache, error) {
+func startMQTT(isReady *atomic.Value) (*statusCache, error) {
 	s := statusCache{
 		cache: make(map[int]*statusInfo),
 	}
@@ -158,6 +159,9 @@ func startMQTT() (*statusCache, error) {
 		log.Panic(token.Error()) // Note : May want to use opts.ConnectRetry which will keep trying the connection
 	}
 	s.topicScan = fmt.Sprintf("teslamate%s/cars/%%d/%%s", MQTTNameSpace)
+
+	// setting readyz endpoint to true (when using MQTT)
+	isReady.Store(true)
 
 	// Thats all - newMessage will be called when something new arrives
 	return &s, nil

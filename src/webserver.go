@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"sync/atomic"
 	"time"
 
 	"github.com/gin-contrib/gzip"
@@ -32,6 +33,9 @@ var (
 
 // main function
 func main() {
+	// setup of readyness endpoint code
+	isReady := &atomic.Value{}
+	isReady.Store(false)
 
 	// setting log parameters
 	log.SetFlags(log.Ldate | log.Lmicroseconds)
@@ -57,7 +61,7 @@ func main() {
 	initCommandAllowList()
 
 	// Connect to the MQTT broker
-	statusCache, err := startMQTT()
+	statusCache, err := startMQTT(isReady)
 	if err != nil {
 		log.Fatalf("[error] TeslaMateApi MQTT connection failed: %s", err)
 	}
@@ -151,10 +155,21 @@ func main() {
 	r.GET("/cars/:CarID/updates", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, BasePathV1+c.Request.RequestURI) })
 	r.GET("/globalsettings", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, BasePathV1+c.Request.RequestURI) })
 
+	// health endpoints for kubernetes
+	r.GET("/healthz", healthz)
+	r.GET("/readyz", func(c *gin.Context) {
+		readyz(isReady, c)
+	})
+
 	// build the http server
 	server := &http.Server{
 		Addr:    ":8080", // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 		Handler: r,
+	}
+
+	// setting readyz endpoint to true (if not using MQTT)
+	if getEnvAsBool("DISABLE_MQTT", false) {
+		isReady.Store(true)
 	}
 
 	// graceful shutdown
@@ -411,4 +426,18 @@ func checkArrayContainsString(s []string, e string) bool {
 		}
 	}
 	return false
+}
+
+// healthz is a liveness probe.
+func healthz(c *gin.Context) {
+	c.JSON(http.StatusServiceUnavailable, gin.H{"status": http.StatusText(http.StatusOK)})
+}
+
+// readyz is a readiness probe.
+func readyz(isReady *atomic.Value, c *gin.Context) {
+	if isReady == nil || !isReady.Load().(bool) {
+		c.JSON(http.StatusServiceUnavailable, gin.H{"error": http.StatusText(http.StatusServiceUnavailable)})
+		return
+	}
+	TeslaMateAPIHandleSuccessResponse(c, "webserver", gin.H{"status": http.StatusText(http.StatusOK)})
 }
