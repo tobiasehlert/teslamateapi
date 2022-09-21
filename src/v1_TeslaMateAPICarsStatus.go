@@ -127,7 +127,8 @@ func startMQTT() (*statusCache, error) {
 	// setting generic MQTT settings in opts
 	opts.SetKeepAlive(2 * time.Second)                    // setting keepalive for client
 	opts.SetDefaultPublishHandler(s.newMessage)           // using f mqtt.MessageHandler function
-	opts.SetConnectionLostHandler(s.connectionLost)           // using f mqtt.MessageHandler function
+	opts.SetConnectionLostHandler(s.connectionLost)       // Logs ConnectionLost events
+	opts.SetReconnectingHandler(s.reconnectingHandler)						  // Logs reconnect events
 	opts.SetPingTimeout(1 * time.Second)                  // setting pingtimeout for client
 	opts.SetClientID("teslamateapi-" + randstr.String(4)) // setting mqtt client id for TeslaMateApi
 	opts.SetCleanSession(true)                            // removal of all subscriptions on disconnect
@@ -164,10 +165,13 @@ func startMQTT() (*statusCache, error) {
 	return &s, nil
 }
 
+func reconnectingHandler(c mqtt.Client, options *mqtt.ClientOptions) { 
+	log.Println("[info] mqtt reconnecting...")
+}
+
 // connectionLost - called by mqtt package when the connection get lost
 func connectionLost(c mqtt.Client, err error) {
 	log.Println("[error] MQTT connection lost: %s\n", err.Error())
-
 }
 
 // newMessage - called by mqtt package when new message received
