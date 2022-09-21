@@ -127,8 +127,8 @@ func startMQTT() (*statusCache, error) {
 	// setting generic MQTT settings in opts
 	opts.SetKeepAlive(2 * time.Second)                    // setting keepalive for client
 	opts.SetDefaultPublishHandler(s.newMessage)           // using f mqtt.MessageHandler function
-	opts.SetConnectionLostHandler(s.connectionLost)       // Logs ConnectionLost events
-	opts.SetReconnectingHandler(s.reconnectingHandler)						  // Logs reconnect events
+	opts.SetConnectionLostHandler(connectionLost)       // Logs ConnectionLost events
+	opts.SetReconnectingHandler(reconnectingHandler)						  // Logs reconnect events
 	opts.SetPingTimeout(1 * time.Second)                  // setting pingtimeout for client
 	opts.SetClientID("teslamateapi-" + randstr.String(4)) // setting mqtt client id for TeslaMateApi
 	opts.SetCleanSession(true)                            // removal of all subscriptions on disconnect
