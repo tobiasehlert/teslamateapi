@@ -106,6 +106,7 @@ func startMQTT() (*statusCache, error) {
 	MQTTHost := getEnv("MQTT_HOST", "mosquitto")
 	MQTTUser := getEnv("MQTT_USERNAME", "")
 	MQTTPass := getEnv("MQTT_PASSWORD", "")
+	MQTT_CLIENTID := getEnv("MQTT_CLIENTID", "")
 	// MQTTInvCert := getEnvAsBool("MQTT_TLS_ACCEPT_INVALID_CERTS", false)
 
 	// creating mqttURL to connect with
@@ -127,11 +128,11 @@ func startMQTT() (*statusCache, error) {
 	// setting generic MQTT settings in opts
 	opts.SetKeepAlive(2 * time.Second)                    // setting keepalive for client
 	opts.SetDefaultPublishHandler(s.newMessage)           // using f mqtt.MessageHandler function
-	opts.SetConnectionLostHandler(s.connectionLost)       // Logs ConnectionLost events
-	opts.SetReconnectingHandler(s.reconnectingHandler)						  // Logs reconnect events
+	opts.SetConnectionLostHandler(connectionLost)       // Logs ConnectionLost events
+	opts.SetReconnectingHandler(reconnectingHandler)						  // Logs reconnect events
 	opts.SetPingTimeout(1 * time.Second)                  // setting pingtimeout for client
-	opts.SetClientID("teslamateapi-" + randstr.String(4)) // setting mqtt client id for TeslaMateApi
-	opts.SetCleanSession(true)                            // removal of all subscriptions on disconnect
+	opts.SetClientID("teslamateapi-" + MQTT_CLIENTID) // setting mqtt client id for TeslaMateApi
+	opts.SetCleanSession(false)                            // removal of all subscriptions on disconnect
 	opts.SetOrderMatters(false)                           // don't care about order (removes need for callbacks to return immediately)
 	opts.SetAutoReconnect(true)                           // if connection drops automatically re-establish it
 	opts.AutoReconnect = true
@@ -167,15 +168,17 @@ func startMQTT() (*statusCache, error) {
 
 func reconnectingHandler(c mqtt.Client, options *mqtt.ClientOptions) { 
 	log.Println("[info] mqtt reconnecting...")
+	
 }
 
 // connectionLost - called by mqtt package when the connection get lost
 func connectionLost(c mqtt.Client, err error) {
-	log.Println("[error] MQTT connection lost: %s\n", err.Error())
+	log.Println("[error] MQTT connection lost: " + err.Error())
 }
 
 // newMessage - called by mqtt package when new message received
 func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
+	log.Println("[info] mqtt - received: " + string(msg.Topic()) + " with value: " + string(msg.Payload()))
 	// topic is in the format teslamateMQTT_NAMESPACE/cars/carID/display_name
 	var (
 		carID     int
@@ -187,6 +190,7 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		return
 	}
 
+
 	// extracting the last part of topic
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -196,6 +200,7 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		s.cache[carID] = stat
 	}
 
+	log.Printf(MqttTopic + " set to: " + string(msg.Payload()))
 	// running if-else statements to collect data and put into overall vars..
 	switch MqttTopic {
 	case "display_name":
