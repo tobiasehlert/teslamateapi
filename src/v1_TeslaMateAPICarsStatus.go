@@ -13,6 +13,7 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+	"github.com/thanhpk/randstr"
 )
 
 // statusInfo holds the status info for a car
@@ -117,7 +118,7 @@ func startMQTT() (*statusCache, error) {
 	MQTTHost := getEnv("MQTT_HOST", "mosquitto")
 	MQTTUser := getEnv("MQTT_USERNAME", "")
 	MQTTPass := getEnv("MQTT_PASSWORD", "")
-	MQTT_CLIENTID := getEnv("MQTT_CLIENTID", "")
+	MQTT_CLIENTID := getEnv("MQTT_CLIENTID", randstr.String(4))
 	// MQTTInvCert := getEnvAsBool("MQTT_TLS_ACCEPT_INVALID_CERTS", false)
 
 	// creating mqttURL to connect with
