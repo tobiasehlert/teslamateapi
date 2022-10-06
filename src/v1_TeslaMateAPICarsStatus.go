@@ -82,6 +82,15 @@ type statusCache struct {
 	mu    sync.Mutex
 }
 
+func getMQTTNameSpace() (MQTTNameSpace string) {
+	// adding MQTTNameSpace info
+	MQTTNameSpace = getEnv("MQTT_NAMESPACE", "")
+	if len(MQTTNameSpace) > 0 {
+		MQTTNameSpace = ("/" + MQTTNameSpace)
+	}
+	return MQTTNameSpace
+}
+
 func startMQTT() (*statusCache, error) {
 	s := statusCache{
 		cache: make(map[int]*statusInfo),
@@ -136,7 +145,7 @@ func startMQTT() (*statusCache, error) {
 	opts.SetOnConnectHandler(s.connectedHandler)
 	opts.SetPingTimeout(1 * time.Second)              // setting pingtimeout for client
 	opts.SetClientID("teslamateapi-" + MQTT_CLIENTID) // setting mqtt client id for TeslaMateApi
-	opts.SetCleanSession(false)                       // removal of all subscriptions on disconnect
+	opts.SetCleanSession(true)                        // removal of all subscriptions on disconnect
 	opts.SetOrderMatters(false)                       // don't care about order (removes need for callbacks to return immediately)
 	opts.SetAutoReconnect(true)                       // if connection drops automatically re-establish it
 	opts.AutoReconnect = true
@@ -153,18 +162,7 @@ func startMQTT() (*statusCache, error) {
 		log.Println("[debug] TeslaMateAPICarsStatusV1 successfully connected to mqtt.")
 	}
 
-	// adding MQTTNameSpace info
-	MQTTNameSpace := getEnv("MQTT_NAMESPACE", "")
-	if len(MQTTNameSpace) > 0 {
-		MQTTNameSpace = ("/" + MQTTNameSpace)
-	}
-
-	// Subscribe - we will accept info on any car...
-	topic := fmt.Sprintf("teslamate%s/cars/#", MQTTNameSpace)
-	if token := m.Subscribe(topic, 0, s.newMessage); token.Wait() && token.Error() != nil {
-		log.Panic(token.Error()) // Note : May want to use opts.ConnectRetry which will keep trying the connection
-	}
-	s.topicScan = fmt.Sprintf("teslamate%s/cars/%%d/%%s", MQTTNameSpace)
+	s.topicScan = fmt.Sprintf("teslamate%s/cars/%%d/%%s", getMQTTNameSpace())
 
 	// Thats all - newMessage will be called when something new arrives
 	return &s, nil
@@ -183,6 +181,14 @@ func connectingHandler(broker *url.URL, tlsCfg *tls.Config) *tls.Config {
 func (s *statusCache) connectedHandler(c mqtt.Client) {
 	log.Println("[info] mqtt connected...")
 	s.mqttConnected = true
+
+	// Subscribe - we will accept info on any car...
+	topic := fmt.Sprintf("teslamate%s/cars/#", getMQTTNameSpace())
+	if token := c.Subscribe(topic, 0, s.newMessage); token.Wait() && token.Error() != nil {
+		log.Panic(token.Error()) // Note : May want to use opts.ConnectRetry which will keep trying the connection
+	}
+	log.Println("[info] subscribed to: " + topic)
+
 }
 
 // connectionLost - called by mqtt package when the connection get lost
