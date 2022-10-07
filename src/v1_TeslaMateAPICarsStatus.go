@@ -118,7 +118,7 @@ func startMQTT() (*statusCache, error) {
 	MQTTHost := getEnv("MQTT_HOST", "mosquitto")
 	MQTTUser := getEnv("MQTT_USERNAME", "")
 	MQTTPass := getEnv("MQTT_PASSWORD", "")
-	MQTT_CLIENTID := getEnv("MQTT_CLIENTID", randstr.String(4))
+	MQTTClientId := getEnv("MQTT_CLIENTID", randstr.String(4))
 	// MQTTInvCert := getEnvAsBool("MQTT_TLS_ACCEPT_INVALID_CERTS", false)
 
 	// creating mqttURL to connect with
@@ -144,11 +144,11 @@ func startMQTT() (*statusCache, error) {
 	opts.SetReconnectingHandler(reconnectingHandler) // Logs reconnect events
 	opts.SetConnectionAttemptHandler(connectingHandler)
 	opts.SetOnConnectHandler(s.connectedHandler)
-	opts.SetPingTimeout(1 * time.Second)              // setting pingtimeout for client
-	opts.SetClientID("teslamateapi-" + MQTT_CLIENTID) // setting mqtt client id for TeslaMateApi
-	opts.SetCleanSession(true)                        // removal of all subscriptions on disconnect
-	opts.SetOrderMatters(false)                       // don't care about order (removes need for callbacks to return immediately)
-	opts.SetAutoReconnect(true)                       // if connection drops automatically re-establish it
+	opts.SetPingTimeout(1 * time.Second)             // setting pingtimeout for client
+	opts.SetClientID("teslamateapi-" + MQTTClientId) // setting mqtt client id for TeslaMateApi
+	opts.SetCleanSession(true)                       // removal of all subscriptions on disconnect
+	opts.SetOrderMatters(false)                      // don't care about order (removes need for callbacks to return immediately)
+	opts.SetAutoReconnect(true)                      // if connection drops automatically re-establish it
 	opts.AutoReconnect = true
 
 	// creating MQTT connection with options
