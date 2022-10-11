@@ -1,10 +1,12 @@
 package main
 
 import (
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"sync"
 	"time"
 
@@ -72,12 +74,22 @@ type statusInfo struct {
 }
 
 type statusCache struct {
-	mqttDisabled bool
+	mqttDisabled  bool
+	mqttConnected bool
 
 	topicScan string // scan parameter (expect it to generate car ID then relevant parameter)
 
 	cache map[int]*statusInfo
 	mu    sync.Mutex
+}
+
+func getMQTTNameSpace() (MQTTNameSpace string) {
+	// adding MQTTNameSpace info
+	MQTTNameSpace = getEnv("MQTT_NAMESPACE", "")
+	if len(MQTTNameSpace) > 0 {
+		MQTTNameSpace = ("/" + MQTTNameSpace)
+	}
+	return MQTTNameSpace
 }
 
 func startMQTT() (*statusCache, error) {
@@ -106,6 +118,7 @@ func startMQTT() (*statusCache, error) {
 	MQTTHost := getEnv("MQTT_HOST", "mosquitto")
 	MQTTUser := getEnv("MQTT_USERNAME", "")
 	MQTTPass := getEnv("MQTT_PASSWORD", "")
+	MQTTClientId := getEnv("MQTT_CLIENTID", randstr.String(4))
 	// MQTTInvCert := getEnvAsBool("MQTT_TLS_ACCEPT_INVALID_CERTS", false)
 
 	// creating mqttURL to connect with
@@ -125,13 +138,17 @@ func startMQTT() (*statusCache, error) {
 	// create options for the MQTT client connection
 	opts := mqtt.NewClientOptions().AddBroker(mqttURL)
 	// setting generic MQTT settings in opts
-	opts.SetKeepAlive(2 * time.Second)                    // setting keepalive for client
-	opts.SetDefaultPublishHandler(s.newMessage)           // using f mqtt.MessageHandler function
-	opts.SetPingTimeout(1 * time.Second)                  // setting pingtimeout for client
-	opts.SetClientID("teslamateapi-" + randstr.String(4)) // setting mqtt client id for TeslaMateApi
-	opts.SetCleanSession(true)                            // removal of all subscriptions on disconnect
-	opts.SetOrderMatters(false)                           // don't care about order (removes need for callbacks to return immediately)
-	opts.SetAutoReconnect(true)                           // if connection drops automatically re-establish it
+	opts.SetKeepAlive(2 * time.Second)               // setting keepalive for client
+	opts.SetDefaultPublishHandler(s.newMessage)      // using f mqtt.MessageHandler function
+	opts.SetConnectionLostHandler(s.connectionLost)  // Logs ConnectionLost events
+	opts.SetReconnectingHandler(reconnectingHandler) // Logs reconnect events
+	opts.SetConnectionAttemptHandler(connectingHandler)
+	opts.SetOnConnectHandler(s.connectedHandler)
+	opts.SetPingTimeout(1 * time.Second)             // setting pingtimeout for client
+	opts.SetClientID("teslamateapi-" + MQTTClientId) // setting mqtt client id for TeslaMateApi
+	opts.SetCleanSession(true)                       // removal of all subscriptions on disconnect
+	opts.SetOrderMatters(false)                      // don't care about order (removes need for callbacks to return immediately)
+	opts.SetAutoReconnect(true)                      // if connection drops automatically re-establish it
 	opts.AutoReconnect = true
 
 	// creating MQTT connection with options
@@ -146,25 +163,44 @@ func startMQTT() (*statusCache, error) {
 		log.Println("[debug] TeslaMateAPICarsStatusV1 successfully connected to mqtt.")
 	}
 
-	// adding MQTTNameSpace info
-	MQTTNameSpace := getEnv("MQTT_NAMESPACE", "")
-	if len(MQTTNameSpace) > 0 {
-		MQTTNameSpace = ("/" + MQTTNameSpace)
-	}
-
-	// Subscribe - we will accept info on any car...
-	topic := fmt.Sprintf("teslamate%s/cars/#", MQTTNameSpace)
-	if token := m.Subscribe(topic, 0, s.newMessage); token.Wait() && token.Error() != nil {
-		log.Panic(token.Error()) // Note : May want to use opts.ConnectRetry which will keep trying the connection
-	}
-	s.topicScan = fmt.Sprintf("teslamate%s/cars/%%d/%%s", MQTTNameSpace)
+	s.topicScan = fmt.Sprintf("teslamate%s/cars/%%d/%%s", getMQTTNameSpace())
 
 	// Thats all - newMessage will be called when something new arrives
 	return &s, nil
 }
 
+func reconnectingHandler(c mqtt.Client, options *mqtt.ClientOptions) {
+	log.Println("[info] mqtt reconnecting...")
+
+}
+
+func connectingHandler(broker *url.URL, tlsCfg *tls.Config) *tls.Config {
+	log.Println("[info] mqtt connecting...")
+	return tlsCfg
+}
+
+func (s *statusCache) connectedHandler(c mqtt.Client) {
+	log.Println("[info] mqtt connected...")
+	s.mqttConnected = true
+
+	// Subscribe - we will accept info on any car...
+	topic := fmt.Sprintf("teslamate%s/cars/#", getMQTTNameSpace())
+	if token := c.Subscribe(topic, 0, s.newMessage); token.Wait() && token.Error() != nil {
+		log.Panic(token.Error()) // Note : May want to use opts.ConnectRetry which will keep trying the connection
+	}
+	log.Println("[info] subscribed to: " + topic)
+
+}
+
+// connectionLost - called by mqtt package when the connection get lost
+func (s *statusCache) connectionLost(c mqtt.Client, err error) {
+	log.Println("[error] MQTT connection lost: " + err.Error())
+	s.mqttConnected = false
+}
+
 // newMessage - called by mqtt package when new message received
 func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
+	//log.Println("[info] mqtt - received: " + string(msg.Topic()) + " with value: " + string(msg.Payload()))
 	// topic is in the format teslamateMQTT_NAMESPACE/cars/carID/display_name
 	var (
 		carID     int
@@ -185,6 +221,7 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		s.cache[carID] = stat
 	}
 
+	//log.Printf(MqttTopic + " set to: " + string(msg.Payload()))
 	// running if-else statements to collect data and put into overall vars..
 	switch MqttTopic {
 	case "display_name":
@@ -303,6 +340,12 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	if s.mqttDisabled {
 		log.Println("[notice] TeslaMateAPICarsStatusV1 DISABLE_MQTT is set to true.. can not return status for car without mqtt!")
 		TeslaMateAPIHandleOtherResponse(c, http.StatusNotImplemented, "TeslaMateAPICarsStatusV1", gin.H{"error": "mqtt disabled.. status not accessible!"})
+		return
+	}
+
+	if !s.mqttConnected {
+		log.Println("[notice] TeslaMateAPICarsStatusV1 mqtt is disconnected.. can not return status for car without mqtt!")
+		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsStatusV1", gin.H{"error": "mqtt disconnected.. status not accessible!"})
 		return
 	}
 

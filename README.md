@@ -121,6 +121,7 @@ Basically the same environment variables for the database, mqqt and timezone nee
 | **MQTT_USERNAME** | string | |
 | **MQTT_PASSWORD** | string | |
 | **MQTT_NAMESPACE** | string | |
+| **MQTT_CLIENTID** | string | *4 char random string* |
 
 **Commands** environment variables
 
