@@ -3,10 +3,10 @@
 ## [1.16.0] - 2022-10-12
 
 ### Changed
-* updating `go build` step in dockerfile by @tobiasehlert in ([#192](https://github.com/tobiasehlert/teslamateapi/pull/192) by [tobiasehlert](https://github.com/tobiasehlert))
-* bump golang from 1.18.3 to 1.19.2 by @dependabot in ([#193](https://github.com/tobiasehlert/teslamateapi/pull/193), [#194](https://github.com/tobiasehlert/teslamateapi/pull/194), [#196](https://github.com/tobiasehlert/teslamateapi/pull/196), [#200](https://github.com/tobiasehlert/teslamateapi/pull/200) by [dependabot](https://github.com/dependabot))
-* bump github.com/lib/pq from 1.10.6 to 1.10.7 by @dependabot in ([#195](https://github.com/tobiasehlert/teslamateapi/pull/195) by [dependabot](https://github.com/dependabot))
-* fix for issue #176 by @virusbrain in ([#199](https://github.com/tobiasehlert/teslamateapi/pull/199) by [virusbrain](https://github.com/virusbrain) and [LelandSindt](https://github.com/LelandSindt))
+* updating `go build` step in dockerfile ([#192](https://github.com/tobiasehlert/teslamateapi/pull/192) by [tobiasehlert](https://github.com/tobiasehlert))
+* bump golang from 1.18.3 to 1.19.2 ([#193](https://github.com/tobiasehlert/teslamateapi/pull/193), [#194](https://github.com/tobiasehlert/teslamateapi/pull/194), [#196](https://github.com/tobiasehlert/teslamateapi/pull/196), [#200](https://github.com/tobiasehlert/teslamateapi/pull/200) by [dependabot](https://github.com/dependabot))
+* bump github.com/lib/pq from 1.10.6 to 1.10.7 ([#195](https://github.com/tobiasehlert/teslamateapi/pull/195) by [dependabot](https://github.com/dependabot))
+* fix mqtt reconnection issue #176 ([#199](https://github.com/tobiasehlert/teslamateapi/pull/199) by [virusbrain](https://github.com/virusbrain) and [LelandSindt](https://github.com/LelandSindt))
 
 ## [1.15.0] - 2022-07-15
 
