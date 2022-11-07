@@ -1,5 +1,5 @@
 # get golang container
-FROM golang:1.19.2
+FROM golang:1.19.3
 
 # get args
 ARG apiVersion=unknown
