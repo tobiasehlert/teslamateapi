@@ -56,7 +56,7 @@ func TeslaMateAPICarsV1(c *gin.Context) {
 	// Cars struct - child of Data
 	type Cars struct {
 		CarID            int              `json:"car_id"`            // smallint
-		Name             string           `json:"name"`              // text
+		Name             NullString       `json:"name"`              // text
 		CarDetails       CarDetails       `json:"car_details"`       // struct
 		CarExterior      CarExterior      `json:"car_exterior"`      // struct
 		CarSettings      CarSettings      `json:"car_settings"`      // struct

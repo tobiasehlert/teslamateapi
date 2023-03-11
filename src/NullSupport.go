@@ -6,6 +6,8 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"database/sql/driver"
+	"errors"
 )
 
 // NullInt64 is an alias for sql.NullInt64 data type
@@ -47,15 +49,24 @@ func (nf *NullFloat64) MarshalJSON() ([]byte, error) {
 	return json.Marshal(nf.Float64)
 }
 
-// NullString is an alias for sql.NullString data type
-type NullString struct {
-	sql.NullString
+type NullString string
+
+func (s *NullString) Scan(value interface{}) error {
+    if value == nil {
+        *s = ""
+        return nil
+    }
+    strVal, ok := value.(string)
+    if !ok {
+        return errors.New("Column is not a string")
+    }
+    *s = NullString(strVal)
+    return nil
 }
 
-// MarshalJSON for NullString
-func (ns *NullString) MarshalJSON() ([]byte, error) {
-	if !ns.Valid {
-		return []byte("null"), nil
-	}
-	return json.Marshal(ns.String)
+func (s NullString) Value() (driver.Value, error) {
+    if len(s) == 0 { // if nil or empty string
+        return nil, nil
+    }
+    return string(s), nil
 }
