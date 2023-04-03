@@ -6,7 +6,7 @@ require (
 	github.com/eclipse/paho.mqtt.golang v1.4.2
 	github.com/gin-gonic/gin v1.9.0
 	github.com/lib/pq v1.10.7
-	github.com/thanhpk/randstr v1.0.4
+	github.com/thanhpk/randstr v1.0.5
 )
 
 require (
