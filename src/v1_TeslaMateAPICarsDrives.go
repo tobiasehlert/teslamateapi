@@ -20,21 +20,21 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 	// creating structs for /cars/<CarID>/drives
 	// Car struct - child of Data
 	type Car struct {
-		CarID   int    	   `json:"car_id"`   // smallint
+		CarID   int        `json:"car_id"`   // smallint
 		CarName NullString `json:"car_name"` // text
 	}
 	// AddressDetails struct - child of Drive
 	type AddressDetails struct {
-		AddressID          int         `json:"address_id"`         // integer
-		HouseNumber	   NullString  `json:"house_number"`       // text
-		Road	   	   NullString  `json:"road"`         	   // text
-		Neighbourhood	   NullString  `json:"neighbourhood"`      // text
-		City	   	   NullString  `json:"city"`         	   // text
-		County	           NullString  `json:"county"`         	   // text
-		PostCode	   NullString  `json:"post_code"`          // text
-		State	           NullString  `json:"state"`         	   // text
-		StateDistrict	   NullString  `json:"state_district"`     // text
-		Country	           NullString  `json:"country"`            // text
+		AddressID     int        `json:"address_id"`     // integer
+		HouseNumber   NullString `json:"house_number"`   // text
+		Road          NullString `json:"road"`           // text
+		Neighbourhood NullString `json:"neighbourhood"`  // text
+		City          NullString `json:"city"`           // text
+		County        NullString `json:"county"`         // text
+		PostCode      NullString `json:"post_code"`      // text
+		State         NullString `json:"state"`          // text
+		StateDistrict NullString `json:"state_district"` // text
+		Country       NullString `json:"country"`        // text
 	}
 	// OdometerDetails struct - child of Drives
 	type OdometerDetails struct {
@@ -59,25 +59,25 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 	}
 	// Drives struct - child of Data
 	type Drives struct {
-		DriveID         	int             `json:"drive_id"`         	// int
-		StartDate       	string          `json:"start_date"`       	// string
-		EndDate         	string          `json:"end_date"`         	// string
-		StartAddress    	string          `json:"start_address"`    	// string
-		EndAddress      	string          `json:"end_address"`      	// string
-		StartAddressDetails	AddressDetails  `json:"start_address_details"`	// struct
-		EndAddressDetails	AddressDetails  `json:"end_address_details"`	// struct
-		OdometerDetails 	OdometerDetails `json:"odometer_details"` 	// OdometerDetails
-		DurationMin     	int             `json:"duration_min"`     	// int
-		DurationStr     	string          `json:"duration_str"`     	// string
-		SpeedMax        	int             `json:"speed_max"`        	// int
-		SpeedAvg        	float64         `json:"speed_avg"`        	// float64
-		PowerMax        	int             `json:"power_max"`        	// int
-		PowerMin        	int             `json:"power_min"`        	// int
-		BatteryDetails  	BatteryDetails  `json:"battery_details"`  	// BatteryDetails
-		RangeIdeal      	PreferredRange  `json:"range_ideal"`      	// PreferredRange
-		RangeRated      	PreferredRange  `json:"range_rated"`      	// PreferredRange
-		OutsideTempAvg  	float64         `json:"outside_temp_avg"` 	// float64
-		InsideTempAvg   	float64         `json:"inside_temp_avg"`  	// float64
+		DriveID             int             `json:"drive_id"`              // int
+		StartDate           string          `json:"start_date"`            // string
+		EndDate             string          `json:"end_date"`              // string
+		StartAddress        string          `json:"start_address"`         // string
+		EndAddress          string          `json:"end_address"`           // string
+		StartAddressDetails AddressDetails  `json:"start_address_details"` // struct
+		EndAddressDetails   AddressDetails  `json:"end_address_details"`   // struct
+		OdometerDetails     OdometerDetails `json:"odometer_details"`      // OdometerDetails
+		DurationMin         int             `json:"duration_min"`          // int
+		DurationStr         string          `json:"duration_str"`          // string
+		SpeedMax            int             `json:"speed_max"`             // int
+		SpeedAvg            float64         `json:"speed_avg"`             // float64
+		PowerMax            int             `json:"power_max"`             // int
+		PowerMin            int             `json:"power_min"`             // int
+		BatteryDetails      BatteryDetails  `json:"battery_details"`       // BatteryDetails
+		RangeIdeal          PreferredRange  `json:"range_ideal"`           // PreferredRange
+		RangeRated          PreferredRange  `json:"range_rated"`           // PreferredRange
+		OutsideTempAvg      float64         `json:"outside_temp_avg"`      // float64
+		InsideTempAvg       float64         `json:"inside_temp_avg"`       // float64
 	}
 	// TeslaMateUnits struct - child of Data
 	type TeslaMateUnits struct {
@@ -97,9 +97,9 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 
 	// creating required vars
 	var (
-		DrivesData                             []Drives
-		UnitsLength, UnitsTemperature	       string
-		CarName 			       NullString
+		CarName                       NullString
+		DrivesData                    []Drives
+		UnitsLength, UnitsTemperature string
 	)
 
 	// calculate offset based on page (page 0 is not possible, since first page is minimum 1)
