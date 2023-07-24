@@ -3,7 +3,7 @@ module github.com/tobiasehlert/teslamateapi
 go 1.20
 
 require (
-	github.com/eclipse/paho.mqtt.golang v1.4.2
+	github.com/eclipse/paho.mqtt.golang v1.4.3
 	github.com/gin-gonic/gin v1.9.1
 	github.com/lib/pq v1.10.9
 	github.com/thanhpk/randstr v1.0.6
