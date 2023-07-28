@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.16.2] - 2023-07-28
+
+### Changed
+* Bump github.com/thanhpk/randstr from 1.0.5 to 1.0.6 ([#222](https://github.com/tobiasehlert/teslamateapi/pull/222) by @dependabot)
+* Bump github.com/gin-gonic/gin from 1.9.0 to 1.9.1 ([#223](https://github.com/tobiasehlert/teslamateapi/pull/223) by @dependabot)
+* Bump golang from 1.20.4 to 1.20.6 ([#225](https://github.com/tobiasehlert/teslamateapi/pull/225), [#230](https://github.com/tobiasehlert/teslamateapi/pull/230) by @dependabot)
+* Bump github.com/eclipse/paho.mqtt.golang from 1.4.2 to 1.4.3 ([#229](https://github.com/tobiasehlert/teslamateapi/pull/229) by @dependabot)
+
 ## [1.16.1] - 2023-05-22
 
 ### Changed
@@ -342,6 +350,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.16.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.1...v1.16.2
 [1.16.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.0...v1.16.1
 [1.16.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.15.0...v1.16.0
 [1.15.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.14.0...v1.15.0
