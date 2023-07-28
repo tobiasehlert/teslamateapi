@@ -6,13 +6,13 @@ on:
       - "main"
       - "feature-*"
       - "bug-*"
-    tags:
-      - "v*"
     paths:
       - "src/**"
       - "Dockerfile"
       - "go.mod"
       - "go.sum"
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -32,6 +32,7 @@ jobs:
             type=edge
             type=ref,event=branch,enable=${{ (github.ref != 'refs/heads/main') }}
             type=semver,pattern={{version}}
+            type=semver,pattern={{major}}
             type=semver,pattern={{major}}.{{minor}}
 
       - name: Set up QEMU
@@ -76,3 +77,12 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache
           build-args: |
             apiVersion=${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.version'] }}
+
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: peterevans/dockerhub-description
+          short-description: ${{ github.event.repository.description }}
