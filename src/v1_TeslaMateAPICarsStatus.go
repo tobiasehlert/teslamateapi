@@ -462,8 +462,8 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	}
 	// Cars struct - child of Data
 	type Car struct {
-		CarID   int    `json:"car_id"`   // smallint
-		CarName string `json:"car_name"` // text
+		CarID   int        `json:"car_id"`   // smallint
+		CarName NullString `json:"car_name"` // text (nullable)
 	}
 	// TeslaMateUnits struct - child of Data
 	type TeslaMateUnits struct {

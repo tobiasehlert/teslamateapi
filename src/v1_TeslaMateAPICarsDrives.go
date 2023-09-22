@@ -20,8 +20,8 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 	// creating structs for /cars/<CarID>/drives
 	// Car struct - child of Data
 	type Car struct {
-		CarID   int    `json:"car_id"`   // smallint
-		CarName string `json:"car_name"` // text
+		CarID   int        `json:"car_id"`   // smallint
+		CarName NullString `json:"car_name"` // text (nullable)
 	}
 	// OdometerDetails struct - child of Drives
 	type OdometerDetails struct {
@@ -82,8 +82,9 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 
 	// creating required vars
 	var (
-		DrivesData                             []Drives
-		UnitsLength, UnitsTemperature, CarName string
+		CarName                       NullString
+		DrivesData                    []Drives
+		UnitsLength, UnitsTemperature string
 	)
 
 	// calculate offset based on page (page 0 is not possible, since first page is minimum 1)
