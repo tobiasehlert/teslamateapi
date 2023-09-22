@@ -23,8 +23,8 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 	// creating structs for /cars/<CarID>/drives/<DriveID>
 	// Car struct - child of Data
 	type Car struct {
-		CarID   int    `json:"car_id"`   // smallint
-		CarName string `json:"car_name"` // text
+		CarID   int        `json:"car_id"`   // smallint
+		CarName NullString `json:"car_name"` // text (nullable)
 	}
 	// OdometerDetails struct - child of Drives
 	type OdometerDetails struct {
@@ -121,9 +121,10 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 
 	// creating required vars
 	var (
-		drive                                  Drive
-		DriveDetailsData                       []DriveDetails
-		UnitsLength, UnitsTemperature, CarName string
+		CarName                       NullString
+		drive                         Drive
+		DriveDetailsData              []DriveDetails
+		UnitsLength, UnitsTemperature string
 	)
 
 	// getting data from database
