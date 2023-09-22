@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"strings"
@@ -163,7 +163,7 @@ func initCommandAllowList() {
 		}
 
 		defer commandAllowListFile.Close()
-		byteValue, err := ioutil.ReadAll(commandAllowListFile)
+		byteValue, err := io.ReadAll(commandAllowListFile)
 		if err != nil {
 			log.Println("[error] getAllowList error while reading COMMANDS_ALLOWLIST: " + commandAllowListLocation + " it will be ignored")
 			return

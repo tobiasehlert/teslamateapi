@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -50,10 +50,10 @@ func TeslaMateAPICarsLoggingV1(c *gin.Context) {
 	}
 
 	// getting request body to pass to Tesla
-	reqBody, err := ioutil.ReadAll(c.Request.Body)
+	reqBody, err := io.ReadAll(c.Request.Body)
 	if err != nil {
-		log.Println("[error] TeslaMateAPICarsLoggingV1 error in first ioutil.ReadAll", err)
-		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsLoggingV1", gin.H{"error": "internal ioutil reading error"})
+		log.Println("[error] TeslaMateAPICarsLoggingV1 error in first io.ReadAll", err)
+		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsLoggingV1", gin.H{"error": "internal io reading error"})
 		return
 	}
 
@@ -88,10 +88,10 @@ func TeslaMateAPICarsLoggingV1(c *gin.Context) {
 	defer resp.Body.Close()
 	defer client.CloseIdleConnections()
 
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Println("[error] TeslaMateAPICarsLoggingV1 error in second ioutil.ReadAll:", err)
-		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsLoggingV1", gin.H{"error": "internal ioutil reading error"})
+		log.Println("[error] TeslaMateAPICarsLoggingV1 error in second io.ReadAll:", err)
+		TeslaMateAPIHandleOtherResponse(c, http.StatusInternalServerError, "TeslaMateAPICarsLoggingV1", gin.H{"error": "internal io reading error"})
 		return
 	}
 	json.Unmarshal([]byte(respBody), &jsonData)
