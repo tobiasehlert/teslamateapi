@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.16.3] - 2023-09-22
+
+### Changed
+* bump actions/checkout from 3 to 4 ([#233](https://github.com/tobiasehlert/teslamateapi/pull/233) by [dependabot](https://github.com/dependabot))
+* bump docker/build-push-action from 4 to 5 ([#239](https://github.com/tobiasehlert/teslamateapi/pull/239) by [dependabot](https://github.com/dependabot))
+* bump docker/login-action from 2 to 3 ([#238](https://github.com/tobiasehlert/teslamateapi/pull/238) by [dependabot](https://github.com/dependabot))
+* bump docker/metadata-action from 4 to 5 ([#237](https://github.com/tobiasehlert/teslamateapi/pull/237) by [dependabot](https://github.com/dependabot))
+* bump docker/setup-buildx-action from 2 to 3 ([#236](https://github.com/tobiasehlert/teslamateapi/pull/236) by [dependabot](https://github.com/dependabot))
+* bump docker/setup-qemu-action from 2 to 3 ([#235](https://github.com/tobiasehlert/teslamateapi/pull/235) by [dependabot](https://github.com/dependabot))
+* bump golang from 1.20.6 to 1.21.1 ([#231](https://github.com/tobiasehlert/teslamateapi/pull/231), [#234](https://github.com/tobiasehlert/teslamateapi/pull/234) by [dependabot](https://github.com/dependabot))
+* cleaning, bumping and enhancing ([#243](https://github.com/tobiasehlert/teslamateapi/pull/243) by [tobiasehlert](https://github.com/tobiasehlert))
+
+### Fixed
+* change CarName to be NullString instead of string ([#242](https://github.com/tobiasehlert/teslamateapi/pull/242) by [tobiasehlert](https://github.com/tobiasehlert))
+
 ## [1.16.2] - 2023-07-28
 
 ### Changed
@@ -350,6 +365,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.16.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.2...v1.16.3
 [1.16.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.1...v1.16.2
 [1.16.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.0...v1.16.1
 [1.16.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.15.0...v1.16.0
