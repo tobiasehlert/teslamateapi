@@ -17,7 +17,7 @@ type CarRegionAPI string
 
 const (
 	ChinaAPI  CarRegionAPI = "China"
-	GlobalAPI              = "Global"
+	GlobalAPI CarRegionAPI = "Global"
 )
 
 // decryptAccessToken funct to decrypt tokens from database
@@ -97,9 +97,11 @@ func decryptAccessToken(data string, encryptionKey string) string {
 		panic(err.Error())
 	}
 
-	if gin.IsDebugging() {
-		// fmt.Printf("[debug] decryptAccessToken - Decrypted: %s\n", plaintext)
-	}
+	/*
+		if gin.IsDebugging() {
+			fmt.Printf("[debug] decryptAccessToken - Decrypted: %s\n", plaintext)
+		}
+	*/
 
 	return string(plaintext)
 }
