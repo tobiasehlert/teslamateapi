@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.16.4] - 2023-09-23
+
+### Fixed
+* fix NullString issue in several endpoints ([#245](https://github.com/tobiasehlert/teslamateapi/pull/245) by [tobiasehlert](https://github.com/tobiasehlert))
+
 ## [1.16.3] - 2023-09-22
 
 ### Changed
@@ -365,6 +370,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.16.4]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.3...v1.16.4
 [1.16.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.2...v1.16.3
 [1.16.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.1...v1.16.2
 [1.16.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.0...v1.16.1
