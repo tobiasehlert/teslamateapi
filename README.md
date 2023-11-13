@@ -7,7 +7,7 @@
 [![GitHub license](https://img.shields.io/github/license/tobiasehlert/teslamateapi)](https://github.com/tobiasehlert/teslamateapi/blob/main/LICENSE)
 [![Docker pulls](https://img.shields.io/docker/pulls/tobiasehlert/teslamateapi)](https://hub.docker.com/r/tobiasehlert/teslamateapi)
 
-TeslaMateApi is a RESTful API to get data collected by self-hosted data logger **[TeslaMate](https://github.com/adriankumpf/teslamate)** in JSON.
+TeslaMateApi is a RESTful API to get data collected by self-hosted data logger **[TeslaMate](https://github.com/teslamate-org/teslamate)** in JSON.
 
 - Written in **[Golang](https://golang.org/)**
 - Data is collected from TeslaMate **Postgres** database and local **MQTT** Broker

@@ -16,7 +16,7 @@ func initCommandAllowList() {
 	// generate map of all available commands
 	CommandList := make(map[string][]string)
 
-	// https://github.com/adriankumpf/teslamate/discussions/1433
+	// https://github.com/teslamate-org/teslamate/discussions/1433
 	CommandList["COMMANDS_LOGGING"] = []string{
 		"/logging/resume",
 		"/logging/suspend",
