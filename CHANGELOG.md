@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.16.6] - 2023-12-19
+
+### Changed
+* bump golang from 1.21.2 to 1.21.5 ([#251](https://github.com/tobiasehlert/teslamateapi/pull/251), [#253](https://github.com/tobiasehlert/teslamateapi/pull/253), [#257](https://github.com/tobiasehlert/teslamateapi/pull/257) by [dependabot](https://github.com/dependabot))
+* bump actions/setup-go from 4 to 5 ([#256](https://github.com/tobiasehlert/teslamateapi/pull/256) by [dependabot](https://github.com/dependabot))
+* bump github/codeql-action from 2 to 3 ([#258](https://github.com/tobiasehlert/teslamateapi/pull/258) by [dependabot](https://github.com/dependabot))
+* bump golang.org/x/crypto from 0.14.0 to 0.17.0 ([#259](https://github.com/tobiasehlert/teslamateapi/pull/259) by [dependabot](https://github.com/dependabot))
+
 ## [1.16.5] - 2023-10-12
 
 ### Changed
@@ -377,6 +385,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.16.6]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.5...v1.16.6
 [1.16.5]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.4...v1.16.5
 [1.16.4]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.3...v1.16.4
 [1.16.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.2...v1.16.3
