@@ -79,7 +79,7 @@ jobs:
             apiVersion=${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.version'] }}
 
       - name: Docker Hub Description
-        uses: peter-evans/dockerhub-description@v3
+        uses: peter-evans/dockerhub-description@v4
         if: github.event_name == 'release'
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
