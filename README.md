@@ -92,62 +92,62 @@ Basically the same environment variables for the database, mqqt and timezone nee
 
 **Required** environment variables (even if there are some default values available)
 
-| Variable | Type | Default |
-|---|---|---|
-| **DATABASE_USER** | string | *teslamate* |
-| **DATABASE_PASS** | string | *secret* |
-| **DATABASE_NAME** | string | *teslamate* |
-| **DATABASE_HOST** | string | *database* |
-| **ENCRYPTION_KEY** | string | |
-| **MQTT_HOST** | string | *mosquitto* |
-| **TZ** | string | *Europe/Berlin* |
+| Variable           | Type   | Default         |
+| ------------------ | ------ | --------------- |
+| **DATABASE_USER**  | string | _teslamate_     |
+| **DATABASE_PASS**  | string | _secret_        |
+| **DATABASE_NAME**  | string | _teslamate_     |
+| **DATABASE_HOST**  | string | _database_      |
+| **ENCRYPTION_KEY** | string |                 |
+| **MQTT_HOST**      | string | _mosquitto_     |
+| **TZ**             | string | _Europe/Berlin_ |
 
 **Optional** environment variables
 
-| Variable | Type | Default |
-|---|---|---|
-| **TESLAMATE_SSL** | boolean | *false* |
-| **TESLAMATE_HOST** | string | *teslamate* |
-| **TESLAMATE_PORT** | string | *4000* |
-| **API_TOKEN** | string | |
-| **API_TOKEN_DISABLE** | string | *false* |
-| **DATABASE_PORT** | integer | *5432* |
-| **DATABASE_TIMEOUT** | integer | *60000* |
-| **DATABASE_SSL** | boolean | *true* |
-| **DEBUG_MODE** | boolean | *false* |
-| **DISABLE_MQTT** | boolean | *false* |
-| **MQTT_TLS** | boolean | *false* |
-| **MQTT_PORT** | integer | *1883 (if TLS is true: 8883)* |
-| **MQTT_USERNAME** | string | |
-| **MQTT_PASSWORD** | string | |
-| **MQTT_NAMESPACE** | string | |
-| **MQTT_CLIENTID** | string | *4 char random string* |
+| Variable              | Type    | Default                       |
+| --------------------- | ------- | ----------------------------- |
+| **TESLAMATE_SSL**     | boolean | _false_                       |
+| **TESLAMATE_HOST**    | string  | _teslamate_                   |
+| **TESLAMATE_PORT**    | string  | _4000_                        |
+| **API_TOKEN**         | string  |                               |
+| **API_TOKEN_DISABLE** | string  | _false_                       |
+| **DATABASE_PORT**     | integer | _5432_                        |
+| **DATABASE_TIMEOUT**  | integer | _60000_                       |
+| **DATABASE_SSL**      | boolean | _true_                        |
+| **DEBUG_MODE**        | boolean | _false_                       |
+| **DISABLE_MQTT**      | boolean | _false_                       |
+| **MQTT_TLS**          | boolean | _false_                       |
+| **MQTT_PORT**         | integer | _1883 (if TLS is true: 8883)_ |
+| **MQTT_USERNAME**     | string  |                               |
+| **MQTT_PASSWORD**     | string  |                               |
+| **MQTT_NAMESPACE**    | string  |                               |
+| **MQTT_CLIENTID**     | string  | _4 char random string_        |
 
 **Commands** environment variables
 
-| Variable | Type | Default |
-|---|---|---|
-| **ENABLE_COMMANDS** | boolean | *false* |
-| **COMMANDS_ALL** | boolean | *false* |
-| **COMMANDS_ALLOWLIST** | string | *allow_list.json* |
-| **COMMANDS_LOGGING** | boolean | *false* |
-| **COMMANDS_WAKE** | boolean | *false* |
-| **COMMANDS_ALERT** | boolean | *false* |
-| **COMMANDS_REMOTESTART** | boolean | *false* |
-| **COMMANDS_HOMELINK** | boolean | *false* |
-| **COMMANDS_SPEEDLIMIT** | boolean | *false* |
-| **COMMANDS_VALET** | boolean | *false* |
-| **COMMANDS_SENTRYMODE** | boolean | *false* |
-| **COMMANDS_DOORS** | boolean | *false* |
-| **COMMANDS_TRUNK** | boolean | *false* |
-| **COMMANDS_WINDOWS** | boolean | *false* |
-| **COMMANDS_SUNROOF** | boolean | *false* |
-| **COMMANDS_CHARGING** | boolean | *false* |
-| **COMMANDS_CLIMATE** | boolean | *false* |
-| **COMMANDS_MEDIA** | boolean | *false* |
-| **COMMANDS_SHARING** | boolean | *false* |
-| **COMMANDS_SOFTWAREUPDATE** | boolean | *false* |
-| **COMMANDS_UNKNOWN** | boolean | *false* |
+| Variable                    | Type    | Default           |
+| --------------------------- | ------- | ----------------- |
+| **ENABLE_COMMANDS**         | boolean | _false_           |
+| **COMMANDS_ALL**            | boolean | _false_           |
+| **COMMANDS_ALLOWLIST**      | string  | _allow_list.json_ |
+| **COMMANDS_LOGGING**        | boolean | _false_           |
+| **COMMANDS_WAKE**           | boolean | _false_           |
+| **COMMANDS_ALERT**          | boolean | _false_           |
+| **COMMANDS_REMOTESTART**    | boolean | _false_           |
+| **COMMANDS_HOMELINK**       | boolean | _false_           |
+| **COMMANDS_SPEEDLIMIT**     | boolean | _false_           |
+| **COMMANDS_VALET**          | boolean | _false_           |
+| **COMMANDS_SENTRYMODE**     | boolean | _false_           |
+| **COMMANDS_DOORS**          | boolean | _false_           |
+| **COMMANDS_TRUNK**          | boolean | _false_           |
+| **COMMANDS_WINDOWS**        | boolean | _false_           |
+| **COMMANDS_SUNROOF**        | boolean | _false_           |
+| **COMMANDS_CHARGING**       | boolean | _false_           |
+| **COMMANDS_CLIMATE**        | boolean | _false_           |
+| **COMMANDS_MEDIA**          | boolean | _false_           |
+| **COMMANDS_SHARING**        | boolean | _false_           |
+| **COMMANDS_SOFTWAREUPDATE** | boolean | _false_           |
+| **COMMANDS_UNKNOWN**        | boolean | _false_           |
 
 ## API documentation
 
@@ -185,7 +185,7 @@ There are two options available for authentication to be done.
 
 2. Adding URI parameter `?token=<token>` to the endpoint you try to reach. (not a good option)
 
-\* *Note: If you use the second option and your logs get compromised, your token will be leaked.*
+\* _Note: If you use the second option and your logs get compromised, your token will be leaked._
 
 ### Commands
 
@@ -201,7 +201,7 @@ There are 3 ways of using Commands:
 
 3. The most coarse option `COMMANDS_ALL=true` will enable all commands (specific groups and allow_list will be ignored).
 
-\* *Note: if `COMMANDS_ALL` or any specific group of commands has been enabled `COMMANDS_ALLOWLIST` is ignored.*
+\* _Note: if `COMMANDS_ALL` or any specific group of commands has been enabled `COMMANDS_ALLOWLIST` is ignored._
 
 A list of possible commands can be found under [environment variables](#environment-variables).
 
