@@ -109,6 +109,10 @@ func initCommandAllowList() {
 		"/command/set_bioweapon_mode",
 		"/command/set_climate_keeper_mode",
 		"/command/remote_auto_seat_climate_request",
+		"/command/set_cop_temp",
+		"/command/set_cabin_overheat_protection",
+		"/command/remote_auto_steering_wheel_heat_climate_request", // missing documentation
+		"/command/remote_steering_wheel_heat_level_request",        // missing documentation
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/media
@@ -120,12 +124,12 @@ func initCommandAllowList() {
 		"/command/media_prev_fav",
 		"/command/media_volume_up",
 		"/command/media_volume_down",
+		"/command/adjust_volume",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/sharing
 	CommandList["COMMANDS_SHARING"] = []string{
 		"/command/share",
-		"/command/navigation_sc_request",
 	}
 
 	// https://tesla-api.timdorr.com/vehicle/commands/softwareupdate
@@ -138,6 +142,16 @@ func initCommandAllowList() {
 	CommandList["COMMANDS_UNKNOWN"] = []string{
 		"/command/upcoming_calendar_entries",
 		"/command/dashcam_save_clip",
+		"/command/navigation_sc_request",
+		"/command/remote_boombox",
+		"/command/get_active_route",
+		"/command/get_managed_charging_sites",
+		"/command/add_managed_charging_site",
+		"/command/remove_managed_charging_site",
+		"/command/update_charge_on_solar_feature",
+		"/command/get_charge_on_solar_feature",
+		"/command/take_drivenote",
+		"/command/navigation_gps_request",
 	}
 
 	// allow all commands available below
