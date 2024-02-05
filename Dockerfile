@@ -20,8 +20,8 @@ COPY src/ .
 RUN CGO_ENABLED=0 go build -ldflags="-w -s -X 'main.apiVersion=${apiVersion}'" -o app ./...
 
 
-# get latest alpine container
-FROM alpine:latest
+# get alpine container
+FROM alpine:alpine:3.19.1
 
 # add ca-certificates
 RUN apk --no-cache add ca-certificates tzdata
