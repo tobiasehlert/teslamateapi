@@ -21,7 +21,7 @@ RUN CGO_ENABLED=0 go build -ldflags="-w -s -X 'main.apiVersion=${apiVersion}'" -
 
 
 # get alpine container
-FROM alpine:alpine:3.19.1
+FROM alpine:3.19.1
 
 # create nonroot user
 RUN addgroup -S nonroot \
