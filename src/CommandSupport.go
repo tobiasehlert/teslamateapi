@@ -27,6 +27,14 @@ func initCommandAllowList() {
 		"/wake_up",
 	}
 
+	// https://tesla-api.timdorr.com/vehicle/state
+	CommandList["COMMANDS_STATE"] = []string{
+		"/vehicle_data",
+		"/mobile_enabled",
+		"/nearby_charging_sites",
+		"/release_notes",
+	}
+
 	// https://tesla-api.timdorr.com/vehicle/commands/alerts
 	CommandList["COMMANDS_ALERT"] = []string{
 		"/command/honk_horn",

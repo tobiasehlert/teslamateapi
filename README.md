@@ -14,7 +14,7 @@ TeslaMateApi is a RESTful API to get data collected by self-hosted data logger *
 - Endpoints return data in JSON format
 - Send commands to your Tesla through the TeslaMateApi
 
-### Table of Contents
+## Table of Contents
 
 - [How to use](#how-to-use)
   - [Docker-compose](#docker-compose)
@@ -169,6 +169,10 @@ More detailed documentation of every endpoint will come..
 - GET `/api/v1/cars/:CarID/logging`
 - GET `/api/v1/cars/:CarID/status`
 - GET `/api/v1/cars/:CarID/updates`
+- GET `/api/v1/cars/:CarID/vehicle_data`
+- GET `/api/v1/cars/:CarID/mobile_enabled`
+- GET `/api/v1/cars/:CarID/nearby_charging_sites`
+- GET `/api/v1/cars/:CarID/release_notes`
 - POST `/api/v1/cars/:CarID/wake_up`
 - GET `/api/v1/globalsettings`
 - GET `/api/ping`
