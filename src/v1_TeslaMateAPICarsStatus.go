@@ -75,6 +75,9 @@ type statusInfo struct {
 	MQTTDataTpmsSoftWarningFR          bool
 	MQTTDataTpmsSoftWarningRL          bool
 	MQTTDataTpmsSoftWarningRR          bool
+	MQTTDataActiveRouteDestination     string
+	MQTTDataActiveRouteLatitude        float64
+	MQTTDataActiveRouteLongitude       float64
 }
 
 type statusCache struct {
@@ -342,6 +345,12 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		stat.MQTTDataTpmsSoftWarningRL = convertStringToBool(string(msg.Payload()))
 	case "tpms_soft_warning_rr":
 		stat.MQTTDataTpmsSoftWarningRR = convertStringToBool(string(msg.Payload()))
+	case "active_route_destination":
+		stat.MQTTDataActiveRouteDestination = string(msg.Payload())
+	case "active_route_latitude":
+		stat.MQTTDataActiveRouteLatitude = convertStringToFloat(string(msg.Payload()))
+	case "active_route_longitude":
+		stat.MQTTDataActiveRouteLongitude = convertStringToFloat(string(msg.Payload()))
 	default:
 		log.Printf("[warning] TeslaMateAPICarsStatusV1 mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
 	}
@@ -442,11 +451,14 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	}
 	// DrivingDetails struct - child of MQTTInformation
 	type DrivingDetails struct {
-		ShiftState string `json:"shift_state"` // D - Current/Last Shift State (D/N/R/P)
-		Power      int    `json:"power"`       // -9 Current battery power in watts. Positive value on discharge, negative value on charge
-		Speed      int    `json:"speed"`       // 12 - Current Speed in km/h
-		Heading    int    `json:"heading"`     // 340 - Last reported car direction
-		Elevation  int    `json:"elevation"`   // 70 - Current elevation above sea level in meters
+		ActiveRouteDestination string  `json:"active_route_destination"` // Home - Navigation destination name
+		ActiveRouteLatitude    float64 `json:"active_route_latitude"`    // 35.278131 - Navigation destination latitude
+		ActiveRouteLongitude   float64 `json:"active_route_longitude"`   // 29.744801 - Navigation destination longitude
+		ShiftState             string  `json:"shift_state"`              // D - Current/Last Shift State (D/N/R/P)
+		Power                  int     `json:"power"`                    // -9 Current battery power in watts. Positive value on discharge, negative value on charge
+		Speed                  int     `json:"speed"`                    // 12 - Current Speed in km/h
+		Heading                int     `json:"heading"`                  // 340 - Last reported car direction
+		Elevation              int     `json:"elevation"`                // 70 - Current elevation above sea level in meters
 	}
 	// TpmsDetails struct - child of MQTTInformation
 	type TpmsDetails struct {
@@ -541,6 +553,9 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	MQTTInformationData.CarGeodata.Geofence = stat.MQTTDataGeofence
 	MQTTInformationData.CarGeodata.Latitude = stat.MQTTDataLatitude
 	MQTTInformationData.CarGeodata.Longitude = stat.MQTTDataLongitude
+	MQTTInformationData.DrivingDetails.ActiveRouteDestination = stat.MQTTDataActiveRouteDestination
+	MQTTInformationData.DrivingDetails.ActiveRouteLatitude = stat.MQTTDataActiveRouteLatitude
+	MQTTInformationData.DrivingDetails.ActiveRouteLongitude = stat.MQTTDataActiveRouteLongitude
 	MQTTInformationData.DrivingDetails.ShiftState = stat.MQTTDataShiftState
 	MQTTInformationData.DrivingDetails.Power = stat.MQTTDataPower
 	MQTTInformationData.DrivingDetails.Speed = stat.MQTTDataSpeed
