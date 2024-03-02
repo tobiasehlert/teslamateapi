@@ -71,6 +71,10 @@ type statusInfo struct {
 	MQTTDataTpmsPressureFR             float64
 	MQTTDataTpmsPressureRL             float64
 	MQTTDataTpmsPressureRR             float64
+	MQTTDataTpmsSoftWarningFL          bool
+	MQTTDataTpmsSoftWarningFR          bool
+	MQTTDataTpmsSoftWarningRL          bool
+	MQTTDataTpmsSoftWarningRR          bool
 }
 
 type statusCache struct {
@@ -330,6 +334,14 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		stat.MQTTDataTpmsPressureRL = convertStringToFloat(string(msg.Payload()))
 	case "tpms_pressure_rr":
 		stat.MQTTDataTpmsPressureRR = convertStringToFloat(string(msg.Payload()))
+	case "tpms_soft_warning_fl":
+		stat.MQTTDataTpmsSoftWarningFL = convertStringToBool(string(msg.Payload()))
+	case "tpms_soft_warning_fr":
+		stat.MQTTDataTpmsSoftWarningFR = convertStringToBool(string(msg.Payload()))
+	case "tpms_soft_warning_rl":
+		stat.MQTTDataTpmsSoftWarningRL = convertStringToBool(string(msg.Payload()))
+	case "tpms_soft_warning_rr":
+		stat.MQTTDataTpmsSoftWarningRR = convertStringToBool(string(msg.Payload()))
 	default:
 		log.Printf("[warning] TeslaMateAPICarsStatusV1 mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
 	}
@@ -436,12 +448,16 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 		Heading    int    `json:"heading"`     // 340 - Last reported car direction
 		Elevation  int    `json:"elevation"`   // 70 - Current elevation above sea level in meters
 	}
-	// TpmsDetails struct - child of MQTTInformatiojn
+	// TpmsDetails struct - child of MQTTInformation
 	type TpmsDetails struct {
-		TpmsPressureFL float64 `json:"tpms_pressure_fl"` // 2.9 - Tire pressure measure in BAR, front left tire
-		TpmsPressureFR float64 `json:"tpms_pressure_fr"` // 2.8 - Tire pressure measure in BAR, front right tire
-		TpmsPressureRL float64 `json:"tpms_pressure_rl"` // 2.9 - Tire pressure measure in BAR, rear left tire
-		TpmsPressureRR float64 `json:"tpms_pressure_rr"` // 2.8 - Tire pressure measure in BAR, rear right tire
+		TpmsPressureFL    float64 `json:"tpms_pressure_fl"`     // 2.9 - Tire pressure measure in BAR, front left tire
+		TpmsPressureFR    float64 `json:"tpms_pressure_fr"`     // 2.8 - Tire pressure measure in BAR, front right tire
+		TpmsPressureRL    float64 `json:"tpms_pressure_rl"`     // 2.9 - Tire pressure measure in BAR, rear left tire
+		TpmsPressureRR    float64 `json:"tpms_pressure_rr"`     // 2.8 - Tire pressure measure in BAR, rear right tire
+		TpmsSoftWarningFL bool    `json:"tpms_soft_warning_fl"` // true  - Indicates if the Tire pressure measure is soft warning, front left tire
+		TpmsSoftWarningFR bool    `json:"tpms_soft_warning_fr"` // false - Indicates if the Tire pressure measure is soft warning, front right tire
+		TpmsSoftWarningRL bool    `json:"tpms_soft_warning_rl"` // false - Indicates if the Tire pressure measure is soft warning, rear left tire
+		TpmsSoftWarningRR bool    `json:"tpms_soft_warning_rr"` // false - Indicates if the Tire pressure measure is soft warning, rear right tire
 	}
 	// MQTTInformation struct - child of Cars
 	type MQTTInformation struct {
@@ -563,6 +579,10 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	MQTTInformationData.TpmsDetails.TpmsPressureFR = stat.MQTTDataTpmsPressureFR
 	MQTTInformationData.TpmsDetails.TpmsPressureRL = stat.MQTTDataTpmsPressureRL
 	MQTTInformationData.TpmsDetails.TpmsPressureRR = stat.MQTTDataTpmsPressureRR
+	MQTTInformationData.TpmsDetails.TpmsSoftWarningFL = stat.MQTTDataTpmsSoftWarningFL
+	MQTTInformationData.TpmsDetails.TpmsSoftWarningFR = stat.MQTTDataTpmsSoftWarningFR
+	MQTTInformationData.TpmsDetails.TpmsSoftWarningRL = stat.MQTTDataTpmsSoftWarningRL
+	MQTTInformationData.TpmsDetails.TpmsSoftWarningRR = stat.MQTTDataTpmsSoftWarningRR
 
 	// converting values based of settings UnitsLength
 	if UnitsLength == "mi" {
