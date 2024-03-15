@@ -1,5 +1,5 @@
 # get golang container
-FROM golang:1.22.1 as builder
+FROM golang:1.22.1 AS builder
 
 # get args
 ARG apiVersion=unknown
@@ -21,7 +21,7 @@ RUN CGO_ENABLED=0 go build -ldflags="-w -s -X 'main.apiVersion=${apiVersion}'" -
 
 
 # get alpine container
-FROM alpine:3.19.1 as app
+FROM alpine:3.19.1 AS app
 
 # create workdir
 WORKDIR /opt/app
