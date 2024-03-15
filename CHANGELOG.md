@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.17.1] - 2024-03-15
+
+### Fixed
+
+- fix permission issues with Dockerfile nonroot implementation ([#274](https://github.com/tobiasehlert/teslamateapi/pull/274) by [tobiasehlert](https://github.com/tobiasehlert))
+
 ## [1.17.0] - 2024-03-15
 
 ### Added
@@ -472,6 +478,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.17.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.17.0...v1.17.1
 [1.17.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.6...v1.17.0
 [1.16.6]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.5...v1.16.6
 [1.16.5]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.4...v1.16.5
