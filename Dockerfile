@@ -1,5 +1,5 @@
 # get golang container
-FROM golang:1.22.1
+FROM golang:1.22.1 AS builder
 
 # get args
 ARG apiVersion=unknown
@@ -21,23 +21,24 @@ RUN CGO_ENABLED=0 go build -ldflags="-w -s -X 'main.apiVersion=${apiVersion}'" -
 
 
 # get alpine container
-FROM alpine:3.19.1
-
-# create nonroot user
-RUN addgroup -S nonroot \
-  && adduser -S nonroot -G nonroot
-
-# add ca-certificates
-RUN apk --no-cache add ca-certificates tzdata
+FROM alpine:3.19.1 AS app
 
 # create workdir
-WORKDIR /root/
+WORKDIR /opt/app
 
-# copy binary from first container
-COPY --from=0 /go/src/app .
+# add ca-certificates and tzdata
+RUN apk --no-cache add ca-certificates tzdata
 
-# set user
-USER nonroot
+# create nonroot user and group
+RUN addgroup -S nonroot && \
+  adduser -S nonroot -G nonroot && \
+  chown -R nonroot:nonroot .
+
+# set user to nonroot
+USER nonroot:nonroot
+
+# copy binary from builder
+COPY --from=builder --chown=nonroot:nonroot --chmod=544 /go/src/app .
 
 # expose port 8080
 EXPOSE 8080
