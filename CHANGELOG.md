@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.17.0] - 2024-03-15
+
+### Added
+
+- add tire pressure warning and active route from mqtt ([#270](https://github.com/tobiasehlert/teslamateapi/pull/270) by [tobiasehlert](https://github.com/tobiasehlert))
+
+### Changed
+
+- alignment of commands to version 4.23.6 ([#265](https://github.com/tobiasehlert/teslamateapi/pull/265) by [tobiasehlert](https://github.com/tobiasehlert))
+- bump actions/cache from 3 to 4 ([#261](https://github.com/tobiasehlert/teslamateapi/pull/261) by [dependabot](https://github.com/dependabot))
+- bump golang from 1.21.5 to 1.22.1 ([#260](https://github.com/tobiasehlert/teslamateapi/pull/260), [#268](https://github.com/tobiasehlert/teslamateapi/pull/268), [#271](https://github.com/tobiasehlert/teslamateapi/pull/271) by [dependabot](https://github.com/dependabot))
+- bump google.golang.org/protobuf from 1.32.0 to 1.33.0 ([#272](https://github.com/tobiasehlert/teslamateapi/pull/272) by [dependabot](https://github.com/dependabot))
+- bump peter-evans/dockerhub-description from 3 to 4 ([#262](https://github.com/tobiasehlert/teslamateapi/pull/262) by [dependabot](https://github.com/dependabot))
+- update Dockerfile to specific version and use of nonroot user ([#266](https://github.com/tobiasehlert/teslamateapi/pull/266) by [tobiasehlert](https://github.com/tobiasehlert))
+- updating go mods and linting markdown files ([#264](https://github.com/tobiasehlert/teslamateapi/pull/264) by [tobiasehlert](https://github.com/tobiasehlert))
+
+### Fixed
+
+- fix Dockerfile alpine container typo ([#267](https://github.com/tobiasehlert/teslamateapi/pull/267) by [tobiasehlert](https://github.com/tobiasehlert))
+
 ## [1.16.6] - 2023-12-19
 
 ### Changed
@@ -452,6 +472,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.17.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.6...v1.17.0
 [1.16.6]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.5...v1.16.6
 [1.16.5]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.4...v1.16.5
 [1.16.4]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.3...v1.16.4
