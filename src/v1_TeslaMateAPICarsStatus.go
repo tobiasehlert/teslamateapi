@@ -351,6 +351,8 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		stat.MQTTDataActiveRouteLatitude = convertStringToFloat(string(msg.Payload()))
 	case "active_route_longitude":
 		stat.MQTTDataActiveRouteLongitude = convertStringToFloat(string(msg.Payload()))
+	case "location":
+		// doing nothing, since this is identical data to latitude and longitude topics
 	default:
 		log.Printf("[warning] TeslaMateAPICarsStatusV1 mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
 	}
