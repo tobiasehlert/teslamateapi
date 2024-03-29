@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -78,6 +79,10 @@ type statusInfo struct {
 	MQTTDataActiveRouteDestination     string
 	MQTTDataActiveRouteLatitude        float64
 	MQTTDataActiveRouteLongitude       float64
+	MQTTDataLocation                   struct {
+		MQTTDataLatitude  float64
+		MQTTDataLongitude float64
+	}
 }
 
 type statusCache struct {
@@ -351,6 +356,11 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		stat.MQTTDataActiveRouteLatitude = convertStringToFloat(string(msg.Payload()))
 	case "active_route_longitude":
 		stat.MQTTDataActiveRouteLongitude = convertStringToFloat(string(msg.Payload()))
+	case "location":
+		err := json.Unmarshal(msg.Payload(), &stat.MQTTDataLocation)
+		if err != nil {
+			log.Printf("[warning] TeslaMateAPICarsStatusV1 mqtt.MessageHandler issue.. extraction of data for location faulty: %v", err)
+		}
 	default:
 		log.Printf("[warning] TeslaMateAPICarsStatusV1 mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
 	}
@@ -404,11 +414,17 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 		SpoilerType   string `json:"spoiler_type"`   // None - The spoiler type
 		WheelType     string `json:"wheel_type"`     // Pinwheel18 - The wheel type
 	}
+	// Location struct - child of CarGeodata
+	type Location struct {
+		Latitude  float64 `json:"latitude"`  // 37.889544 - Last reported car latitude
+		Longitude float64 `json:"longitude"` // 41.128817 - Last reported car longitude
+	}
 	// CarGeodata struct - child of MQTTInformation
 	type CarGeodata struct {
-		Geofence  string  `json:"geofence"`  // Home - The name of the Geo-fence, if one exists at the current position
-		Latitude  float64 `json:"latitude"`  // 35.278131 - Last reported car latitude
-		Longitude float64 `json:"longitude"` // 29.744801 - Last reported car longitude
+		Geofence  string   `json:"geofence"`  // Home - The name of the Geo-fence, if one exists at the current position
+		Latitude  float64  `json:"latitude"`  // 35.278131 - Last reported car latitude
+		Longitude float64  `json:"longitude"` // 29.744801 - Last reported car longitude
+		Location  Location `json:"location"`  // struct
 	}
 	// CarStatus struct - child of MQTTInformation
 	type CarStatus struct {
@@ -598,6 +614,8 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	MQTTInformationData.TpmsDetails.TpmsSoftWarningFR = stat.MQTTDataTpmsSoftWarningFR
 	MQTTInformationData.TpmsDetails.TpmsSoftWarningRL = stat.MQTTDataTpmsSoftWarningRL
 	MQTTInformationData.TpmsDetails.TpmsSoftWarningRR = stat.MQTTDataTpmsSoftWarningRR
+	MQTTInformationData.CarGeodata.Location.Latitude = stat.MQTTDataLocation.MQTTDataLatitude
+	MQTTInformationData.CarGeodata.Location.Longitude = stat.MQTTDataLocation.MQTTDataLongitude
 
 	// converting values based of settings UnitsLength
 	if UnitsLength == "mi" {
