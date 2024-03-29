@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.17.2] - 2024-03-30
+
+### Changed
+
+- bump github.com/gin-contrib/gzip from 0.0.6 to 1.0.0 ([#276](https://github.com/tobiasehlert/teslamateapi/pull/276) by [dependabot](https://github.com/dependabot))
+
+### Fixed
+
+- fix: issue after location mqtt implementation ([#278](https://github.com/tobiasehlert/teslamateapi/pull/278) by [tobiasehlert](https://github.com/tobiasehlert))
+
 ## [1.17.1] - 2024-03-15
 
 ### Fixed
@@ -478,6 +488,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.17.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.17.1...v1.17.2
 [1.17.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.17.0...v1.17.1
 [1.17.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.6...v1.17.0
 [1.16.6]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.5...v1.16.6
