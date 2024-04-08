@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
   packages: write
 
 jobs:
@@ -41,6 +42,10 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+
+      - name: Install Cosign
+        if: github.event_name != 'pull_request'
+        uses: sigstore/cosign-installer@v3
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -79,6 +84,15 @@ jobs:
           build-args: |
             apiVersion=${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.version'] }}
 
+      - name: Sign the images (with GitHub OIDC Token)
+        if: github.event_name != 'pull_request'
+        run: |
+          cosign sign --yes --recursive \
+            tobiasehlert/teslamateapi@${{ steps.docker_build.outputs.digest }}
+
+          cosign sign --yes --recursive \
+            ghcr.io/tobiasehlert/teslamateapi@${{ steps.docker_build.outputs.digest }}
+
       - name: Inspect image
         run: |
           echo "::group::Inspecting Manifest"
@@ -95,6 +109,22 @@ jobs:
 
           echo "::group::Inspecting (linux/amd64) SBOM"
           docker buildx imagetools inspect ${{ fromJson(steps.docker_meta.outputs.json).tags[0] }}@${{ steps.docker_build.outputs.digest }} --format '{{ json (index .SBOM "linux/amd64") }}'
+          echo "::endgroup::"
+
+      - name: Verify cosign signatures
+        run: |
+          echo "::group::Verify signature (DockerHub)"
+          cosign verify --rekor-url https://rekor.sigstore.dev \
+            --certificate-identity "https://github.com/${{ github.repository }}" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            tobiasehlert/teslamateapi@${{ steps.docker_build.outputs.digest }}
+          echo "::endgroup::"
+
+          echo "::group::Verify signature (GitHub Container Registry)"
+          cosign verify --rekor-url https://rekor.sigstore.dev \
+            --certificate-identity "https://github.com/${{ github.repository }}" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            ghcr.io/tobiasehlert/teslamateapi@${{ steps.docker_build.outputs.digest }}
           echo "::endgroup::"
 
   dockerhub:
