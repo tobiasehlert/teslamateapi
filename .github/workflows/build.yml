@@ -86,15 +86,15 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::Inspecting (linux/amd64) Image"
-          docker buildx imagetools inspect ${{ fromJson(steps.docker_meta.outputs.json).tags[0] }}@${{ steps.docker_build.outputs.digest }} --format '{{ json (index .Image "linux/amd64") }}
+          docker buildx imagetools inspect ${{ fromJson(steps.docker_meta.outputs.json).tags[0] }}@${{ steps.docker_build.outputs.digest }} --format '{{ json (index .Image "linux/amd64") }}'
           echo "::endgroup::"
 
           echo "::group::Inspecting (linux/amd64) Provenance"
-          docker buildx imagetools inspect ${{ fromJson(steps.docker_meta.outputs.json).tags[0] }}@${{ steps.docker_build.outputs.digest }} --format '{{ json (index .Provenance "linux/amd64") }}
+          docker buildx imagetools inspect ${{ fromJson(steps.docker_meta.outputs.json).tags[0] }}@${{ steps.docker_build.outputs.digest }} --format '{{ json (index .Provenance "linux/amd64") }}'
           echo "::endgroup::"
 
           echo "::group::Inspecting (linux/amd64) SBOM"
-          docker buildx imagetools inspect ${{ fromJson(steps.docker_meta.outputs.json).tags[0] }}@${{ steps.docker_build.outputs.digest }} --format '{{ json (index .SBOM "linux/amd64") }}
+          docker buildx imagetools inspect ${{ fromJson(steps.docker_meta.outputs.json).tags[0] }}@${{ steps.docker_build.outputs.digest }} --format '{{ json (index .SBOM "linux/amd64") }}'
           echo "::endgroup::"
 
   dockerhub:
