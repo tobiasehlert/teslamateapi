@@ -64,6 +64,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
+        id: docker_build
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -77,6 +78,9 @@ jobs:
           sbom: true
           build-args: |
             apiVersion=${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.version'] }}
+
+      - name: Inspect image
+        run: docker buildx imagetools inspect ${{ fromJson(steps.docker_meta.outputs.json).tags[0] }}@${{ steps.docker_build.outputs.digest }} --format='{{index .}}'
 
   dockerhub:
     if: github.event_name == 'release'
