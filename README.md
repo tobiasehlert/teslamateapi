@@ -1,9 +1,9 @@
 # TeslaMateApi
 
 [![GitHub CI](https://img.shields.io/github/actions/workflow/status/tobiasehlert/teslamateapi/build.yml?branch=main&logo=github)](https://github.com/tobiasehlert/teslamateapi/actions/workflows/build.yml)
-[![GitHub go.mod version](https://img.shields.io/github/go-mod/go-version/tobiasehlert/teslamateapi?log)](https://github.com/tobiasehlert/teslamateapi/blob/main/go.mod)
-[![GitHub release](https://img.shields.io/github/v/release/tobiasehlert/teslamateapi?sort=semver)](https://github.com/tobiasehlert/teslamateapi/releases)
-[![Docker image size (tag)](https://img.shields.io/docker/image-size/tobiasehlert/teslamateapi/latest)](https://hub.docker.com/r/tobiasehlert/teslamateapi)
+[![GitHub go.mod version](https://img.shields.io/github/go-mod/go-version/tobiasehlert/teslamateapi?logo=go)](https://github.com/tobiasehlert/teslamateapi/blob/main/go.mod)
+[![GitHub release](https://img.shields.io/github/v/release/tobiasehlert/teslamateapi?sort=semver&logo=github)](https://github.com/tobiasehlert/teslamateapi/releases)
+[![Docker image size (tag)](https://img.shields.io/docker/image-size/tobiasehlert/teslamateapi/latest?logo=docker)](https://hub.docker.com/r/tobiasehlert/teslamateapi)
 [![GitHub license](https://img.shields.io/github/license/tobiasehlert/teslamateapi)](https://github.com/tobiasehlert/teslamateapi/blob/main/LICENSE)
 [![Docker pulls](https://img.shields.io/docker/pulls/tobiasehlert/teslamateapi)](https://hub.docker.com/r/tobiasehlert/teslamateapi)
 
