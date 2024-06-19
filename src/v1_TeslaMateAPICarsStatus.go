@@ -201,7 +201,7 @@ func (s *statusCache) connectedHandler(c mqtt.Client) {
 
 // connectionLost - called by mqtt package when the connection get lost
 func (s *statusCache) connectionLost(c mqtt.Client, err error) {
-	log.Println("[error] MQTT connection lost: " + err.Error())
+	log.Println("[error] MQTT connection lost: " + err.Error())
 	s.mqttConnected = false
 }
 
