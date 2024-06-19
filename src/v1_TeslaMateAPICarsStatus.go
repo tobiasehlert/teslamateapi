@@ -388,8 +388,10 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 			DistanceToArrival   float64 `json:"miles_to_arrival"`
 			MinutesToArrival    float64 `json:"minutes_to_arrival"`
 			TrafficMinutesDelay float64 `json:"traffic_minutes_delay"`
-			Latitude            float64 `json:"latitude"`
-			Longitude           float64 `json:"longitude"`
+			Location            struct {
+				Latitude  float64 `json:"latitude"`
+				Longitude float64 `json:"longitude"`
+			} `json:"location"`
 		}
 		_ = json.Unmarshal(msg.Payload(), &tmp)
 		stat.MQTTDataActiveRoute.Destination = tmp.Destination
@@ -397,8 +399,8 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		stat.MQTTDataActiveRoute.DistanceToArrival = milesToKilometers(tmp.DistanceToArrival)
 		stat.MQTTDataActiveRoute.MinutesToArrival = tmp.MinutesToArrival
 		stat.MQTTDataActiveRoute.TrafficMinutesDelay = tmp.TrafficMinutesDelay
-		stat.MQTTDataActiveRoute.Latitude = tmp.Latitude
-		stat.MQTTDataActiveRoute.Longitude = tmp.Longitude
+		stat.MQTTDataActiveRoute.Latitude = tmp.Location.Latitude
+		stat.MQTTDataActiveRoute.Longitude = tmp.Location.Longitude
 
 	// deprecated
 	case "latitude", "longitude", "active_route_destination", "active_route_latitude", "active_route_longitude":
