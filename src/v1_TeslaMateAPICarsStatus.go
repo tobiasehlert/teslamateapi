@@ -42,6 +42,10 @@ type statusInfo struct {
 	MQTTDataSentryMode                 bool
 	MQTTDataWindowsOpen                bool
 	MQTTDataDoorsOpen                  bool
+	MQTTDataDriverFrontDoorOpen        bool
+	MQTTDataDriverRearDoorOpen         bool
+	MQTTDataPassengerFrontDoorOpen     bool
+	MQTTDataPassengerRearDoorOpen      bool
 	MQTTDataTrunkOpen                  bool
 	MQTTDataFrunkOpen                  bool
 	MQTTDataIsUserPresent              bool
@@ -49,6 +53,7 @@ type statusInfo struct {
 	MQTTDataInsideTemp                 float64
 	MQTTDataOutsideTemp                float64
 	MQTTDataIsPreconditioning          bool
+	MQTTDataClimateKeeperMode          string
 	MQTTDataOdometer                   float64
 	MQTTDataEstBatteryRange            float64
 	MQTTDataRatedBatteryRange          float64
@@ -56,6 +61,7 @@ type statusInfo struct {
 	MQTTDataBatteryLevel               int
 	MQTTDataUsableBatteryLevel         int
 	MQTTDataPluggedIn                  bool
+	MQTTDataChargingState              string
 	MQTTDataChargeEnergyAdded          float64
 	MQTTDataChargeLimitSoc             int
 	MQTTDataChargePortDoorOpen         bool
@@ -279,6 +285,14 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		stat.MQTTDataWindowsOpen = convertStringToBool(string(msg.Payload()))
 	case "doors_open":
 		stat.MQTTDataDoorsOpen = convertStringToBool(string(msg.Payload()))
+	case "driver_front_door_open":
+		stat.MQTTDataDriverFrontDoorOpen = convertStringToBool(string(msg.Payload()))
+	case "driver_rear_door_open":
+		stat.MQTTDataDriverRearDoorOpen = convertStringToBool(string(msg.Payload()))
+	case "passenger_front_door_open":
+		stat.MQTTDataPassengerFrontDoorOpen = convertStringToBool(string(msg.Payload()))
+	case "passenger_rear_door_open":
+		stat.MQTTDataPassengerRearDoorOpen = convertStringToBool(string(msg.Payload()))
 	case "trunk_open":
 		stat.MQTTDataTrunkOpen = convertStringToBool(string(msg.Payload()))
 	case "frunk_open":
@@ -293,6 +307,8 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		stat.MQTTDataOutsideTemp = convertStringToFloat(string(msg.Payload()))
 	case "is_preconditioning":
 		stat.MQTTDataIsPreconditioning = convertStringToBool(string(msg.Payload()))
+	case "climate_keeper_mode":
+		stat.MQTTDataClimateKeeperMode = string(msg.Payload())
 	case "odometer":
 		stat.MQTTDataOdometer = convertStringToFloat(string(msg.Payload()))
 	case "est_battery_range_km":
@@ -307,6 +323,8 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		stat.MQTTDataUsableBatteryLevel = convertStringToInteger(string(msg.Payload()))
 	case "plugged_in":
 		stat.MQTTDataPluggedIn = convertStringToBool(string(msg.Payload()))
+	case "charging_state":
+		stat.MQTTDataChargingState = string(msg.Payload())
 	case "charge_energy_added":
 		stat.MQTTDataChargeEnergyAdded = convertStringToFloat(string(msg.Payload()))
 	case "charge_limit_soc":
@@ -351,8 +369,8 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		stat.MQTTDataActiveRouteLatitude = convertStringToFloat(string(msg.Payload()))
 	case "active_route_longitude":
 		stat.MQTTDataActiveRouteLongitude = convertStringToFloat(string(msg.Payload()))
-	case "location":
-		// doing nothing, since this is identical data to latitude and longitude topics
+	case "location", "active_route":
+		// doing nothing
 	default:
 		log.Printf("[warning] TeslaMateAPICarsStatusV1 mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
 	}
@@ -414,14 +432,18 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	}
 	// CarStatus struct - child of MQTTInformation
 	type CarStatus struct {
-		Healthy       bool `json:"healthy"`         // true - Health status of the logger for that vehicle
-		Locked        bool `json:"locked"`          // true - Indicates if the car is locked
-		SentryMode    bool `json:"sentry_mode"`     // false - Indicates if Sentry Mode is active
-		WindowsOpen   bool `json:"windows_open"`    // false - Indicates if any of the windows are open
-		DoorsOpen     bool `json:"doors_open"`      // false - Indicates if any of the doors are open
-		TrunkOpen     bool `json:"trunk_open"`      // false - Indicates if the trunk is open
-		FrunkOpen     bool `json:"frunk_open"`      // false - Indicates if the frunk is open
-		IsUserPresent bool `json:"is_user_present"` // false - Indicates if a user is present in the vehicle
+		Healthy                bool `json:"healthy"`                   // true - Health status of the logger for that vehicle
+		Locked                 bool `json:"locked"`                    // true - Indicates if the car is locked
+		SentryMode             bool `json:"sentry_mode"`               // false - Indicates if Sentry Mode is active
+		WindowsOpen            bool `json:"windows_open"`              // false - Indicates if any of the windows are open
+		DoorsOpen              bool `json:"doors_open"`                // false - Indicates if any of the doors are open
+		DriverFrontDoorOpen    bool `json:"driver_front_door_open"`    // false - Indicates if the driver-side front door is open
+		DriverRearDoorOpen     bool `json:"driver_rear_door_open"`     // false - Indicates if the driver-side rear door is open
+		PassengerFrontDoorOpen bool `json:"passenger_front_door_open"` // false - Indicates if the passenger-side front door is open
+		PassengerRearDoorOpen  bool `json:"passenger_rear_door_open"`  // false - Indicates if the passenger-side rear door is open
+		TrunkOpen              bool `json:"trunk_open"`                // false - Indicates if the trunk is open
+		FrunkOpen              bool `json:"frunk_open"`                // false - Indicates if the frunk is open
+		IsUserPresent          bool `json:"is_user_present"`           // false - Indicates if a user is present in the vehicle
 	}
 	// CarVersions struct - child of MQTTInformation
 	type CarVersions struct {
@@ -432,6 +454,7 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	// ChargingDetails struct - child of MQTTInformation
 	type ChargingDetails struct {
 		PluggedIn                  bool    `json:"plugged_in"`                    // true - If car is currently plugged into a charger
+		ChargingState              string  `json:"charging_state"`                // "Charging" - Indicates if the car is currently charging
 		ChargeEnergyAdded          float64 `json:"charge_energy_added"`           // 5.06 - Last added energy in kWh
 		ChargeLimitSoc             int     `json:"charge_limit_soc"`              // 90 - Charge Limit Configured in Percentage
 		ChargePortDoorOpen         bool    `json:"charge_port_door_open"`         // true - Indicates if the charger door is open
@@ -446,10 +469,11 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	}
 	// ClimateDetails struct - child of MQTTInformation
 	type ClimateDetails struct {
-		IsClimateOn       bool    `json:"is_climate_on"`      // true - Indicates if the climate control is on
-		InsideTemp        float64 `json:"inside_temp"`        // 20.8 - Inside Temperature in °C
-		OutsideTemp       float64 `json:"outside_temp"`       // 18.4 - Temperature in °C
-		IsPreconditioning bool    `json:"is_preconditioning"` // false - Indicates if the vehicle is being preconditioned
+		IsClimateOn       bool    `json:"is_climate_on"`       // true - Indicates if the climate control is on
+		InsideTemp        float64 `json:"inside_temp"`         // 20.8 - Inside Temperature in °C
+		OutsideTemp       float64 `json:"outside_temp"`        // 18.4 - Temperature in °C
+		IsPreconditioning bool    `json:"is_preconditioning"`  // false - Indicates if the vehicle is being preconditioned
+		ClimateKeeperMode string  `json:"climate_keeper_mode"` // dog - Climate Keeper Mode
 	}
 	// DrivingDetails struct - child of MQTTInformation
 	type DrivingDetails struct {
@@ -567,6 +591,10 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	MQTTInformationData.CarStatus.SentryMode = stat.MQTTDataSentryMode
 	MQTTInformationData.CarStatus.WindowsOpen = stat.MQTTDataWindowsOpen
 	MQTTInformationData.CarStatus.DoorsOpen = stat.MQTTDataDoorsOpen
+	MQTTInformationData.CarStatus.DriverFrontDoorOpen = stat.MQTTDataDriverFrontDoorOpen
+	MQTTInformationData.CarStatus.DriverRearDoorOpen = stat.MQTTDataDriverRearDoorOpen
+	MQTTInformationData.CarStatus.PassengerFrontDoorOpen = stat.MQTTDataPassengerFrontDoorOpen
+	MQTTInformationData.CarStatus.PassengerRearDoorOpen = stat.MQTTDataPassengerRearDoorOpen
 	MQTTInformationData.CarStatus.TrunkOpen = stat.MQTTDataTrunkOpen
 	MQTTInformationData.CarStatus.FrunkOpen = stat.MQTTDataFrunkOpen
 	MQTTInformationData.CarStatus.IsUserPresent = stat.MQTTDataIsUserPresent
@@ -574,6 +602,7 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	MQTTInformationData.ClimateDetails.InsideTemp = stat.MQTTDataInsideTemp
 	MQTTInformationData.ClimateDetails.OutsideTemp = stat.MQTTDataOutsideTemp
 	MQTTInformationData.ClimateDetails.IsPreconditioning = stat.MQTTDataIsPreconditioning
+	MQTTInformationData.ClimateDetails.ClimateKeeperMode = stat.MQTTDataClimateKeeperMode
 	MQTTInformationData.Odometer = stat.MQTTDataOdometer
 	MQTTInformationData.BatteryDetails.EstBatteryRange = stat.MQTTDataEstBatteryRange
 	MQTTInformationData.BatteryDetails.RatedBatteryRange = stat.MQTTDataRatedBatteryRange
@@ -581,6 +610,7 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	MQTTInformationData.BatteryDetails.BatteryLevel = stat.MQTTDataBatteryLevel
 	MQTTInformationData.BatteryDetails.UsableBatteryLevel = stat.MQTTDataUsableBatteryLevel
 	MQTTInformationData.ChargingDetails.PluggedIn = stat.MQTTDataPluggedIn
+	MQTTInformationData.ChargingDetails.ChargingState = stat.MQTTDataChargingState
 	MQTTInformationData.ChargingDetails.ChargeEnergyAdded = stat.MQTTDataChargeEnergyAdded
 	MQTTInformationData.ChargingDetails.ChargeLimitSoc = stat.MQTTDataChargeLimitSoc
 	MQTTInformationData.ChargingDetails.ChargePortDoorOpen = stat.MQTTDataChargePortDoorOpen
