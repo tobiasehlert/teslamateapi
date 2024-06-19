@@ -401,7 +401,7 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		stat.MQTTDataActiveRoute.Longitude = tmp.Longitude
 
 	// deprecated
-	case "latitude", "longitude", "active_route_latitude", "active_route_longitude":
+	case "latitude", "longitude", "active_route_destination", "active_route_latitude", "active_route_longitude":
 		// doing nothing
 
 	// default
