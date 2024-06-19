@@ -383,6 +383,18 @@ func milesToKilometersNilSupport(mi NullFloat64) NullFloat64 {
 }
 */
 
+// barToPsi func
+func barToPsi(bar float64) float64 {
+	return (bar * 14.503773800722)
+}
+
+/*
+// psiToBar func
+func psiToBar(psi float64) float64 {
+	return (psi * 0.068947572932)
+}
+*/
+
 // celsiusToFahrenheit func
 func celsiusToFahrenheit(c float64) float64 {
 	return (c*9/5 + 32)

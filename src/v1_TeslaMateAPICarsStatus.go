@@ -522,6 +522,7 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	// TeslaMateUnits struct - child of Data
 	type TeslaMateUnits struct {
 		UnitsLength      string `json:"unit_of_length"`      // string
+		UnitsPressure    string `json:"unit_of_pressure"`    // string
 		UnitsTemperature string `json:"unit_of_temperature"` // string
 	}
 	// Data struct - child of JSONData
@@ -537,9 +538,9 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 
 	// creating required vars
 	var (
-		CarData                       Car
-		MQTTInformationData           MQTTInformation
-		UnitsLength, UnitsTemperature string
+		CarData                                      Car
+		MQTTInformationData                          MQTTInformation
+		UnitsLength, UnitsPressure, UnitsTemperature string
 	)
 
 	// getting data from database (assume that carID is unique!)
@@ -548,6 +549,7 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 			id,
 			name,
 			(SELECT unit_of_length FROM settings LIMIT 1) as unit_of_length,
+			(SELECT unit_of_pressure FROM settings LIMIT 1) as unit_of_pressure,
 			(SELECT unit_of_temperature FROM settings LIMIT 1) as unit_of_temperature
 		FROM cars
 		WHERE id=$1
@@ -555,6 +557,7 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	err := db.QueryRow(query, carID).Scan(&CarData.CarID,
 		&CarData.CarName,
 		&UnitsLength,
+		&UnitsPressure,
 		&UnitsTemperature)
 
 	// checking for errors in query (this will include no rows found)
@@ -639,6 +642,13 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 		MQTTInformationData.BatteryDetails.RatedBatteryRange = kilometersToMiles(MQTTInformationData.BatteryDetails.RatedBatteryRange)
 		MQTTInformationData.BatteryDetails.IdealBatteryRange = kilometersToMiles(MQTTInformationData.BatteryDetails.IdealBatteryRange)
 	}
+	// converting values based of settings UnitsPressure
+	if UnitsPressure == "psi" {
+		MQTTInformationData.TpmsDetails.TpmsPressureFL = barToPsi(MQTTInformationData.TpmsDetails.TpmsPressureFL)
+		MQTTInformationData.TpmsDetails.TpmsPressureFR = barToPsi(MQTTInformationData.TpmsDetails.TpmsPressureFR)
+		MQTTInformationData.TpmsDetails.TpmsPressureRL = barToPsi(MQTTInformationData.TpmsDetails.TpmsPressureRL)
+		MQTTInformationData.TpmsDetails.TpmsPressureRR = barToPsi(MQTTInformationData.TpmsDetails.TpmsPressureRR)
+	}
 	// converting values based of settings UnitsTemperature
 	if UnitsTemperature == "F" {
 		MQTTInformationData.ClimateDetails.InsideTemp = celsiusToFahrenheit(MQTTInformationData.ClimateDetails.InsideTemp)
@@ -657,6 +667,7 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 			MQTTInformation: MQTTInformationData,
 			TeslaMateUnits: TeslaMateUnits{
 				UnitsLength:      UnitsLength,
+				UnitsPressure:    UnitsPressure,
 				UnitsTemperature: UnitsTemperature,
 			},
 		},
