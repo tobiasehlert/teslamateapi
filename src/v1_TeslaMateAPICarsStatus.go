@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -324,7 +325,7 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 	case "plugged_in":
 		stat.MQTTDataPluggedIn = convertStringToBool(string(msg.Payload()))
 	case "charging_state":
-		stat.MQTTDataChargingState = string(msg.Payload())
+		stat.MQTTDataChargingState = strings.ToLower(string(msg.Payload()))
 	case "charge_energy_added":
 		stat.MQTTDataChargeEnergyAdded = convertStringToFloat(string(msg.Payload()))
 	case "charge_limit_soc":
