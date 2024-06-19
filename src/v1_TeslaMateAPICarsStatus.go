@@ -458,7 +458,7 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 		SpoilerType   string `json:"spoiler_type"`   // None - The spoiler type
 		WheelType     string `json:"wheel_type"`     // Pinwheel18 - The wheel type
 	}
-	// CarLocation struct - child of CarGeodata
+	// CarLocation struct - child of multiple structs
 	type CarLocation struct {
 		Latitude  float64 `json:"latitude"`  // 35.278131 - Last reported car latitude
 		Longitude float64 `json:"longitude"` // 29.744801 - Last reported car longitude
