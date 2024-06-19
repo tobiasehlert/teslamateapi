@@ -370,12 +370,12 @@ func kilometersToMilesNilSupport(km NullFloat64) NullFloat64 {
 	return (km)
 }
 
-/*
 // milesToKilometers func
 func milesToKilometers(mi float64) float64 {
 	return (mi * 1.609344)
 }
 
+/*
 // milesToKilometersNilSupport func
 func milesToKilometersNilSupport(mi NullFloat64) NullFloat64 {
 	mi.Float64 = (mi.Float64 * 1.609344)

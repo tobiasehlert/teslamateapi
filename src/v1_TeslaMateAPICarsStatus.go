@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -32,8 +33,6 @@ type statusInfo struct {
 	MQTTDataWheelType                  string
 	MQTTDataSpoilerType                string
 	MQTTDataGeofence                   string
-	MQTTDataLatitude                   float64
-	MQTTDataLongitude                  float64
 	MQTTDataShiftState                 string
 	MQTTDataPower                      int
 	MQTTDataSpeed                      int
@@ -82,9 +81,21 @@ type statusInfo struct {
 	MQTTDataTpmsSoftWarningFR          bool
 	MQTTDataTpmsSoftWarningRL          bool
 	MQTTDataTpmsSoftWarningRR          bool
-	MQTTDataActiveRouteDestination     string
-	MQTTDataActiveRouteLatitude        float64
-	MQTTDataActiveRouteLongitude       float64
+
+	MQTTDataLocation struct {
+		Latitude  float64
+		Longitude float64
+	}
+
+	MQTTDataActiveRoute struct {
+		Destination         string
+		EnergyAtArrival     int
+		DistanceToArrival   float64
+		MinutesToArrival    float64
+		TrafficMinutesDelay float64
+		Latitude            float64
+		Longitude           float64
+	}
 }
 
 type statusCache struct {
@@ -194,7 +205,7 @@ func connectingHandler(broker *url.URL, tlsCfg *tls.Config) *tls.Config {
 }
 
 func (s *statusCache) connectedHandler(c mqtt.Client) {
-	log.Println("[info] mqtt connected...")
+	log.Println("[info] mqtt connected.")
 	s.mqttConnected = true
 
 	// Subscribe - we will accept info on any car...
@@ -264,10 +275,6 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		stat.MQTTDataSpoilerType = string(msg.Payload())
 	case "geofence":
 		stat.MQTTDataGeofence = string(msg.Payload())
-	case "latitude":
-		stat.MQTTDataLatitude = convertStringToFloat(string(msg.Payload()))
-	case "longitude":
-		stat.MQTTDataLongitude = convertStringToFloat(string(msg.Payload()))
 	case "shift_state":
 		stat.MQTTDataShiftState = string(msg.Payload())
 	case "power":
@@ -364,14 +371,40 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		stat.MQTTDataTpmsSoftWarningRL = convertStringToBool(string(msg.Payload()))
 	case "tpms_soft_warning_rr":
 		stat.MQTTDataTpmsSoftWarningRR = convertStringToBool(string(msg.Payload()))
-	case "active_route_destination":
-		stat.MQTTDataActiveRouteDestination = string(msg.Payload())
-	case "active_route_latitude":
-		stat.MQTTDataActiveRouteLatitude = convertStringToFloat(string(msg.Payload()))
-	case "active_route_longitude":
-		stat.MQTTDataActiveRouteLongitude = convertStringToFloat(string(msg.Payload()))
-	case "location", "active_route":
+
+	case "location":
+		var tmp struct {
+			Latitude  float64 `json:"latitude"`
+			Longitude float64 `json:"longitude"`
+		}
+		_ = json.Unmarshal(msg.Payload(), &tmp)
+		stat.MQTTDataLocation.Latitude = tmp.Latitude
+		stat.MQTTDataLocation.Longitude = tmp.Longitude
+
+	case "active_route":
+		var tmp struct {
+			Destination         string  `json:"destination"`
+			EnergyAtArrival     int     `json:"energy_at_arrival"`
+			DistanceToArrival   float64 `json:"miles_to_arrival"`
+			MinutesToArrival    float64 `json:"minutes_to_arrival"`
+			TrafficMinutesDelay float64 `json:"traffic_minutes_delay"`
+			Latitude            float64 `json:"latitude"`
+			Longitude           float64 `json:"longitude"`
+		}
+		_ = json.Unmarshal(msg.Payload(), &tmp)
+		stat.MQTTDataActiveRoute.Destination = tmp.Destination
+		stat.MQTTDataActiveRoute.EnergyAtArrival = tmp.EnergyAtArrival
+		stat.MQTTDataActiveRoute.DistanceToArrival = milesToKilometers(tmp.DistanceToArrival)
+		stat.MQTTDataActiveRoute.MinutesToArrival = tmp.MinutesToArrival
+		stat.MQTTDataActiveRoute.TrafficMinutesDelay = tmp.TrafficMinutesDelay
+		stat.MQTTDataActiveRoute.Latitude = tmp.Latitude
+		stat.MQTTDataActiveRoute.Longitude = tmp.Longitude
+
+	// deprecated
+	case "latitude", "longitude", "active_route_latitude", "active_route_longitude":
 		// doing nothing
+
+	// default
 	default:
 		log.Printf("[warning] TeslaMateAPICarsStatusV1 mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
 	}
@@ -425,11 +458,17 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 		SpoilerType   string `json:"spoiler_type"`   // None - The spoiler type
 		WheelType     string `json:"wheel_type"`     // Pinwheel18 - The wheel type
 	}
-	// CarGeodata struct - child of MQTTInformation
-	type CarGeodata struct {
-		Geofence  string  `json:"geofence"`  // Home - The name of the Geo-fence, if one exists at the current position
+	// CarGeodataLocation struct - child of CarGeodata
+	type CarGeodataLocation struct {
 		Latitude  float64 `json:"latitude"`  // 35.278131 - Last reported car latitude
 		Longitude float64 `json:"longitude"` // 29.744801 - Last reported car longitude
+	}
+	// CarGeodata struct - child of MQTTInformation
+	type CarGeodata struct {
+		Geofence  string             `json:"geofence"`  // Home - The name of the Geo-fence, if one exists at the current position
+		Location  CarGeodataLocation `json:"location"`  // struct
+		Latitude  float64            `json:"latitude"`  // DEPRECATED 35.278131 - Last reported car latitude
+		Longitude float64            `json:"longitude"` // DEPRECATED 29.744801 - Last reported car longitude
 	}
 	// CarStatus struct - child of MQTTInformation
 	type CarStatus struct {
@@ -476,16 +515,27 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 		IsPreconditioning bool    `json:"is_preconditioning"`  // false - Indicates if the vehicle is being preconditioned
 		ClimateKeeperMode string  `json:"climate_keeper_mode"` // dog - Climate Keeper Mode
 	}
+	// ActiveRouteDetails struct - child of DrivingDetails
+	type ActiveRouteDetails struct {
+		Destination         string  `json:"destination"`           // Home - Navigation destination name
+		EnergyAtArrival     int     `json:"energy_at_arrival"`     // 73 - Energy at arrival in kWh
+		DistanceToArrival   float64 `json:"distance_to_arrival"`   // 10.437077034 - Distance to arrival in km
+		MinutesToArrival    float64 `json:"minutes_to_arrival"`    // 23.466667 - Minutes to arrival
+		TrafficMinutesDelay float64 `json:"traffic_minutes_delay"` // 0.0 - Traffic delay in minutes
+		Latitude            float64 `json:"latitude"`              // 35.278131 - Navigation destination latitude
+		Longitude           float64 `json:"longitude"`             // 29.744801 - Navigation destination longitude
+	}
 	// DrivingDetails struct - child of MQTTInformation
 	type DrivingDetails struct {
-		ActiveRouteDestination string  `json:"active_route_destination"` // Home - Navigation destination name
-		ActiveRouteLatitude    float64 `json:"active_route_latitude"`    // 35.278131 - Navigation destination latitude
-		ActiveRouteLongitude   float64 `json:"active_route_longitude"`   // 29.744801 - Navigation destination longitude
-		ShiftState             string  `json:"shift_state"`              // D - Current/Last Shift State (D/N/R/P)
-		Power                  int     `json:"power"`                    // -9 Current battery power in watts. Positive value on discharge, negative value on charge
-		Speed                  int     `json:"speed"`                    // 12 - Current Speed in km/h
-		Heading                int     `json:"heading"`                  // 340 - Last reported car direction
-		Elevation              int     `json:"elevation"`                // 70 - Current elevation above sea level in meters
+		ActiveRoute            ActiveRouteDetails `json:"active_route"`             // struct
+		ActiveRouteDestination string             `json:"active_route_destination"` // DEPRECATED Home - Navigation destination name
+		ActiveRouteLatitude    float64            `json:"active_route_latitude"`    // DEPRECATED 35.278131 - Navigation destination latitude
+		ActiveRouteLongitude   float64            `json:"active_route_longitude"`   // DEPRECATED 29.744801 - Navigation destination longitude
+		ShiftState             string             `json:"shift_state"`              // D - Current/Last Shift State (D/N/R/P)
+		Power                  int                `json:"power"`                    // -9 Current battery power in watts. Positive value on discharge, negative value on charge
+		Speed                  int                `json:"speed"`                    // 12 - Current Speed in km/h
+		Heading                int                `json:"heading"`                  // 340 - Last reported car direction
+		Elevation              int                `json:"elevation"`                // 70 - Current elevation above sea level in meters
 	}
 	// TpmsDetails struct - child of MQTTInformation
 	type TpmsDetails struct {
@@ -581,11 +631,15 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	MQTTInformationData.CarExterior.WheelType = stat.MQTTDataWheelType
 	MQTTInformationData.CarExterior.SpoilerType = stat.MQTTDataSpoilerType
 	MQTTInformationData.CarGeodata.Geofence = stat.MQTTDataGeofence
-	MQTTInformationData.CarGeodata.Latitude = stat.MQTTDataLatitude
-	MQTTInformationData.CarGeodata.Longitude = stat.MQTTDataLongitude
-	MQTTInformationData.DrivingDetails.ActiveRouteDestination = stat.MQTTDataActiveRouteDestination
-	MQTTInformationData.DrivingDetails.ActiveRouteLatitude = stat.MQTTDataActiveRouteLatitude
-	MQTTInformationData.DrivingDetails.ActiveRouteLongitude = stat.MQTTDataActiveRouteLongitude
+	MQTTInformationData.CarGeodata.Location.Latitude = stat.MQTTDataLocation.Latitude
+	MQTTInformationData.CarGeodata.Location.Longitude = stat.MQTTDataLocation.Longitude
+	MQTTInformationData.DrivingDetails.ActiveRoute.Destination = stat.MQTTDataActiveRoute.Destination
+	MQTTInformationData.DrivingDetails.ActiveRoute.EnergyAtArrival = stat.MQTTDataActiveRoute.EnergyAtArrival
+	MQTTInformationData.DrivingDetails.ActiveRoute.DistanceToArrival = stat.MQTTDataActiveRoute.DistanceToArrival
+	MQTTInformationData.DrivingDetails.ActiveRoute.MinutesToArrival = stat.MQTTDataActiveRoute.MinutesToArrival
+	MQTTInformationData.DrivingDetails.ActiveRoute.TrafficMinutesDelay = stat.MQTTDataActiveRoute.TrafficMinutesDelay
+	MQTTInformationData.DrivingDetails.ActiveRoute.Latitude = stat.MQTTDataActiveRoute.Latitude
+	MQTTInformationData.DrivingDetails.ActiveRoute.Longitude = stat.MQTTDataActiveRoute.Longitude
 	MQTTInformationData.DrivingDetails.ShiftState = stat.MQTTDataShiftState
 	MQTTInformationData.DrivingDetails.Power = stat.MQTTDataPower
 	MQTTInformationData.DrivingDetails.Speed = stat.MQTTDataSpeed
@@ -635,10 +689,18 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	MQTTInformationData.TpmsDetails.TpmsSoftWarningRL = stat.MQTTDataTpmsSoftWarningRL
 	MQTTInformationData.TpmsDetails.TpmsSoftWarningRR = stat.MQTTDataTpmsSoftWarningRR
 
+	// DEPRECATAD - setting values for deprecated fields
+	MQTTInformationData.CarGeodata.Latitude = stat.MQTTDataLocation.Latitude
+	MQTTInformationData.CarGeodata.Longitude = stat.MQTTDataLocation.Longitude
+	MQTTInformationData.DrivingDetails.ActiveRouteDestination = stat.MQTTDataActiveRoute.Destination
+	MQTTInformationData.DrivingDetails.ActiveRouteLatitude = stat.MQTTDataActiveRoute.Latitude
+	MQTTInformationData.DrivingDetails.ActiveRouteLongitude = stat.MQTTDataActiveRoute.Longitude
+
 	// converting values based of settings UnitsLength
 	if UnitsLength == "mi" {
 		// drive.OdometerDetails.OdometerStart = kilometersToMiles(drive.OdometerDetails.OdometerStart)
 		MQTTInformationData.Odometer = kilometersToMiles(MQTTInformationData.Odometer)
+		MQTTInformationData.DrivingDetails.ActiveRoute.DistanceToArrival = kilometersToMiles(MQTTInformationData.DrivingDetails.ActiveRoute.DistanceToArrival)
 		MQTTInformationData.BatteryDetails.EstBatteryRange = kilometersToMiles(MQTTInformationData.BatteryDetails.EstBatteryRange)
 		MQTTInformationData.BatteryDetails.RatedBatteryRange = kilometersToMiles(MQTTInformationData.BatteryDetails.RatedBatteryRange)
 		MQTTInformationData.BatteryDetails.IdealBatteryRange = kilometersToMiles(MQTTInformationData.BatteryDetails.IdealBatteryRange)
