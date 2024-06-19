@@ -58,8 +58,10 @@ func main() {
 
 	// Connect to the MQTT broker
 	statusCache, err := startMQTT()
-	if err != nil {
+	if !getEnvAsBool("DISABLE_MQTT", false) && err != nil {
 		log.Fatalf("[error] TeslaMateApi MQTT connection failed: %s", err)
+	} else if getEnvAsBool("DISABLE_MQTT", false) {
+		log.Println("[info] TeslaMateApi MQTT connection not established.")
 	}
 
 	if getEnvAsBool("API_TOKEN_DISABLE", false) {
