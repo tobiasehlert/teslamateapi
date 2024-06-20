@@ -44,7 +44,7 @@ jobs:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
 
       - name: Install Cosign
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' || github.event_name == 'release'
         uses: sigstore/cosign-installer@v3
 
       - name: Set up QEMU
@@ -54,14 +54,12 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Login to DockerHub
-        if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Login to GitHub Container Registry
-        if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -74,7 +72,7 @@ jobs:
         with:
           context: .
           platforms: linux/amd64,linux/arm/v7,linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           annotations: ${{ steps.docker_meta.outputs.annotations }}
           labels: ${{ steps.docker_meta.outputs.labels }}
           tags: ${{ steps.docker_meta.outputs.tags }}
@@ -85,7 +83,7 @@ jobs:
             apiVersion=${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.version'] }}
 
       - name: Sign the images (with GitHub OIDC Token)
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' || github.event_name == 'release'
         run: |
           cosign sign --yes --recursive \
             tobiasehlert/teslamateapi@${{ steps.docker_build.outputs.digest }}
@@ -94,6 +92,7 @@ jobs:
             ghcr.io/tobiasehlert/teslamateapi@${{ steps.docker_build.outputs.digest }}
 
       - name: Inspect image
+        if: github.ref == 'refs/heads/main' || github.event_name == 'release'
         run: |
           echo "::group::Inspecting Manifest"
           docker buildx imagetools inspect ${{ fromJson(steps.docker_meta.outputs.json).tags[0] }}@${{ steps.docker_build.outputs.digest }} --format '{{ json .Manifest }}'
@@ -112,6 +111,7 @@ jobs:
           echo "::endgroup::"
 
       - name: Verify cosign signatures
+        if: github.ref == 'refs/heads/main' || github.event_name == 'release'
         run: |
           echo "::group::Verify signature (DockerHub)"
           cosign verify --rekor-url https://rekor.sigstore.dev \
@@ -138,7 +138,6 @@ jobs:
 
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v4
-        if: github.event_name == 'release'
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
