@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.18.1] - 2024-07-24
+
+### Fixed
+
+- invalid memory address or nil pointer dereference ([#296](https://github.com/tobiasehlert/teslamateapi/pull/296) by [tobiasehlert](https://github.com/tobiasehlert))
+
 ## [1.18.0] - 2024-07-24
 
 ### Added
@@ -510,6 +516,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.18.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.0...v1.18.1
 [1.18.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.17.2...v1.18.0
 [1.17.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.17.1...v1.17.2
 [1.17.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.17.0...v1.17.1
