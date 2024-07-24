@@ -37,7 +37,7 @@ var (
 // main function
 func main() {
 	// setup of readyness endpoint code
-	isReady := &atomic.Value{}
+	isReady = &atomic.Value{}
 	isReady.Store(false)
 
 	// setting log parameters
