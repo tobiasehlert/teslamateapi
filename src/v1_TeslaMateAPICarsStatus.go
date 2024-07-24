@@ -190,6 +190,9 @@ func startMQTT() (*statusCache, error) {
 
 	s.topicScan = fmt.Sprintf("teslamate%s/cars/%%d/%%s", getMQTTNameSpace())
 
+	// setting readyz endpoint to true (when using MQTT)
+	isReady.Store(true)
+
 	// Thats all - newMessage will be called when something new arrives
 	return &s, nil
 }
@@ -215,12 +218,17 @@ func (s *statusCache) connectedHandler(c mqtt.Client) {
 	}
 	log.Println("[info] subscribed to: " + topic)
 
+	// setting readyz endpoint to true (when using MQTT)
+	isReady.Store(true)
 }
 
 // connectionLost - called by mqtt package when the connection get lost
 func (s *statusCache) connectionLost(c mqtt.Client, err error) {
 	log.Println("[error] MQTT connection lost: " + err.Error())
 	s.mqttConnected = false
+
+	// setting readyz endpoint to false (when using MQTT)
+	isReady.Store(false)
 }
 
 // newMessage - called by mqtt package when new message received
