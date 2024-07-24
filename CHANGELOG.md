@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.18.0] - 2024-07-24
+
+### Added
+
+- add support for k8s health endpoints ([#191](https://github.com/tobiasehlert/teslamateapi/pull/191) by [tobiasehlert](https://github.com/tobiasehlert))
+- add cosign of images in build workflow ([#280](https://github.com/tobiasehlert/teslamateapi/pull/280) by [tobiasehlert](https://github.com/tobiasehlert))
+
+### Changed
+
+- add and update of MQTT topics ([#289](https://github.com/tobiasehlert/teslamateapi/pull/289) by [tobiasehlert](https://github.com/tobiasehlert))
+- add center_display_state mqtt topic ([#295](https://github.com/tobiasehlert/teslamateapi/pull/295) by [tobiasehlert](https://github.com/tobiasehlert))
+
+### Fixed
+
+- resolving fatal when disabling of mqtt ([#288](https://github.com/tobiasehlert/teslamateapi/pull/288) by [tobiasehlert](https://github.com/tobiasehlert))
+- update GitHub action workflow and go mod ([#279](https://github.com/tobiasehlert/teslamateapi/pull/279) by [tobiasehlert](https://github.com/tobiasehlert))
+- bump alpine from 3.19.1 to 3.20.1 ([#285](https://github.com/tobiasehlert/teslamateapi/pull/285), [#290](https://github.com/tobiasehlert/teslamateapi/pull/290) by [dependabot](https://github.com/dependabot))
+- bump docker/build-push-action from 5 to 6 ([#287](https://github.com/tobiasehlert/teslamateapi/pull/287) by [dependabot](https://github.com/dependabot))
+- bump github.com/gin-contrib/gzip from 1.0.0 to 1.0.1 ([#282](https://github.com/tobiasehlert/teslamateapi/pull/282) by [dependabot](https://github.com/dependabot))
+- bump github.com/gin-gonic/gin from 1.9.1 to 1.10.0 ([#283](https://github.com/tobiasehlert/teslamateapi/pull/283) by [dependabot](https://github.com/dependabot))
+- bump golang from 1.22.2 to 1.22.5 ([#284](https://github.com/tobiasehlert/teslamateapi/pull/284), [#286](https://github.com/tobiasehlert/teslamateapi/pull/286), [#293](https://github.com/tobiasehlert/teslamateapi/pull/293) by [dependabot](https://github.com/dependabot))
+
 ## [1.17.2] - 2024-03-30
 
 ### Changed
@@ -488,6 +510,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.18.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.17.2...v1.18.0
 [1.17.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.17.1...v1.17.2
 [1.17.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.17.0...v1.17.1
 [1.17.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.6...v1.17.0
