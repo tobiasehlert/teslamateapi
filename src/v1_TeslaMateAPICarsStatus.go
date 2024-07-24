@@ -49,6 +49,7 @@ type statusInfo struct {
 	MQTTDataTrunkOpen                  bool
 	MQTTDataFrunkOpen                  bool
 	MQTTDataIsUserPresent              bool
+	MQTTDataCenterDisplayState         int
 	MQTTDataIsClimateOn                bool
 	MQTTDataInsideTemp                 float64
 	MQTTDataOutsideTemp                float64
@@ -315,6 +316,8 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 		stat.MQTTDataFrunkOpen = convertStringToBool(string(msg.Payload()))
 	case "is_user_present":
 		stat.MQTTDataIsUserPresent = convertStringToBool(string(msg.Payload()))
+	case "center_display_state":
+		stat.MQTTDataCenterDisplayState = convertStringToInteger(string(msg.Payload()))
 	case "is_climate_on":
 		stat.MQTTDataIsClimateOn = convertStringToBool(string(msg.Payload()))
 	case "inside_temp":
@@ -492,6 +495,7 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 		TrunkOpen              bool `json:"trunk_open"`                // false - Indicates if the trunk is open
 		FrunkOpen              bool `json:"frunk_open"`                // false - Indicates if the frunk is open
 		IsUserPresent          bool `json:"is_user_present"`           // false - Indicates if a user is present in the vehicle
+		CenterDisplayState     int  `json:"center_display_state"`      // 0 - Center Display State
 	}
 	// CarVersions struct - child of MQTTInformation
 	type CarVersions struct {
@@ -661,6 +665,7 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	MQTTInformationData.CarStatus.TrunkOpen = stat.MQTTDataTrunkOpen
 	MQTTInformationData.CarStatus.FrunkOpen = stat.MQTTDataFrunkOpen
 	MQTTInformationData.CarStatus.IsUserPresent = stat.MQTTDataIsUserPresent
+	MQTTInformationData.CarStatus.CenterDisplayState = stat.MQTTDataCenterDisplayState
 	MQTTInformationData.ClimateDetails.IsClimateOn = stat.MQTTDataIsClimateOn
 	MQTTInformationData.ClimateDetails.InsideTemp = stat.MQTTDataInsideTemp
 	MQTTInformationData.ClimateDetails.OutsideTemp = stat.MQTTDataOutsideTemp
