@@ -21,7 +21,7 @@ RUN CGO_ENABLED=0 go build -ldflags="-w -s -X 'main.apiVersion=${apiVersion}'" -
 
 
 # get alpine container
-FROM alpine:3.20.1 AS app
+FROM alpine:3.20.2 AS app
 
 # create workdir
 WORKDIR /opt/app
