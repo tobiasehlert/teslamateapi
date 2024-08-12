@@ -399,6 +399,11 @@ func milesToKilometersNilSupport(mi NullFloat64) NullFloat64 {
 }
 */
 
+// kilometersToMilesInteger func
+func kilometersToMilesInteger(km int) int {
+	return int(float64(km) * 0.62137119223733)
+}
+
 // barToPsi func
 func barToPsi(bar float64) float64 {
 	return (bar * 14.503773800722)
