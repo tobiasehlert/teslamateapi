@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.18.2] - 2024-08-12
+
+### Changed
+
+- bump alpine from 3.20.1 to 3.20.2 ([#297](https://github.com/tobiasehlert/teslamateapi/pull/297) by [dependabot](https://github.com/dependabot))
+- bump github.com/eclipse/paho.mqtt.golang from 1.4.3 to 1.5.0 ([#298](https://github.com/tobiasehlert/teslamateapi/pull/298) by [dependabot](https://github.com/dependabot))
+
+### Fixed
+
+- fix converts the current speed if unit is "mi" on status endpoint ([#299](https://github.com/tobiasehlert/teslamateapi/pull/299) by [ckanoab](https://github.com/ckanoab))
+- fix status drivingdetails.speed to be int and not float64 ([#301](https://github.com/tobiasehlert/teslamateapi/pull/301) by [tobiasehlert](https://github.com/tobiasehlert))
+
 ## [1.18.1] - 2024-07-24
 
 ### Fixed
@@ -516,6 +528,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.18.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.1...v1.18.2
 [1.18.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.0...v1.18.1
 [1.18.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.17.2...v1.18.0
 [1.17.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.17.1...v1.17.2
