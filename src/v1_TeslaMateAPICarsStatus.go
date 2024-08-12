@@ -711,6 +711,7 @@ func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 		// drive.OdometerDetails.OdometerStart = kilometersToMiles(drive.OdometerDetails.OdometerStart)
 		MQTTInformationData.Odometer = kilometersToMiles(MQTTInformationData.Odometer)
 		MQTTInformationData.DrivingDetails.ActiveRoute.DistanceToArrival = kilometersToMiles(MQTTInformationData.DrivingDetails.ActiveRoute.DistanceToArrival)
+		MQTTInformationData.DrivingDetails.Speed = kilometersToMiles(MQTTInformationData.DrivingDetails.Speed)
 		MQTTInformationData.BatteryDetails.EstBatteryRange = kilometersToMiles(MQTTInformationData.BatteryDetails.EstBatteryRange)
 		MQTTInformationData.BatteryDetails.RatedBatteryRange = kilometersToMiles(MQTTInformationData.BatteryDetails.RatedBatteryRange)
 		MQTTInformationData.BatteryDetails.IdealBatteryRange = kilometersToMiles(MQTTInformationData.BatteryDetails.IdealBatteryRange)
