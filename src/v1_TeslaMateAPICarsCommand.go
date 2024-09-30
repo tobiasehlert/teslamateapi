@@ -112,9 +112,9 @@ func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	switch getCarRegionAPI(TeslaAccessToken) {
 	case ChinaAPI:
-		TeslaEndpointUrl = "https://owner-api.vn.cloud.tesla.cn"
+		TeslaEndpointUrl = getEnv("TESLA_API_URL", "https://owner-api.vn.cloud.tesla.cn")
 	default:
-		TeslaEndpointUrl = "https://owner-api.teslamotors.com"
+		TeslaEndpointUrl = getEnv("TESLA_API_URL", "https://owner-api.teslamotors.com")
 	}
 
 	client := &http.Client{}
