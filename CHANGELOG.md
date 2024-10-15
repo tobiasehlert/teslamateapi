@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.3] - 2024-10-15
+
+### Changed
+
+- bump alpine from 3.20.2 to 3.20.3 ([#305](https://github.com/tobiasehlert/teslamateapi/pull/305) by [dependabot](https://github.com/dependabot))
+- bump golang from 1.22.5 to 1.23.2 ([#302](https://github.com/tobiasehlert/teslamateapi/pull/302), [#306](https://github.com/tobiasehlert/teslamateapi/pull/306), [#308](https://github.com/tobiasehlert/teslamateapi/pull/308) by [dependabot](https://github.com/dependabot))
+- decrease Dockerfile layers ([#303](https://github.com/tobiasehlert/teslamateapi/pull/303) by [tobiasehlert](https://github.com/tobiasehlert))
+
 ## [1.18.2] - 2024-08-12
 
 ### Changed
@@ -528,6 +536,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.18.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.2...v1.18.3
 [1.18.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.1...v1.18.2
 [1.18.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.0...v1.18.1
 [1.18.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.17.2...v1.18.0
