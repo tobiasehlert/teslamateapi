@@ -1,16 +1,31 @@
 version: 2
 updates:
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: "daily"
+      interval: daily
+    commit-message:
+      prefix: "chore(ci): "
+    labels:
+      - dependencies
+      - github_actions
 
-  - package-ecosystem: "gomod"
-    directory: "/"
+  - package-ecosystem: gomod
+    directory: /
     schedule:
-      interval: "daily"
+      interval: daily
+    commit-message:
+      prefix: "chore(go): "
+    labels:
+      - dependencies
+      - go
 
-  - package-ecosystem: "docker"
-    directory: "/"
+  - package-ecosystem: docker
+    directory: /
     schedule:
-      interval: "weekly"
+      interval: weekly
+    commit-message:
+      prefix: "chore(docker): "
+    labels:
+      - dependencies
+      - docker
