@@ -122,7 +122,7 @@ Basically the same environment variables for the database, mqqt and timezone nee
 | **MQTT_PASSWORD**     | string  |                                   |
 | **MQTT_NAMESPACE**    | string  |                                   |
 | **MQTT_CLIENTID**     | string  | _4 char random string_            |
-| **TESLA_API_URL**     | string  | https://owner-api.teslamotors.com |
+| **TESLA_API_HOST**    | string  | https://owner-api.teslamotors.com |
 
 **Commands** environment variables
 
