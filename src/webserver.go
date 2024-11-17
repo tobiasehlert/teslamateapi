@@ -74,7 +74,11 @@ func main() {
 	}
 
 	if getEnvAsBool("API_TOKEN_DISABLE", false) {
-		log.Println("[warning] validateAuthToken - header authorization bearer token disabled. Authorizaiton: Bearer token will not be required for commands.")
+		log.Println("[warning] validateAuthToken - header authorization bearer token disabled. Authorization: Bearer token will not be required for commands.")
+	}
+
+	if teslaApiHost := os.Getenv("TESLA_API_HOST"); teslaApiHost != "" {
+		log.Printf("[info] TESLA_API_HOST is set: %s\n", teslaApiHost)
 	}
 
 	// kicking off Gin in value r
