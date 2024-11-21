@@ -78,7 +78,7 @@ func main() {
 	}
 
 	if teslaApiHost := getEnv("TESLA_API_HOST", ""); teslaApiHost != "" {
-		log.Println("[info] TESLA_API_HOST is set: %s", teslaApiHost)
+		log.Printf("[info] TESLA_API_HOST is set: %s", teslaApiHost)
 	}
 
 	// kicking off Gin in value r
