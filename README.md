@@ -104,25 +104,25 @@ Basically the same environment variables for the database, mqqt and timezone nee
 
 **Optional** environment variables
 
-| Variable              | Type    | Default                           |
-|-----------------------|---------|-----------------------------------|
-| **TESLAMATE_SSL**     | boolean | _false_                           |
-| **TESLAMATE_HOST**    | string  | _teslamate_                       |
-| **TESLAMATE_PORT**    | string  | _4000_                            |
-| **API_TOKEN**         | string  |                                   |
-| **API_TOKEN_DISABLE** | string  | _false_                           |
-| **DATABASE_PORT**     | integer | _5432_                            |
-| **DATABASE_TIMEOUT**  | integer | _60000_                           |
-| **DATABASE_SSL**      | boolean | _true_                            |
-| **DEBUG_MODE**        | boolean | _false_                           |
-| **DISABLE_MQTT**      | boolean | _false_                           |
-| **MQTT_TLS**          | boolean | _false_                           |
-| **MQTT_PORT**         | integer | _1883 (if TLS is true: 8883)_     |
-| **MQTT_USERNAME**     | string  |                                   |
-| **MQTT_PASSWORD**     | string  |                                   |
-| **MQTT_NAMESPACE**    | string  |                                   |
-| **MQTT_CLIENTID**     | string  | _4 char random string_            |
-| **TESLA_API_HOST**    | string  | https://owner-api.teslamotors.com |
+| Variable              | Type    | Default                       |
+| --------------------- | ------- | ----------------------------- |
+| **TESLAMATE_SSL**     | boolean | _false_                       |
+| **TESLAMATE_HOST**    | string  | _teslamate_                   |
+| **TESLAMATE_PORT**    | string  | _4000_                        |
+| **API_TOKEN**         | string  |                               |
+| **API_TOKEN_DISABLE** | string  | _false_                       |
+| **DATABASE_PORT**     | integer | _5432_                        |
+| **DATABASE_TIMEOUT**  | integer | _60000_                       |
+| **DATABASE_SSL**      | boolean | _true_                        |
+| **DEBUG_MODE**        | boolean | _false_                       |
+| **DISABLE_MQTT**      | boolean | _false_                       |
+| **MQTT_TLS**          | boolean | _false_                       |
+| **MQTT_PORT**         | integer | _1883 (if TLS is true: 8883)_ |
+| **MQTT_USERNAME**     | string  |                               |
+| **MQTT_PASSWORD**     | string  |                               |
+| **MQTT_NAMESPACE**    | string  |                               |
+| **MQTT_CLIENTID**     | string  | _4 char random string_        |
+| **TESLA_API_HOST**    | string  | _retrieved by access token_   |
 
 **Commands** environment variables
 
