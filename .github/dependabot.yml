@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: daily
     commit-message:
-      prefix: "chore(ci): "
+      prefix: "deps(ci): "
     labels:
       - dependencies
       - github_actions
@@ -15,7 +15,7 @@ updates:
     schedule:
       interval: daily
     commit-message:
-      prefix: "chore(go): "
+      prefix: "deps(go): "
     labels:
       - dependencies
       - go
@@ -25,7 +25,7 @@ updates:
     schedule:
       interval: weekly
     commit-message:
-      prefix: "chore(docker): "
+      prefix: "deps(docker): "
     labels:
       - dependencies
       - docker
