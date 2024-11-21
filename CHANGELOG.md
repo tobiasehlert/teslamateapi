@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.19.0] - 2024-11-21
+
+### Added
+
+- ability to use custom API endpoint ([#307](https://github.com/tobiasehlert/teslamateapi/pull/307) by [jlestel](https://github.com/jlestel))
+
+### Changed
+
+- bump golang from 1.23.2 to 1.23.3 ([#311](https://github.com/tobiasehlert/teslamateapi/pull/311) by [dependabot](https://github.com/dependabot))
+
 ## [1.18.3] - 2024-10-15
 
 ### Changed
@@ -536,6 +546,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.19.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.3...v1.19.0
 [1.18.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.2...v1.18.3
 [1.18.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.1...v1.18.2
 [1.18.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.0...v1.18.1
