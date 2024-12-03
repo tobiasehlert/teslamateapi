@@ -150,7 +150,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 			&UnitsLength,
 			&UnitsTemperature,
 			&CarName,
-			&Odometer,
+			&charge.Odometer,
 		)
 
 		// converting values based of settings UnitsLength
