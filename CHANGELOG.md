@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.20.0] - 2024-12-18
+
+### Added
+
+- add odometer information to charge-endpoints ([#313](https://github.com/tobiasehlert/teslamateapi/pull/313) by [herrfrei](https://github.com/herrfrei))
+
+### Changed
+
+- bump alpine from 3.20.3 to 3.21.0 ([#314](https://github.com/tobiasehlert/teslamateapi/pull/314) by [dependabot](https://github.com/dependabot))
+- bump golang from 1.23.3 to 1.23.4 ([#315](https://github.com/tobiasehlert/teslamateapi/pull/315) by [dependabot](https://github.com/dependabot))
+
 ## [1.19.0] - 2024-11-21
 
 ### Added
@@ -546,6 +557,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.20.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.19.0...v1.20.0
 [1.19.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.3...v1.19.0
 [1.18.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.2...v1.18.3
 [1.18.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.1...v1.18.2
