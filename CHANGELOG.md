@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.20.1] - 2024-12-18
+
+### Changed
+
+- bump golang.org/x/crypto from 0.29.0 to 0.31.0 ([#316](https://github.com/tobiasehlert/teslamateapi/pull/316) by [dependabot](https://github.com/dependabot))
+
 ## [1.20.0] - 2024-12-18
 
 ### Added
@@ -557,6 +563,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.20.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.20.0...v1.20.1
 [1.20.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.19.0...v1.20.0
 [1.19.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.3...v1.19.0
 [1.18.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.2...v1.18.3
