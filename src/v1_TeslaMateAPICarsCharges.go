@@ -100,10 +100,10 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 			duration_min,
 			TO_CHAR((duration_min * INTERVAL '1 minute'), 'HH24:MI') as duration_str,
 			outside_temp_avg,
+			position.odometer as odometer,
 			(SELECT unit_of_length FROM settings LIMIT 1) as unit_of_length,
 			(SELECT unit_of_temperature FROM settings LIMIT 1) as unit_of_temperature,
-			cars.name,
-			position.odometer as odometer
+			cars.name
 		FROM charging_processes
 		LEFT JOIN cars ON car_id = cars.id
 		LEFT JOIN addresses address ON address_id = address.id
@@ -147,10 +147,10 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 			&charge.DurationMin,
 			&charge.DurationStr,
 			&charge.OutsideTempAvg,
+			&charge.Odometer,
 			&UnitsLength,
 			&UnitsTemperature,
 			&CarName,
-			&charge.Odometer,
 		)
 
 		// converting values based of settings UnitsLength
