@@ -159,6 +159,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 			charge.RangeIdeal.EndRange = kilometersToMiles(charge.RangeIdeal.EndRange)
 			charge.RangeRated.StartRange = kilometersToMiles(charge.RangeRated.StartRange)
 			charge.RangeRated.EndRange = kilometersToMiles(charge.RangeRated.EndRange)
+			charge.Odometer = kilometersToMiles(charge.Odometer)
 		}
 		// converting values based of settings UnitsTemperature
 		if UnitsTemperature == "F" {
