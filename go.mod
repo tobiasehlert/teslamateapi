@@ -1,6 +1,6 @@
 module github.com/tobiasehlert/teslamateapi
 
-go 1.23
+go 1.23.5
 
 require (
 	github.com/eclipse/paho.mqtt.golang v1.5.0
@@ -11,8 +11,8 @@ require (
 
 require (
 	github.com/bytedance/sonic v1.12.7 // indirect
-	github.com/bytedance/sonic/loader v0.2.2 // indirect
-	github.com/cloudwego/base64x v0.1.4 // indirect
+	github.com/bytedance/sonic/loader v0.2.3 // indirect
+	github.com/cloudwego/base64x v0.1.5 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
 	github.com/goccy/go-json v0.10.4 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.9 // indirect
@@ -40,5 +40,5 @@ require (
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
-	google.golang.org/protobuf v1.36.2 // indirect
+	google.golang.org/protobuf v1.36.3 // indirect
 )
