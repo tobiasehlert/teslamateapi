@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -331,7 +332,10 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 	case "tpms_pressure_rr":
 		stat.MQTTDataTpmsPressureRR = convertStringToFloat(string(msg.Payload()))
 	default:
-		log.Printf("[warning] TeslaMateAPICarsStatusV1 mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
+		//log.Printf("[warning] TeslaMateAPICarsStatusV1 mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
+		if !strings.Contains(MqttTopic, "location") && !strings.Contains(MqttTopic, "center_display_state") && !strings.Contains(MqttTopic, "door_open") {
+			log.Printf("[warning] TeslaMateAPICarsStatusV1 mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
+		}
 	}
 }
 
