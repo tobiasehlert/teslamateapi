@@ -1,5 +1,5 @@
 # get golang container
-FROM golang:1.21.6
+FROM golang:1.23.5 AS builder
 
 # get args
 ARG apiVersion=unknown
@@ -7,37 +7,35 @@ ARG apiVersion=unknown
 # create and set workingfolder
 WORKDIR /go/src/
 
-# copy go mod files
+# copy go mod files and sourcecode
 COPY go.mod go.sum ./
-
-# download go mods
-RUN go mod download
-
-# copy all sourcecode
 COPY src/ .
 
-# compile the program
-RUN CGO_ENABLED=0 go build -ldflags="-w -s -X 'main.apiVersion=${apiVersion}'" -o app ./...
+# download go mods and compile the program
+RUN go mod download && \
+  CGO_ENABLED=0 GOOS=linux go build \
+  -a -installsuffix cgo -ldflags="-w -s \
+  -X 'main.apiVersion=${apiVersion}' \
+  " -o app ./...
 
 
 # get alpine container
-FROM alpine:3.19.1
-
-# create nonroot user
-RUN addgroup -S nonroot \
-  && adduser -S nonroot -G nonroot
-
-# add ca-certificates
-RUN apk --no-cache add ca-certificates tzdata
+FROM alpine:3.21.2 AS app
 
 # create workdir
-WORKDIR /root/
+WORKDIR /opt/app
 
-# copy binary from first container
-COPY --from=0 /go/src/app .
+# add packages, create nonroot user and group
+RUN apk --no-cache add ca-certificates tzdata && \
+  addgroup -S nonroot && \
+  adduser -S nonroot -G nonroot && \
+  chown -R nonroot:nonroot .
 
-# set user
-USER nonroot
+# set user to nonroot
+USER nonroot:nonroot
+
+# copy binary from builder
+COPY --from=builder --chown=nonroot:nonroot --chmod=544 /go/src/app .
 
 # expose port 8080
 EXPOSE 8080

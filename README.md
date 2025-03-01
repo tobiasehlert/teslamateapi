@@ -1,9 +1,9 @@
 # TeslaMateApi
 
-[![GitHub CI](https://github.com/tobiasehlert/teslamateapi/workflows/build/badge.svg?branch=main)](https://github.com/tobiasehlert/teslamateapi/actions?query=workflow%3Abuild)
-[![GitHub go.mod version](https://img.shields.io/github/go-mod/go-version/tobiasehlert/teslamateapi)](https://github.com/tobiasehlert/teslamateapi/blob/main/go.mod)
-[![Docker version](https://img.shields.io/docker/v/tobiasehlert/teslamateapi/latest)](https://hub.docker.com/r/tobiasehlert/teslamateapi)
-[![Docker size](https://img.shields.io/docker/image-size/tobiasehlert/teslamateapi/latest)](https://hub.docker.com/r/tobiasehlert/teslamateapi)
+[![GitHub CI](https://img.shields.io/github/actions/workflow/status/tobiasehlert/teslamateapi/build.yml?branch=main&logo=github)](https://github.com/tobiasehlert/teslamateapi/actions/workflows/build.yml)
+[![GitHub go.mod version](https://img.shields.io/github/go-mod/go-version/tobiasehlert/teslamateapi?logo=go)](https://github.com/tobiasehlert/teslamateapi/blob/main/go.mod)
+[![GitHub release](https://img.shields.io/github/v/release/tobiasehlert/teslamateapi?sort=semver&logo=github)](https://github.com/tobiasehlert/teslamateapi/releases)
+[![Docker image size (tag)](https://img.shields.io/docker/image-size/tobiasehlert/teslamateapi/latest?logo=docker)](https://hub.docker.com/r/tobiasehlert/teslamateapi)
 [![GitHub license](https://img.shields.io/github/license/tobiasehlert/teslamateapi)](https://github.com/tobiasehlert/teslamateapi/blob/main/LICENSE)
 [![Docker pulls](https://img.shields.io/docker/pulls/tobiasehlert/teslamateapi)](https://hub.docker.com/r/tobiasehlert/teslamateapi)
 
@@ -122,6 +122,7 @@ Basically the same environment variables for the database, mqqt and timezone nee
 | **MQTT_PASSWORD**     | string  |                               |
 | **MQTT_NAMESPACE**    | string  |                               |
 | **MQTT_CLIENTID**     | string  | _4 char random string_        |
+| **TESLA_API_HOST**    | string  | _retrieved by access token_   |
 
 **Commands** environment variables
 
@@ -175,7 +176,9 @@ More detailed documentation of every endpoint will come..
 - GET `/api/v1/cars/:CarID/release_notes`
 - POST `/api/v1/cars/:CarID/wake_up`
 - GET `/api/v1/globalsettings`
+- GET `/api/healthz`
 - GET `/api/ping`
+- GET `/api/readyz`
 
 ### Authentication
 

@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"sync/atomic"
 	"time"
 
 	"github.com/gin-contrib/gzip"
@@ -17,6 +18,9 @@ import (
 )
 
 var (
+	// application readyz endpoint value for k8s
+	isReady *atomic.Value
+
 	// setting TeslaMateApi version number
 	apiVersion = "unspecified"
 
@@ -32,6 +36,9 @@ var (
 
 // main function
 func main() {
+	// setup of readyness endpoint code
+	isReady = &atomic.Value{}
+	isReady.Store(false)
 
 	// setting log parameters
 	log.SetFlags(log.Ldate | log.Lmicroseconds)
@@ -58,12 +65,20 @@ func main() {
 
 	// Connect to the MQTT broker
 	statusCache, err := startMQTT()
-	if err != nil {
-		log.Fatalf("[error] TeslaMateApi MQTT connection failed: %s", err)
+	if getEnvAsBool("DISABLE_MQTT", false) {
+		log.Printf("[info] TeslaMateApi MQTT connection not established.")
+	} else {
+		if err != nil {
+			log.Fatalf("[error] TeslaMateApi MQTT connection failed: %s", err)
+		}
 	}
 
 	if getEnvAsBool("API_TOKEN_DISABLE", false) {
-		log.Println("[warning] validateAuthToken - header authorization bearer token disabled. Authorizaiton: Bearer token will not be required for commands.")
+		log.Println("[warning] validateAuthToken - header authorization bearer token disabled. Authorization: Bearer token will not be required for commands.")
+	}
+
+	if teslaApiHost := getEnv("TESLA_API_HOST", ""); teslaApiHost != "" {
+		log.Printf("[info] TESLA_API_HOST is set: %s", teslaApiHost)
 	}
 
 	// kicking off Gin in value r
@@ -140,6 +155,10 @@ func main() {
 
 		// /api/ping endpoint
 		api.GET("/ping", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "pong"}) })
+
+		// health endpoints for kubernetes
+		api.GET("/healthz", healthz)
+		api.GET("/readyz", readyz)
 	}
 
 	// TeslaMateApi endpoints (before versioning)
@@ -158,6 +177,11 @@ func main() {
 	server := &http.Server{
 		Addr:    ":8080", // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 		Handler: r,
+	}
+
+	// setting readyz endpoint to true (if not using MQTT)
+	if getEnvAsBool("DISABLE_MQTT", false) {
+		isReady.Store(true)
 	}
 
 	// graceful shutdown
@@ -369,16 +393,33 @@ func kilometersToMilesNilSupport(km NullFloat64) NullFloat64 {
 	return (km)
 }
 
-/*
 // milesToKilometers func
 func milesToKilometers(mi float64) float64 {
 	return (mi * 1.609344)
 }
 
+/*
 // milesToKilometersNilSupport func
 func milesToKilometersNilSupport(mi NullFloat64) NullFloat64 {
 	mi.Float64 = (mi.Float64 * 1.609344)
 	return (mi)
+}
+*/
+
+// kilometersToMilesInteger func
+func kilometersToMilesInteger(km int) int {
+	return int(float64(km) * 0.62137119223733)
+}
+
+// barToPsi func
+func barToPsi(bar float64) float64 {
+	return (bar * 14.503773800722)
+}
+
+/*
+// psiToBar func
+func psiToBar(psi float64) float64 {
+	return (psi * 0.068947572932)
 }
 */
 
@@ -414,4 +455,18 @@ func checkArrayContainsString(s []string, e string) bool {
 		}
 	}
 	return false
+}
+
+// healthz is a liveness probe.
+func healthz(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusText(http.StatusOK)})
+}
+
+// readyz is a readiness probe.
+func readyz(c *gin.Context) {
+	if isReady == nil || !isReady.Load().(bool) {
+		c.JSON(http.StatusServiceUnavailable, gin.H{"error": http.StatusText(http.StatusServiceUnavailable)})
+		return
+	}
+	TeslaMateAPIHandleSuccessResponse(c, "webserver", gin.H{"status": http.StatusText(http.StatusOK)})
 }

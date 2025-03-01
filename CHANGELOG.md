@@ -1,5 +1,116 @@
 # Changelog
 
+## [1.20.1] - 2024-12-18
+
+### Changed
+
+- bump golang.org/x/crypto from 0.29.0 to 0.31.0 ([#316](https://github.com/tobiasehlert/teslamateapi/pull/316) by [dependabot](https://github.com/dependabot))
+
+## [1.20.0] - 2024-12-18
+
+### Added
+
+- add odometer information to charge-endpoints ([#313](https://github.com/tobiasehlert/teslamateapi/pull/313) by [herrfrei](https://github.com/herrfrei))
+
+### Changed
+
+- bump alpine from 3.20.3 to 3.21.0 ([#314](https://github.com/tobiasehlert/teslamateapi/pull/314) by [dependabot](https://github.com/dependabot))
+- bump golang from 1.23.3 to 1.23.4 ([#315](https://github.com/tobiasehlert/teslamateapi/pull/315) by [dependabot](https://github.com/dependabot))
+
+## [1.19.0] - 2024-11-21
+
+### Added
+
+- ability to use custom API endpoint ([#307](https://github.com/tobiasehlert/teslamateapi/pull/307) by [jlestel](https://github.com/jlestel))
+
+### Changed
+
+- bump golang from 1.23.2 to 1.23.3 ([#311](https://github.com/tobiasehlert/teslamateapi/pull/311) by [dependabot](https://github.com/dependabot))
+
+## [1.18.3] - 2024-10-15
+
+### Changed
+
+- bump alpine from 3.20.2 to 3.20.3 ([#305](https://github.com/tobiasehlert/teslamateapi/pull/305) by [dependabot](https://github.com/dependabot))
+- bump golang from 1.22.5 to 1.23.2 ([#302](https://github.com/tobiasehlert/teslamateapi/pull/302), [#306](https://github.com/tobiasehlert/teslamateapi/pull/306), [#308](https://github.com/tobiasehlert/teslamateapi/pull/308) by [dependabot](https://github.com/dependabot))
+- decrease Dockerfile layers ([#303](https://github.com/tobiasehlert/teslamateapi/pull/303) by [tobiasehlert](https://github.com/tobiasehlert))
+
+## [1.18.2] - 2024-08-12
+
+### Changed
+
+- bump alpine from 3.20.1 to 3.20.2 ([#297](https://github.com/tobiasehlert/teslamateapi/pull/297) by [dependabot](https://github.com/dependabot))
+- bump github.com/eclipse/paho.mqtt.golang from 1.4.3 to 1.5.0 ([#298](https://github.com/tobiasehlert/teslamateapi/pull/298) by [dependabot](https://github.com/dependabot))
+
+### Fixed
+
+- fix converts the current speed if unit is "mi" on status endpoint ([#299](https://github.com/tobiasehlert/teslamateapi/pull/299) by [ckanoab](https://github.com/ckanoab))
+- fix status drivingdetails.speed to be int and not float64 ([#301](https://github.com/tobiasehlert/teslamateapi/pull/301) by [tobiasehlert](https://github.com/tobiasehlert))
+
+## [1.18.1] - 2024-07-24
+
+### Fixed
+
+- invalid memory address or nil pointer dereference ([#296](https://github.com/tobiasehlert/teslamateapi/pull/296) by [tobiasehlert](https://github.com/tobiasehlert))
+
+## [1.18.0] - 2024-07-24
+
+### Added
+
+- add support for k8s health endpoints ([#191](https://github.com/tobiasehlert/teslamateapi/pull/191) by [tobiasehlert](https://github.com/tobiasehlert))
+- add cosign of images in build workflow ([#280](https://github.com/tobiasehlert/teslamateapi/pull/280) by [tobiasehlert](https://github.com/tobiasehlert))
+
+### Changed
+
+- add and update of MQTT topics ([#289](https://github.com/tobiasehlert/teslamateapi/pull/289) by [tobiasehlert](https://github.com/tobiasehlert))
+- add center_display_state mqtt topic ([#295](https://github.com/tobiasehlert/teslamateapi/pull/295) by [tobiasehlert](https://github.com/tobiasehlert))
+
+### Fixed
+
+- resolving fatal when disabling of mqtt ([#288](https://github.com/tobiasehlert/teslamateapi/pull/288) by [tobiasehlert](https://github.com/tobiasehlert))
+- update GitHub action workflow and go mod ([#279](https://github.com/tobiasehlert/teslamateapi/pull/279) by [tobiasehlert](https://github.com/tobiasehlert))
+- bump alpine from 3.19.1 to 3.20.1 ([#285](https://github.com/tobiasehlert/teslamateapi/pull/285), [#290](https://github.com/tobiasehlert/teslamateapi/pull/290) by [dependabot](https://github.com/dependabot))
+- bump docker/build-push-action from 5 to 6 ([#287](https://github.com/tobiasehlert/teslamateapi/pull/287) by [dependabot](https://github.com/dependabot))
+- bump github.com/gin-contrib/gzip from 1.0.0 to 1.0.1 ([#282](https://github.com/tobiasehlert/teslamateapi/pull/282) by [dependabot](https://github.com/dependabot))
+- bump github.com/gin-gonic/gin from 1.9.1 to 1.10.0 ([#283](https://github.com/tobiasehlert/teslamateapi/pull/283) by [dependabot](https://github.com/dependabot))
+- bump golang from 1.22.2 to 1.22.5 ([#284](https://github.com/tobiasehlert/teslamateapi/pull/284), [#286](https://github.com/tobiasehlert/teslamateapi/pull/286), [#293](https://github.com/tobiasehlert/teslamateapi/pull/293) by [dependabot](https://github.com/dependabot))
+
+## [1.17.2] - 2024-03-30
+
+### Changed
+
+- bump github.com/gin-contrib/gzip from 0.0.6 to 1.0.0 ([#276](https://github.com/tobiasehlert/teslamateapi/pull/276) by [dependabot](https://github.com/dependabot))
+
+### Fixed
+
+- fix: issue after location mqtt implementation ([#278](https://github.com/tobiasehlert/teslamateapi/pull/278) by [tobiasehlert](https://github.com/tobiasehlert))
+
+## [1.17.1] - 2024-03-15
+
+### Fixed
+
+- fix permission issues with Dockerfile nonroot implementation ([#274](https://github.com/tobiasehlert/teslamateapi/pull/274) by [tobiasehlert](https://github.com/tobiasehlert))
+
+## [1.17.0] - 2024-03-15
+
+### Added
+
+- add tire pressure warning and active route from mqtt ([#270](https://github.com/tobiasehlert/teslamateapi/pull/270) by [tobiasehlert](https://github.com/tobiasehlert))
+
+### Changed
+
+- alignment of commands to version 4.23.6 ([#265](https://github.com/tobiasehlert/teslamateapi/pull/265) by [tobiasehlert](https://github.com/tobiasehlert))
+- bump actions/cache from 3 to 4 ([#261](https://github.com/tobiasehlert/teslamateapi/pull/261) by [dependabot](https://github.com/dependabot))
+- bump golang from 1.21.5 to 1.22.1 ([#260](https://github.com/tobiasehlert/teslamateapi/pull/260), [#268](https://github.com/tobiasehlert/teslamateapi/pull/268), [#271](https://github.com/tobiasehlert/teslamateapi/pull/271) by [dependabot](https://github.com/dependabot))
+- bump google.golang.org/protobuf from 1.32.0 to 1.33.0 ([#272](https://github.com/tobiasehlert/teslamateapi/pull/272) by [dependabot](https://github.com/dependabot))
+- bump peter-evans/dockerhub-description from 3 to 4 ([#262](https://github.com/tobiasehlert/teslamateapi/pull/262) by [dependabot](https://github.com/dependabot))
+- update Dockerfile to specific version and use of nonroot user ([#266](https://github.com/tobiasehlert/teslamateapi/pull/266) by [tobiasehlert](https://github.com/tobiasehlert))
+- updating go mods and linting markdown files ([#264](https://github.com/tobiasehlert/teslamateapi/pull/264) by [tobiasehlert](https://github.com/tobiasehlert))
+
+### Fixed
+
+- fix Dockerfile alpine container typo ([#267](https://github.com/tobiasehlert/teslamateapi/pull/267) by [tobiasehlert](https://github.com/tobiasehlert))
+
 ## [1.16.6] - 2023-12-19
 
 ### Changed
@@ -452,6 +563,16 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.20.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.20.0...v1.20.1
+[1.20.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.19.0...v1.20.0
+[1.19.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.3...v1.19.0
+[1.18.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.2...v1.18.3
+[1.18.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.1...v1.18.2
+[1.18.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.0...v1.18.1
+[1.18.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.17.2...v1.18.0
+[1.17.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.17.1...v1.17.2
+[1.17.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.17.0...v1.17.1
+[1.17.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.6...v1.17.0
 [1.16.6]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.5...v1.16.6
 [1.16.5]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.4...v1.16.5
 [1.16.4]: https://github.com/tobiasehlert/teslamateapi/compare/v1.16.3...v1.16.4

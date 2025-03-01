@@ -13,6 +13,12 @@ on:
       - "go.sum"
   release:
     types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  packages: write
 
 jobs:
   build:
@@ -34,6 +40,12 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}
             type=semver,pattern={{major}}.{{minor}}
+        env:
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+
+      - name: Install Cosign
+        if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+        uses: sigstore/cosign-installer@v3
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -41,23 +53,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
       - name: Login to DockerHub
-        if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Login to GitHub Container Registry
-        if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -65,22 +67,77 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@v5
+        id: docker_build
+        uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile
           platforms: linux/amd64,linux/arm/v7,linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.docker_meta.outputs.tags }}
+          push: true
+          annotations: ${{ steps.docker_meta.outputs.annotations }}
           labels: ${{ steps.docker_meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+          tags: ${{ steps.docker_meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          sbom: true
           build-args: |
             apiVersion=${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.version'] }}
 
+      - name: Sign the images (with GitHub OIDC Token)
+        if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+        run: |
+          cosign sign --yes --recursive \
+            tobiasehlert/teslamateapi@${{ steps.docker_build.outputs.digest }}
+
+          cosign sign --yes --recursive \
+            ghcr.io/tobiasehlert/teslamateapi@${{ steps.docker_build.outputs.digest }}
+
+      - name: Inspect image
+        if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+        run: |
+          echo "::group::Inspecting Manifest"
+          docker buildx imagetools inspect ${{ fromJson(steps.docker_meta.outputs.json).tags[0] }}@${{ steps.docker_build.outputs.digest }} --format '{{ json .Manifest }}'
+          echo "::endgroup::"
+
+          echo "::group::Inspecting (linux/amd64) Image"
+          docker buildx imagetools inspect ${{ fromJson(steps.docker_meta.outputs.json).tags[0] }}@${{ steps.docker_build.outputs.digest }} --format '{{ json (index .Image "linux/amd64") }}'
+          echo "::endgroup::"
+
+          echo "::group::Inspecting (linux/amd64) Provenance"
+          docker buildx imagetools inspect ${{ fromJson(steps.docker_meta.outputs.json).tags[0] }}@${{ steps.docker_build.outputs.digest }} --format '{{ json (index .Provenance "linux/amd64") }}'
+          echo "::endgroup::"
+
+          echo "::group::Inspecting (linux/amd64) SBOM"
+          docker buildx imagetools inspect ${{ fromJson(steps.docker_meta.outputs.json).tags[0] }}@${{ steps.docker_build.outputs.digest }} --format '{{ json (index .SBOM "linux/amd64") }}'
+          echo "::endgroup::"
+
+      - name: Verify cosign signatures
+        if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+        run: |
+          echo "::group::Verify signature (DockerHub)"
+          cosign verify --rekor-url https://rekor.sigstore.dev \
+            --certificate-identity "https://github.com/${{ github.workflow_ref }}" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            tobiasehlert/teslamateapi@${{ steps.docker_build.outputs.digest }}
+          echo "::endgroup::"
+
+          echo "::group::Verify signature (GitHub Container Registry)"
+          cosign verify --rekor-url https://rekor.sigstore.dev \
+            --certificate-identity "https://github.com/${{ github.workflow_ref }}" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            ghcr.io/tobiasehlert/teslamateapi@${{ steps.docker_build.outputs.digest }}
+          echo "::endgroup::"
+
+  dockerhub:
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v4
-        if: github.event_name == 'release'
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}

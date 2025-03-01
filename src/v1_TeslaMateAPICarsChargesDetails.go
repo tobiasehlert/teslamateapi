@@ -88,6 +88,7 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 		RangeIdeal        PreferredRange  `json:"range_ideal"`         // PreferredRange
 		RangeRated        PreferredRange  `json:"range_rated"`         // PreferredRange
 		OutsideTempAvg    float64         `json:"outside_temp_avg"`    // float64
+		Odometer          float64         `json:"odometer"`            // float64
 		ChargeDetails     []ChargeDetails `json:"charge_details"`      // struct
 	}
 	// TeslaMateUnits struct - child of Data
@@ -133,6 +134,7 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 			duration_min,
 			TO_CHAR((duration_min * INTERVAL '1 minute'), 'HH24:MI') as duration_str,
 			outside_temp_avg,
+			position.odometer as odometer,
 			(SELECT unit_of_length FROM settings LIMIT 1) as unit_of_length,
 			(SELECT unit_of_temperature FROM settings LIMIT 1) as unit_of_temperature,
 			cars.name
@@ -164,6 +166,7 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 		&charge.DurationMin,
 		&charge.DurationStr,
 		&charge.OutsideTempAvg,
+		&charge.Odometer,
 		&UnitsLength,
 		&UnitsTemperature,
 		&CarName,
@@ -187,6 +190,7 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 		charge.RangeIdeal.EndRange = kilometersToMiles(charge.RangeIdeal.EndRange)
 		charge.RangeRated.StartRange = kilometersToMiles(charge.RangeRated.StartRange)
 		charge.RangeRated.EndRange = kilometersToMiles(charge.RangeRated.EndRange)
+		charge.Odometer = kilometersToMiles(charge.Odometer)
 	}
 	// converting values based of settings UnitsTemperature
 	if UnitsTemperature == "F" {
