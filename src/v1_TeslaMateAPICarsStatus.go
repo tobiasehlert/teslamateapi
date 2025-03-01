@@ -332,12 +332,7 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 	case "tpms_pressure_rr":
 		stat.MQTTDataTpmsPressureRR = convertStringToFloat(string(msg.Payload()))
 	default:
-		//log.Printf("[warning] TeslaMateAPICarsStatusV1 mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
-		if !strings.Contains(MqttTopic, "location") && !strings.Contains(MqttTopic, "center_display_state") && 
-			!strings.Contains(MqttTopic, "door_open") && !strings.Contains(MqttTopic, "active_route") && !strings.Contains(MqttTopic, "tpms_soft") &&
-			!strings.Contains(MqttTopic, "climate") && !strings.Contains(MqttTopic, "charging_state") {
-			log.Printf("[warning] TeslaMateAPICarsStatusV1 mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
-		}
+		log.Printf("[warning] TeslaMateAPICarsStatusV1 mqtt.MessageHandler issue.. extraction of data for %s not implemented!", MqttTopic)
 	}
 }
 
