@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.20.2] - 2025-03-06
+
+### Changed
+
+- bump alpine from 3.21.0 to 3.21.3 ([#319](https://github.com/tobiasehlert/teslamateapi/pull/319), [#327](https://github.com/tobiasehlert/teslamateapi/pull/327) by [dependabot](https://github.com/dependabot))
+- bump github.com/gin-contrib/gzip from 1.0.1 to 1.2.2 ([#317](https://github.com/tobiasehlert/teslamateapi/pull/317), [#320](https://github.com/tobiasehlert/teslamateapi/pull/320), [#324](https://github.com/tobiasehlert/teslamateapi/pull/324) by [dependabot](https://github.com/dependabot))
+- bump golang from 1.23.4 to 1.24.0 ([#321](https://github.com/tobiasehlert/teslamateapi/pull/321), [#328](https://github.com/tobiasehlert/teslamateapi/pull/328) by [dependabot](https://github.com/dependabot))
+
 ## [1.20.1] - 2024-12-18
 
 ### Changed
@@ -563,6 +571,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.20.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.20.1...v1.20.2
 [1.20.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.20.0...v1.20.1
 [1.20.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.19.0...v1.20.0
 [1.19.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.18.3...v1.19.0
