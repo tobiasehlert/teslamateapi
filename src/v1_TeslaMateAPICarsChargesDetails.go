@@ -89,9 +89,9 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 		RangeRated        PreferredRange  `json:"range_rated"`         // PreferredRange
 		OutsideTempAvg    float64         `json:"outside_temp_avg"`    // float64
 		Odometer          float64         `json:"odometer"`            // float64
-		ChargeDetails     []ChargeDetails `json:"charge_details"`      // struct
 		Latitude          float64         `json:"latitude"`            // float64
 		Longitude         float64         `json:"longitude"`           // float64
+		ChargeDetails     []ChargeDetails `json:"charge_details"`      // struct
 	}
 	// TeslaMateUnits struct - child of Data
 	type TeslaMateUnits struct {
