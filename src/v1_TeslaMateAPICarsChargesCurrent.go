@@ -149,8 +149,7 @@ func TeslaMateAPICarsChargesCurrentV1(c *gin.Context) {
 		LEFT JOIN addresses address ON address_id = address.id
 		LEFT JOIN positions position ON position_id = position.id
 		LEFT JOIN geofences geofence ON geofence_id = geofence.id
-		WHERE charging_processes.car_id=$1 
-		    AND end_date IS NULL
+		WHERE charging_processes.car_id=$1
 		ORDER BY end_date IS NULL DESC, start_date DESC
 		LIMIT 1;`
 
