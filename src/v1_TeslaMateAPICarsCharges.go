@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -10,12 +12,25 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 
 	// define error messages
 	var CarsChargesError1 = "Unable to load charges."
+	var CarsChargesError2 = "Invalid date format. Please use 2025-07-18T16:26:28 format."
 
 	// getting CarID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))
 	// query options to modify query when collecting data
 	ResultPage := convertStringToInteger(c.DefaultQuery("page", "1"))
 	ResultShow := convertStringToInteger(c.DefaultQuery("show", "100"))
+
+	parsedStartDate, err := parseDateParam(c, "startDate")
+	if err != nil {
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", CarsChargesError2, fmt.Sprintf("Invalid startDate: %s", err.Error()))
+		return
+	}
+
+	parsedEndDate, err := parseDateParam(c, "endDate")
+	if err != nil {
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", CarsChargesError2, fmt.Sprintf("Invalid endDate: %s", err.Error()))
+		return
+	}
 
 	// creating structs for /cars/<CarID>/charges
 	// Car struct - child of Data
@@ -109,10 +124,32 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		LEFT JOIN addresses address ON address_id = address.id
 		LEFT JOIN positions position ON position_id = position.id
 		LEFT JOIN geofences geofence ON geofence_id = geofence.id
-		WHERE charging_processes.car_id=$1 AND charging_processes.end_date IS NOT NULL
-		ORDER BY start_date DESC
-		LIMIT $2 OFFSET $3;`
-	rows, err := db.Query(query, CarID, ResultShow, ResultPage)
+		WHERE charging_processes.car_id=$1 AND charging_processes.end_date IS NOT NULL`
+
+	// Parameters to be passed to the query
+	var queryParams []interface{}
+	queryParams = append(queryParams, CarID)
+	paramIndex := 2
+
+	// Add date filtering if provided
+	if parsedStartDate != "" {
+		query += fmt.Sprintf(" AND charging_processes.start_date >= $%d", paramIndex)
+		queryParams = append(queryParams, parsedStartDate)
+		paramIndex++
+	}
+	if parsedEndDate != "" {
+		query += fmt.Sprintf(" AND charging_processes.end_date <= $%d", paramIndex)
+		queryParams = append(queryParams, parsedEndDate)
+		paramIndex++
+	}
+
+	query += fmt.Sprintf(`
+        ORDER BY start_date DESC
+        LIMIT $%d OFFSET $%d;`, paramIndex, paramIndex+1)
+
+	queryParams = append(queryParams, ResultShow, ResultPage)
+
+	rows, err := db.Query(query, queryParams...)
 
 	// checking for errors in query
 	if err != nil {

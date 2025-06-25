@@ -34,6 +34,38 @@ var (
 	allowList []string
 )
 
+func parseAndValidateDate(dateParam string) (string, error) {
+	if dateParam == "" {
+		return "", nil
+	}
+
+	// getting timezone from environment
+	UsersTimezone := getEnv("TZ", "Europe/Berlin")
+
+	// loading timezone location
+	UserLocation, locationErr := time.LoadLocation(UsersTimezone)
+	if locationErr != nil {
+		return "", fmt.Errorf("invalid timezone '%s': %s", UsersTimezone, locationErr.Error())
+	}
+
+	// parsing datestring as user's local time
+	parsedTime, parseErr := time.ParseInLocation("2025-07-18T16:26:28", dateParam, UserLocation)
+
+	if parseErr != nil {
+		return "", fmt.Errorf("invalid date format '%s': %s", dateParam, parseErr.Error())
+	}
+
+	return parsedTime.UTC().Format("2006-01-02 15:04:05"), nil
+}
+
+func parseDateParam(c *gin.Context, paramName string) (string, error) {
+	dateStr := c.DefaultQuery(paramName, "")
+	if dateStr == "" {
+		return "", nil
+	}
+	return parseAndValidateDate(dateStr)
+}
+
 // main function
 func main() {
 	// setup of readyness endpoint code
