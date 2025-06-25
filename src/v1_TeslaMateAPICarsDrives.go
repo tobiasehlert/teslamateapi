@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -10,12 +12,31 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 
 	// define error messages
 	var CarsDrivesError1 = "Unable to load drives."
+	var CarsDrivesError2 = "Invalid date format. Please use ISO 8601 format (e.g., 2025-06-25T13:26:34+02:00)."
 
 	// getting CarID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))
 	// query options to modify query when collecting data
 	ResultPage := convertStringToInteger(c.DefaultQuery("page", "1"))
 	ResultShow := convertStringToInteger(c.DefaultQuery("show", "100"))
+	StartDate := c.DefaultQuery("startDate", "")
+	EndDate := c.DefaultQuery("endDate", "")
+
+	// Parse and validate date parameters
+	var ParsedStartDate, ParsedEndDate string
+	var err error
+
+	ParsedStartDate, err = parseAndValidateDate(StartDate, "TeslaMateAPICarsDrivesV1", CarsDrivesError2)
+	if err != nil {
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesV1", CarsDrivesError2, fmt.Sprintf("Invalid startDate: %s", err.Error()))
+		return
+	}
+
+	ParsedEndDate, err = parseAndValidateDate(EndDate, "TeslaMateAPICarsDrivesV1", CarsDrivesError2)
+	if err != nil {
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesV1", CarsDrivesError2, fmt.Sprintf("Invalid endDate: %s", err.Error()))
+		return
+	}
 
 	// creating structs for /cars/<CarID>/drives
 	// Car struct - child of Data
@@ -137,10 +158,32 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 		LEFT JOIN positions end_position ON end_position_id = end_position.id
 		LEFT JOIN geofences start_geofence ON start_geofence_id = start_geofence.id
 		LEFT JOIN geofences end_geofence ON end_geofence_id = end_geofence.id
-		WHERE drives.car_id=$1 AND end_date IS NOT NULL
+		WHERE drives.car_id=$1 AND end_date IS NOT NULL`
+
+	// Parameters to be passed to the query
+	var queryParams []interface{}
+	queryParams = append(queryParams, CarID)
+	paramIndex := 2
+
+	// Add date filtering if provided
+	if ParsedStartDate != "" {
+		query += fmt.Sprintf(" AND drives.start_date >= $%d", paramIndex)
+		queryParams = append(queryParams, ParsedStartDate)
+		paramIndex++
+	}
+	if ParsedEndDate != "" {
+		query += fmt.Sprintf(" AND drives.start_date <= $%d", paramIndex)
+		queryParams = append(queryParams, ParsedEndDate)
+		paramIndex++
+	}
+
+	query += `
 		ORDER BY start_date DESC
-		LIMIT $2 OFFSET $3;`
-	rows, err := db.Query(query, CarID, ResultShow, ResultPage)
+		LIMIT $` + fmt.Sprintf("%d", paramIndex) + ` OFFSET $` + fmt.Sprintf("%d", paramIndex+1) + `;`
+
+	queryParams = append(queryParams, ResultShow, ResultPage)
+
+	rows, err := db.Query(query, queryParams...)
 
 	// checking for errors in query
 	if err != nil {

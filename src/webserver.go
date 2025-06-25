@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"strconv"
@@ -33,6 +34,47 @@ var (
 	// list of allowed commands
 	allowList []string
 )
+
+func parseAndValidateDate(dateParam, functionName, errorMessage string) (string, error) {
+	if dateParam == "" {
+		return "", nil
+	}
+
+	decodedDate, err := url.QueryUnescape(dateParam)
+	if err != nil {
+		return "", fmt.Errorf("Failed to decode date parameter: %s", err.Error())
+	}
+
+	if len(decodedDate) > 19 && decodedDate[19] == ' ' {
+		decodedDate = decodedDate[:19] + "+" + decodedDate[20:]
+	}
+
+	var parsedTime time.Time
+	formats := []string{
+		time.RFC3339,
+		"2006-01-02T15:04:05-07:00",
+		"2006-01-02T15:04:05+07:00",
+		"2006-01-02T15:04:05+07:05",
+		"2006-01-02T15:04:05-07:05",
+		"2006-01-02T15:04:05Z",
+		"2006-01-02 15:04:05",
+		"2006-01-02",
+	}
+
+	var parseErr error
+	for _, format := range formats {
+		parsedTime, parseErr = time.Parse(format, decodedDate)
+		if parseErr == nil {
+			break
+		}
+	}
+
+	if parseErr != nil {
+		return "", fmt.Errorf("Invalid date format '%s': %s", decodedDate, parseErr.Error())
+	}
+
+	return parsedTime.UTC().Format("2006-01-02 15:04:05"), nil
+}
 
 // main function
 func main() {
