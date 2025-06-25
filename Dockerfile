@@ -1,5 +1,5 @@
 # get golang container
-FROM golang:1.24.2 AS builder
+FROM golang:1.24.4 AS builder
 
 # get args
 ARG apiVersion=unknown
@@ -20,7 +20,7 @@ RUN go mod download && \
 
 
 # get alpine container
-FROM alpine:3.21.3 AS app
+FROM alpine:3.22.0 AS app
 
 # create workdir
 WORKDIR /opt/app
