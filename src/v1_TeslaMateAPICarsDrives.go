@@ -1,6 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"net/url"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -10,12 +14,106 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 
 	// define error messages
 	var CarsDrivesError1 = "Unable to load drives."
+	var CarsDrivesError2 = "Invalid date format. Please use ISO 8601 format (e.g., 2025-06-25T13:26:34+02:00)."
 
 	// getting CarID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))
 	// query options to modify query when collecting data
 	ResultPage := convertStringToInteger(c.DefaultQuery("page", "1"))
 	ResultShow := convertStringToInteger(c.DefaultQuery("show", "100"))
+	StartDate := c.DefaultQuery("startDate", "")
+	EndDate := c.DefaultQuery("endDate", "")
+
+	// Parse and validate date parameters
+	var ParsedStartDate, ParsedEndDate string
+
+	if StartDate != "" {
+		// URL decode the date parameter to handle + signs in timezone offsets
+		decodedStartDate, err := url.QueryUnescape(StartDate)
+		if err != nil {
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesV1", CarsDrivesError2, fmt.Sprintf("Failed to decode startDate parameter: %s", err.Error()))
+			return
+		}
+
+		// Fix the timezone format by replacing spaces with + for timezone offsets
+		// This handles cases where URL decoding converted + to space
+		if len(decodedStartDate) > 19 && decodedStartDate[19] == ' ' {
+			decodedStartDate = decodedStartDate[:19] + "+" + decodedStartDate[20:]
+		}
+
+		// Try to parse the date in various common formats
+		var parsedTime time.Time
+		formats := []string{
+			time.RFC3339,                // 2006-01-02T15:04:05Z07:00
+			"2006-01-02T15:04:05-07:00", // Alternative timezone format
+			"2006-01-02T15:04:05+07:00", // Alternative timezone format
+			"2006-01-02T15:04:05+07:05", // Handle minute offsets like +02:05
+			"2006-01-02T15:04:05-07:05", // Handle negative minute offsets
+			"2006-01-02T15:04:05Z",      // UTC format
+			"2006-01-02 15:04:05",       // Basic format without timezone
+			"2006-01-02",                // Date only
+		}
+
+		var parseErr error
+		for _, format := range formats {
+			parsedTime, parseErr = time.Parse(format, decodedStartDate)
+			if parseErr == nil {
+				break
+			}
+		}
+
+		if parseErr != nil {
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesV1", CarsDrivesError2, fmt.Sprintf("Invalid startDate format '%s': %s", decodedStartDate, parseErr.Error()))
+			return
+		}
+
+		// Convert to UTC and format for PostgreSQL
+		ParsedStartDate = parsedTime.UTC().Format("2006-01-02 15:04:05")
+	}
+
+	if EndDate != "" {
+		// URL decode the date parameter to handle + signs in timezone offsets
+		decodedEndDate, err := url.QueryUnescape(EndDate)
+		if err != nil {
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesV1", CarsDrivesError2, fmt.Sprintf("Failed to decode endDate parameter: %s", err.Error()))
+			return
+		}
+
+		// Fix the timezone format by replacing spaces with + for timezone offsets
+		// This handles cases where URL decoding converted + to space
+		if len(decodedEndDate) > 19 && decodedEndDate[19] == ' ' {
+			decodedEndDate = decodedEndDate[:19] + "+" + decodedEndDate[20:]
+		}
+
+		// Try to parse the date in various common formats
+		var parsedTime time.Time
+		formats := []string{
+			time.RFC3339,                // 2006-01-02T15:04:05Z07:00
+			"2006-01-02T15:04:05-07:00", // Alternative timezone format
+			"2006-01-02T15:04:05+07:00", // Alternative timezone format
+			"2006-01-02T15:04:05+07:05", // Handle minute offsets like +02:05
+			"2006-01-02T15:04:05-07:05", // Handle negative minute offsets
+			"2006-01-02T15:04:05Z",      // UTC format
+			"2006-01-02 15:04:05",       // Basic format without timezone
+			"2006-01-02",                // Date only
+		}
+
+		var parseErr error
+		for _, format := range formats {
+			parsedTime, parseErr = time.Parse(format, decodedEndDate)
+			if parseErr == nil {
+				break
+			}
+		}
+
+		if parseErr != nil {
+			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesV1", CarsDrivesError2, fmt.Sprintf("Invalid endDate format '%s': %s", decodedEndDate, parseErr.Error()))
+			return
+		}
+
+		// Convert to UTC and format for PostgreSQL
+		ParsedEndDate = parsedTime.UTC().Format("2006-01-02 15:04:05")
+	}
 
 	// creating structs for /cars/<CarID>/drives
 	// Car struct - child of Data
@@ -137,10 +235,32 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 		LEFT JOIN positions end_position ON end_position_id = end_position.id
 		LEFT JOIN geofences start_geofence ON start_geofence_id = start_geofence.id
 		LEFT JOIN geofences end_geofence ON end_geofence_id = end_geofence.id
-		WHERE drives.car_id=$1 AND end_date IS NOT NULL
+		WHERE drives.car_id=$1 AND end_date IS NOT NULL`
+
+	// Parameters to be passed to the query
+	var queryParams []interface{}
+	queryParams = append(queryParams, CarID)
+	paramIndex := 2
+
+	// Add date filtering if provided
+	if ParsedStartDate != "" {
+		query += fmt.Sprintf(" AND drives.start_date >= $%d", paramIndex)
+		queryParams = append(queryParams, ParsedStartDate)
+		paramIndex++
+	}
+	if ParsedEndDate != "" {
+		query += fmt.Sprintf(" AND drives.start_date <= $%d", paramIndex)
+		queryParams = append(queryParams, ParsedEndDate)
+		paramIndex++
+	}
+
+	query += `
 		ORDER BY start_date DESC
-		LIMIT $2 OFFSET $3;`
-	rows, err := db.Query(query, CarID, ResultShow, ResultPage)
+		LIMIT $` + fmt.Sprintf("%d", paramIndex) + ` OFFSET $` + fmt.Sprintf("%d", paramIndex+1) + `;`
+
+	queryParams = append(queryParams, ResultShow, ResultPage)
+
+	rows, err := db.Query(query, queryParams...)
 
 	// checking for errors in query
 	if err != nil {
