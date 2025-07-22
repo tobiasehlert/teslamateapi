@@ -12,7 +12,7 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 
 	// define error messages
 	var CarsDrivesError1 = "Unable to load drives."
-	var CarsDrivesError2 = "Invalid date format. Please use 2025-07-18T16:26:28 format."
+	var CarsDrivesError2 = "Invalid date format. Please use YYYY-MM-DDTHH:MM:SS format."
 
 	// getting CarID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))
