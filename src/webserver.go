@@ -49,7 +49,7 @@ func parseAndValidateDate(dateParam string) (string, error) {
 	}
 
 	// parsing datestring as user's local time
-	parsedTime, parseErr := time.ParseInLocation("2025-07-18T16:26:28", dateParam, UserLocation)
+	parsedTime, parseErr := time.ParseInLocation("2006-01-02T15:04:05", dateParam, UserLocation)
 
 	if parseErr != nil {
 		return "", fmt.Errorf("invalid date format '%s': %s", dateParam, parseErr.Error())
