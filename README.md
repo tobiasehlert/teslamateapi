@@ -162,15 +162,15 @@ More detailed documentation of every endpoint will come..
 - GET `/api/v1/cars/:CarID`
 - GET `/api/v1/cars/:CarID/charges`
   - Supported parameters:
-    - `startDate` (optional, the format must be `2025-07-18T16:26:28`)
-    - `endDate` (optional, the format must be `2025-07-18T16:26:28`) 
+    - `startDate` (optional, the format must be `YYYY-MM-DDTHH:MM:SS`)
+    - `endDate` (optional, the format must be `YYYY-MM-DDTHH:MM:SS`) 
 - GET `/api/v1/cars/:CarID/charges/:ChargeID`
 - GET `/api/v1/cars/:CarID/command`
 - POST `/api/v1/cars/:CarID/command/:Command`
 - GET `/api/v1/cars/:CarID/drives`
   - Supported parameters:
-    - `startDate` (optional, the format must be `2025-07-18T16:26:28`)
-    - `endDate` (optional, the format must be `2025-07-18T16:26:28`) 
+    - `startDate` (optional, the format must be `YYYY-MM-DDTHH:MM:SS`)
+    - `endDate` (optional, the format must be `YYYY-MM-DDTHH:MM:SS`) 
 - GET `/api/v1/cars/:CarID/drives/:DriveID`
 - PUT `/api/v1/cars/:CarID/logging/:Command`
 - GET `/api/v1/cars/:CarID/logging`
