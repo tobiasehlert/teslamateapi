@@ -89,6 +89,8 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 		RangeRated        PreferredRange  `json:"range_rated"`         // PreferredRange
 		OutsideTempAvg    float64         `json:"outside_temp_avg"`    // float64
 		Odometer          float64         `json:"odometer"`            // float64
+		Latitude          float64         `json:"latitude"`            // float64
+		Longitude         float64         `json:"longitude"`           // float64
 		ChargeDetails     []ChargeDetails `json:"charge_details"`      // struct
 	}
 	// TeslaMateUnits struct - child of Data
@@ -135,6 +137,8 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 			TO_CHAR((duration_min * INTERVAL '1 minute'), 'HH24:MI') as duration_str,
 			outside_temp_avg,
 			position.odometer as odometer,
+			position.latitude,
+			position.longitude,
 			(SELECT unit_of_length FROM settings LIMIT 1) as unit_of_length,
 			(SELECT unit_of_temperature FROM settings LIMIT 1) as unit_of_temperature,
 			cars.name
@@ -167,6 +171,8 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 		&charge.DurationStr,
 		&charge.OutsideTempAvg,
 		&charge.Odometer,
+		&charge.Latitude,
+		&charge.Longitude,
 		&UnitsLength,
 		&UnitsTemperature,
 		&CarName,
