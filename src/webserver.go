@@ -300,7 +300,7 @@ func parseDateParam(datestring string) (string, error) {
 
 	// validate that the datestring is in RFC3339 format
 	if _, err := time.Parse(time.RFC3339, datestring); err != nil {
-		return "", fmt.Errorf("invalid date format: %s, please use canonical UTC format in RFC3339", datestring)
+		return "", fmt.Errorf("invalid date format: %s, please use RFC3339 format", datestring)
 	}
 
 	// parse and validate the date string
