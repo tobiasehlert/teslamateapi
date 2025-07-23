@@ -162,15 +162,15 @@ More detailed documentation of every endpoint will come..
 - GET `/api/v1/cars/:CarID`
 - GET `/api/v1/cars/:CarID/charges`
   - Supported parameters:
-    - `startDate` (optional, the format must be `YYYY-MM-DDTHH:MM:SS`)
-    - `endDate` (optional, the format must be `YYYY-MM-DDTHH:MM:SS`) 
+    - `startDate` (optional, use canonical UTC format in RFC3339)
+    - `endDate` (optional, use canonical UTC format in RFC3339)
 - GET `/api/v1/cars/:CarID/charges/:ChargeID`
 - GET `/api/v1/cars/:CarID/command`
 - POST `/api/v1/cars/:CarID/command/:Command`
 - GET `/api/v1/cars/:CarID/drives`
   - Supported parameters:
-    - `startDate` (optional, the format must be `YYYY-MM-DDTHH:MM:SS`)
-    - `endDate` (optional, the format must be `YYYY-MM-DDTHH:MM:SS`) 
+    - `startDate` (optional, use canonical UTC format in RFC3339)
+    - `endDate` (optional, use canonical UTC format in RFC3339)
 - GET `/api/v1/cars/:CarID/drives/:DriveID`
 - PUT `/api/v1/cars/:CarID/logging/:Command`
 - GET `/api/v1/cars/:CarID/logging`
@@ -182,6 +182,8 @@ More detailed documentation of every endpoint will come..
 - GET `/api/ping`
 - GET `/api/readyz`
 
+> [!TIP]
+> Canonical UTC format in RFC3339, e.g. `2006-01-02T15:04:05Z` or `2006-01-02T15:04:05+07:00`
 
 ### Authentication
 

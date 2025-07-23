@@ -12,7 +12,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 
 	// define error messages
 	var CarsChargesError1 = "Unable to load charges."
-	var CarsChargesError2 = "Invalid date format. Please use YYYY-MM-DDTHH:MM:SS format."
+	var CarsChargesError2 = "Invalid date format."
 
 	// getting CarID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))
@@ -20,15 +20,15 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	ResultPage := convertStringToInteger(c.DefaultQuery("page", "1"))
 	ResultShow := convertStringToInteger(c.DefaultQuery("show", "100"))
 
-	parsedStartDate, err := parseDateParam(c, "startDate")
+	// get startDate and endDate from query parameters
+	parsedStartDate, err := parseDateParam(c.Query("startDate"))
 	if err != nil {
-		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", CarsChargesError2, fmt.Sprintf("Invalid startDate: %s", err.Error()))
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", CarsChargesError2, err.Error())
 		return
 	}
-
-	parsedEndDate, err := parseDateParam(c, "endDate")
+	parsedEndDate, err := parseDateParam(c.Query("endDate"))
 	if err != nil {
-		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", CarsChargesError2, fmt.Sprintf("Invalid endDate: %s", err.Error()))
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", CarsChargesError2, err.Error())
 		return
 	}
 
