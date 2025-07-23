@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"sync/atomic"
 	"time"
 
@@ -300,7 +301,8 @@ func parseDateParam(datestring string) (string, error) {
 
 	// validate that the datestring is in RFC3339 format
 	if _, err := time.Parse(time.RFC3339, datestring); err != nil {
-		return "", fmt.Errorf("invalid date format: %s, please use RFC3339 format", datestring)
+		sanitizedInput := strings.NewReplacer("\n", "\\n", "\r", "\\r", "\t", "\\t").Replace(datestring)
+		return "", fmt.Errorf("invalid date format: %s, please use RFC3339 format", sanitizedInput)
 	}
 
 	// parse and validate the date string
