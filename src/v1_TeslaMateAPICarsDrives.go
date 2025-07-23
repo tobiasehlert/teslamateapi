@@ -5,7 +5,15 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// TeslaMateAPICarsDrivesV1 func
+// TeslaMateAPICarsDrivesV1 godoc
+// @Summary      TeslaMate drives endpoint
+// @Description  Get all drives for a specific car by CarID from TeslaMate
+// @Description  Since no DriveID is given, all drives will be returned.
+// @Tags         drives
+// @Param        CarID path int true "The CarID"
+// @Param        page query int false "Page number for pagination" default(1)
+// @Param        show query int false "Number of results to show per page" default(100)
+// @Router       /v1/cars/{CarID}/drives [get]
 func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 
 	// define error messages

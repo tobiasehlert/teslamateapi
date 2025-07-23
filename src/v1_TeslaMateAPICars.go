@@ -5,7 +5,25 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// TeslaMateAPICarsV1 func
+// TeslaMateAPICarsV1List godoc
+// @Summary      TeslaMate cars endpoint
+// @Description  Get all cars from TeslaMate
+// @Description  Since no CarID is given, all cars will be returned.
+// @Tags         cars
+// @Router       /v1/cars/ [get]
+func TeslaMateAPICarsV1List() bool {
+	// this function is only used for the documentation
+	// it is not called in the code
+	return true
+}
+
+// TeslaMateAPICarsV1 godoc
+// @Summary      TeslaMate car-specific endpoint
+// @Description  Get a specific car by CarID from TeslaMate
+// @Description  The CarID is the ID of the car in the TeslaMate database.
+// @Tags         cars
+// @Param        CarID path int true "The CarID"
+// @Router       /v1/cars/{CarID} [get]
 func TeslaMateAPICarsV1(c *gin.Context) {
 
 	// define error messages

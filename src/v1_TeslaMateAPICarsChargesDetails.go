@@ -7,7 +7,14 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// TeslaMateAPICarsChargesDetailsV1 func
+// TeslaMateAPICarsChargesDetailsV1 godoc
+// @Summary      TeslaMate charge details endpoint
+// @Description  Get a specific charge by ChargeID from TeslaMate
+// @Description  The ChargeID is the ID of the charge in the TeslaMate database.
+// @Tags         charges
+// @Param        CarID path int true "The CarID"
+// @Param        ChargeID path int true "The ChargeID"
+// @Router       /v1/cars/{CarID}/charges/{ChargeID} [get]
 func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 
 	// define error messages

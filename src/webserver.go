@@ -34,6 +34,21 @@ var (
 	allowList []string
 )
 
+// @title         TeslaMate API
+// @version       edge
+// @description   This is the API documentation for the TeslaMate API, a RESTful API to get data collected by self-hosted data logger TeslaMate in JSON.
+
+// @contact.name  Tobias Lindberg
+// @contact.url   https://github.com/tobiasehlert/teslamateapi
+
+// @license.name  MIT
+// @license.url   https://github.com/tobiasehlert/teslamateapi/blob/main/LICENSE
+
+// @schemes   http
+// @host      localhost:8080
+// @BasePath  /api
+// @Produce   json
+
 // main function
 func main() {
 	// setup of readyness endpoint code
@@ -151,7 +166,7 @@ func main() {
 		}
 
 		// /api/ping endpoint
-		api.GET("/ping", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "pong"}) })
+		api.GET("/ping", pingz)
 
 		// health endpoints for kubernetes
 		api.GET("/healthz", healthz)
@@ -454,16 +469,49 @@ func checkArrayContainsString(s []string, e string) bool {
 	return false
 }
 
-// healthz is a liveness probe.
-func healthz(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"status": http.StatusText(http.StatusOK)})
+// PingResponse represents the response format for a ping response
+type PingResponse struct {
+	Message string `json:"message" example:"pong"`
 }
 
-// readyz is a readiness probe.
+// pingz godocs
+// @Summary      Ping endpoint
+// @Description  This endpoint is used to check response of the API
+// @Router       /ping [get]
+// @Success      200 {object} PingResponse "pong"
+func pingz(c *gin.Context) {
+	c.JSON(http.StatusOK, PingResponse{Message: "pong"})
+}
+
+// StatusOKResponse represents the response format of the health check
+type StatusOKResponse struct {
+	Status string `json:"status" example:"OK"`
+}
+
+// ErrorResponse represents a generic error structure
+type ErrorResponse struct {
+	Error string `json:"error" example:"Service Unavailable"`
+}
+
+// healthz godocs
+// @Summary      Health check endpoint
+// @Description  This endpoint is used to check if the API is running
+// @Router       /healthz [get]
+// @Success      200 {object} StatusOKResponse "OK"
+func healthz(c *gin.Context) {
+	c.JSON(http.StatusOK, StatusOKResponse{Status: http.StatusText(http.StatusOK)})
+}
+
+// readyz godocs
+// @Summary      Readiness check endpoint
+// @Description  This endpoint is used to check if the API is ready to serve requests
+// @Router       /readyz [get]
+// @Success      200 {object} StatusOKResponse "OK"
+// @Failure      503 {object} ErrorResponse "Service Unavailable"
 func readyz(c *gin.Context) {
 	if isReady == nil || !isReady.Load().(bool) {
-		c.JSON(http.StatusServiceUnavailable, gin.H{"error": http.StatusText(http.StatusServiceUnavailable)})
+		c.JSON(http.StatusServiceUnavailable, ErrorResponse{Error: http.StatusText(http.StatusServiceUnavailable)})
 		return
 	}
-	TeslaMateAPIHandleSuccessResponse(c, "webserver", gin.H{"status": http.StatusText(http.StatusOK)})
+	TeslaMateAPIHandleSuccessResponse(c, "webserver", StatusOKResponse{Status: http.StatusText(http.StatusOK)})
 }

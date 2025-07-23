@@ -5,7 +5,13 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// TeslaMateAPICarsUpdatesV1 func
+// TeslaMateAPICarsUpdatesV1 godoc
+// @Summary      TeslaMate updates endpoint
+// @Description  Get updates of a particular car by CarID from TeslaMate
+// @Description  The CarID is the ID of the car in the TeslaMate database.
+// @Tags         updates
+// @Param        CarID path int true "The CarID"
+// @Router       /v1/cars/{CarID}/updates [get]
 func TeslaMateAPICarsUpdatesV1(c *gin.Context) {
 
 	// define error messages

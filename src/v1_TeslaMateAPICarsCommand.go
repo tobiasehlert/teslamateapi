@@ -12,7 +12,39 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// TeslaMateAPICarsCommandV1 func
+// TeslaMateAPICarsCommandV1List godoc
+// @Summary      TeslaMate commands-list endpoint
+// @Description  Get a list of allowed commands for a particular car by CarID from TeslaMate
+// @Tags         commands
+// @Param        CarID path int true "The CarID"
+// @Router       /v1/cars/{CarID}/command [get]
+func TeslaMateAPICarsCommandV1List() bool {
+	// this function is only used for the documentation
+	// it is not called in the code
+	return true
+}
+
+// TeslaMateAPICarsCommandV1WakeUp godoc
+// @Summary      TeslaMate wake up command endpoint
+// @Description  Wake up a specific car by CarID from TeslaMate
+// @Description  The CarID is the ID of the car in the TeslaMate database.
+// @Tags         commands
+// @Param        CarID path int true "The CarID"
+// @Router       /v1/cars/{CarID}/wake_up [post]
+func TeslaMateAPICarsCommandV1WakeUp(c *gin.Context) {
+	// this function is only used for the documentation
+	// it is not called in the code
+	TeslaMateAPICarsCommandV1(c)
+}
+
+// TeslaMateAPICarsCommandV1 godoc
+// @Summary      TeslaMate commands endpoint
+// @Description  Send a command to the Tesla API for a specific car by CarID
+// @Description  Documentation of how to construct the command can be found at https://tesla-api.timdorr.com/vehicle/commands
+// @Tags         commands
+// @Param        CarID path int true "The CarID"
+// @Param        command path string true "The command to send" extensions(x-example=flash_lights)
+// @Router       /v1/cars/{CarID}/command/{command} [post]
 func TeslaMateAPICarsCommandV1(c *gin.Context) {
 
 	// creating required vars

@@ -166,8 +166,8 @@ More detailed documentation of every endpoint will come..
 - POST `/api/v1/cars/:CarID/command/:Command`
 - GET `/api/v1/cars/:CarID/drives`
 - GET `/api/v1/cars/:CarID/drives/:DriveID`
-- PUT `/api/v1/cars/:CarID/logging/:Command`
 - GET `/api/v1/cars/:CarID/logging`
+- PUT `/api/v1/cars/:CarID/logging/:Command`
 - GET `/api/v1/cars/:CarID/status`
 - GET `/api/v1/cars/:CarID/updates`
 - POST `/api/v1/cars/:CarID/wake_up`

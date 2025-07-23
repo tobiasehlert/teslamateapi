@@ -12,7 +12,24 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// TeslaMateAPICarsLoggingV1 func
+// TeslaMateAPICarsLoggingV1List godoc
+// @Summary      TeslaMate logging endpoint
+// @Tags         logging
+// @Param        CarID path int true "The CarID"
+// @Router       /v1/cars/{CarID}/logging [get]
+func TeslaMateAPICarsLoggingV1List() bool {
+	// this function is only used for the documentation
+	// it is not called in the code
+	return true
+}
+
+// TeslaMateAPICarsLoggingV1 godoc
+// @Summary      TeslaMate loggings endpoint
+// @Description  This endpoint is used to perform logging-commands towards TeslaMate web app
+// @Tags         logging
+// @Param        CarID path int true "The CarID"
+// @Param        command path string true "The command to send" extensions(x-example=flash_lights)
+// @Router       /v1/cars/{CarID}/logging/{command} [put]
 func TeslaMateAPICarsLoggingV1(c *gin.Context) {
 
 	// creating required vars

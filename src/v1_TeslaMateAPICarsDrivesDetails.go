@@ -7,7 +7,14 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// TeslaMateAPICarsDrivesDetailsV1 func
+// TeslaMateAPICarsDrivesDetailsV1 godoc
+// @Summary      TeslaMate drive details endpoint
+// @Description  Get a specific drive by DriveID from TeslaMate
+// @Description  The DriveID is the ID of the drive in the TeslaMate database.
+// @Tags         drives
+// @Param        CarID path int true "The CarID"
+// @Param        DriveID path int true "The DriveID"
+// @Router       /v1/cars/{CarID}/drives/{DriveID} [get]
 func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 
 	// define error messages

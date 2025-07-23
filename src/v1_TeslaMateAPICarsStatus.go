@@ -421,7 +421,13 @@ func (s *statusCache) newMessage(c mqtt.Client, msg mqtt.Message) {
 	}
 }
 
-// TeslaMateAPICarsStatusV1 func
+// TeslaMateAPICarsStatusV1 godoc
+// @Summary      TeslaMate status endpoint
+// @Description  Get status of a particular car by CarID from TeslaMate
+// @Description  The CarID is the ID of the car in the TeslaMate database.
+// @Tags         status
+// @Param        CarID path int true "The CarID"
+// @Router       /v1/cars/{CarID}/status [get]
 func (s *statusCache) TeslaMateAPICarsStatusV1(c *gin.Context) {
 	if s.mqttDisabled {
 		log.Println("[notice] TeslaMateAPICarsStatusV1 DISABLE_MQTT is set to true.. can not return status for car without mqtt!")

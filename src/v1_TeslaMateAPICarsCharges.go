@@ -5,7 +5,15 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// TeslaMateAPICarsChargesV1 func
+// TeslaMateAPICarsChargesV1 godoc
+// @Summary      TeslaMate charges endpoint
+// @Description  Get all charges for a specific car by CarID from TeslaMate
+// @Description  Since no ChargeID is given, all charges will be returned.
+// @Tags         charges
+// @Param        CarID path int true "The CarID"
+// @Param        page query int false "Page number for pagination" default(1)
+// @Param        show query int false "Number of results to show per page" default(100)
+// @Router       /v1/cars/{CarID}/charges [get]
 func TeslaMateAPICarsChargesV1(c *gin.Context) {
 
 	// define error messages
