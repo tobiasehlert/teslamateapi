@@ -300,13 +300,14 @@ func parseDateParam(datestring string) (string, error) {
 	}
 
 	// validate that the datestring is in RFC3339 format
-	if _, err := time.Parse(time.RFC3339, datestring); err != nil {
+	parsedTime, err := time.Parse(time.RFC3339, datestring)
+	if err != nil {
 		sanitizedInput := strings.NewReplacer("\n", "\\n", "\r", "\\r", "\t", "\\t").Replace(datestring)
 		return "", fmt.Errorf("invalid date format: %s, please use RFC3339 format", sanitizedInput)
 	}
 
-	// parse and validate the date string
-	return getTimeInTimeZone(datestring), nil
+	// return the parsed time in UTC format with Z (as used in the database)
+	return parsedTime.UTC().Format("2006-01-02T15:04:05Z"), nil
 }
 
 /*
