@@ -304,9 +304,8 @@ func parseDateParam(datestring string) (string, error) {
 		return t.UTC().Format(dbTimestampFormat), nil
 	}
 
-	// local timestamp without timezone info, interpret in user's timezone
-	const naiveLayout = "2006-01-02T15:04:05"
-	if t, err := time.ParseInLocation(naiveLayout, datestring, appUsersTimezone); err == nil {
+	// DateTime format (2006-01-02 15:04:05) without timezone info, interpret in user's timezone
+	if t, err := time.ParseInLocation(time.DateTime, strings.ReplaceAll(datestring, "T", " "), appUsersTimezone); err == nil {
 		return t.UTC().Format(dbTimestampFormat), nil
 	}
 
