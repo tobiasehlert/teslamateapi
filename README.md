@@ -167,6 +167,7 @@ More detailed documentation of every endpoint will come..
     - `startDate` (optional, use canonical UTC format in RFC3339)
     - `endDate` (optional, use canonical UTC format in RFC3339)
 - GET `/api/v1/cars/:CarID/charges/:ChargeID`
+- GET `/api/v1/cars/:CarID/charges/current`
 - GET `/api/v1/cars/:CarID/command`
 - POST `/api/v1/cars/:CarID/command/:Command`
 - GET `/api/v1/cars/:CarID/drives`
