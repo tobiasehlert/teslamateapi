@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"sync/atomic"
 	"time"
 
@@ -21,8 +22,9 @@ var (
 	// application readyz endpoint value for k8s
 	isReady *atomic.Value
 
-	// setting TeslaMateApi version number
-	apiVersion = "unspecified"
+	// setting TeslaMateApi parameters
+	apiVersion        = "unspecified"
+	dbTimestampFormat = "2006-01-02T15:04:05Z" // format used in postgres for dates
 
 	// defining db var
 	db *sql.DB
@@ -32,6 +34,9 @@ var (
 
 	// list of allowed commands
 	allowList []string
+
+	// app-settings
+	appUsersTimezone *time.Location
 )
 
 // main function
@@ -52,6 +57,12 @@ func main() {
 		// setting GIN_MODE to DebugMode
 		gin.SetMode(gin.DebugMode)
 		log.Printf("[info] TeslaMateApi running in debug mode.")
+	}
+
+	// getting app-settings from environment
+	appUsersTimezone, _ = time.LoadLocation(getEnv("TZ", "Europe/Berlin"))
+	if gin.IsDebugging() {
+		log.Println("[debug] TeslaMateApi appUsersTimezone:", appUsersTimezone)
 	}
 
 	// init of API with connection to database
@@ -269,28 +280,38 @@ func TeslaMateAPIHandleSuccessResponse(c *gin.Context, s string, j interface{}) 
 }
 
 func getTimeInTimeZone(datestring string) string {
-
-	// getting timezone from environment
-	UsersTimezone := getEnv("TZ", "Europe/Berlin")
-
-	// format the dates are stored in postgres
-	TeslaMateDateFormat := "2006-01-02T15:04:05Z"
-
-	// parsing datestring into TeslaMateDateFormat
-	t, _ := time.Parse(TeslaMateDateFormat, datestring)
-
-	// loading timezone location
-	UserLocation, _ := time.LoadLocation(UsersTimezone)
+	// parsing datestring into dbTimestampFormat
+	t, _ := time.Parse(dbTimestampFormat, datestring)
 
 	// formatting in users location in RFC3339 format
-	ReturnDate := t.In(UserLocation).Format(time.RFC3339)
+	ReturnDate := t.In(appUsersTimezone).Format(time.RFC3339)
 
 	// logging time conversion to log
 	if gin.IsDebugging() {
-		log.Println("[debug] getTimeInTimeZone - UTC", t.Format(time.RFC3339), "time converted to", UsersTimezone, "is", ReturnDate)
+		log.Println("[debug] getTimeInTimeZone - UTC", t.Format(time.RFC3339), "time converted to", appUsersTimezone, "is", ReturnDate)
 	}
 
 	return ReturnDate
+}
+
+func parseDateParam(datestring string) (string, error) {
+	if datestring == "" {
+		return "", nil
+	}
+
+	// RFC3339 formats first — includes Z or timezone offset
+	if t, err := time.Parse(time.RFC3339, datestring); err == nil {
+		return t.UTC().Format(dbTimestampFormat), nil
+	}
+
+	// DateTime format (2006-01-02 15:04:05) without timezone info, interpret in user's timezone
+	normalizedDateString := strings.ReplaceAll(datestring, "T", " ")
+	if t, err := time.ParseInLocation(time.DateTime, normalizedDateString, appUsersTimezone); err == nil {
+		return t.UTC().Format(dbTimestampFormat), nil
+	}
+
+	sanitizedInput := strings.NewReplacer("\n", "\\n", "\r", "\\r", "\t", "\\t").Replace(datestring)
+	return "", fmt.Errorf("invalid date format: %s, please use RFC3339 format", sanitizedInput)
 }
 
 /*
