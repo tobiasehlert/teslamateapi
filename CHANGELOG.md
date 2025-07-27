@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.21.0] - 2025-07-24
+
+### Added
+
+- add latitude and longitude to charges ([#333](https://github.com/tobiasehlert/teslamateapi/pull/333) by [LukStankovic](https://github.com/LukStankovic))
+- add support for filtering on start and end dates ([#339](https://github.com/tobiasehlert/teslamateapi/pull/339) by [darox](https://github.com/darox))
+
+### Changed
+
+- bump alpine from 3.21.3 to 3.22.1 ([#336](https://github.com/tobiasehlert/teslamateapi/pull/336), [#342](https://github.com/tobiasehlert/teslamateapi/pull/342) by [dependabot](https://github.com/dependabot))
+- bump github.com/gin-contrib/gzip from 1.2.2 to 1.2.3 ([#331](https://github.com/tobiasehlert/teslamateapi/pull/331) by [dependabot](https://github.com/dependabot))
+- bump github.com/gin-gonic/gin from 1.10.0 to 1.10.1 ([#335](https://github.com/tobiasehlert/teslamateapi/pull/335) by [dependabot](https://github.com/dependabot))
+- bump golang from 1.24.0 to 1.24.5 ([#329](https://github.com/tobiasehlert/teslamateapi/pull/329), [#330](https://github.com/tobiasehlert/teslamateapi/pull/330), [#337](https://github.com/tobiasehlert/teslamateapi/pull/337), [#340](https://github.com/tobiasehlert/teslamateapi/pull/340) by [dependabot](https://github.com/dependabot))
+
 ## [1.20.2] - 2025-03-06
 
 ### Changed
@@ -571,6 +585,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.21.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.20.2...v1.21.0
 [1.20.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.20.1...v1.20.2
 [1.20.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.20.0...v1.20.1
 [1.20.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.19.0...v1.20.0
