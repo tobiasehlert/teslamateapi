@@ -220,7 +220,6 @@ func initDBconnection() {
 
 	// declare error var for use insite initAPI
 	var err error
-	dbsslmode := "disable"
 
 	// creating connection string towards postgres
 	dbhost := getEnv("DATABASE_HOST", "database")
@@ -230,12 +229,10 @@ func initDBconnection() {
 	dbname := getEnv("DATABASE_NAME", "teslamate")
 	// dbpool := getEnvAsInt("DATABASE_POOL_SIZE", 10)
 	dbtimeout := (getEnvAsInt("DATABASE_TIMEOUT", 60000) / 1000)
-	dbssl := getEnvAsBool("DATABASE_SSL", false)
+	dbssl := getEnv("DATABASE_SSL", "disable")
 	// dbipv6 := getEnvAsBool("DATABASE_IPV6", false)
-	if dbssl {
-		dbsslmode = "prefer"
-	}
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s connect_timeout=%d", dbhost, dbport, dbuser, dbpass, dbname, dbsslmode, dbtimeout)
+
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s connect_timeout=%d", dbhost, dbport, dbuser, dbpass, dbname, dbssl, dbtimeout)
 
 	// opening connection to postgres
 	db, err = sql.Open("postgres", psqlInfo)
