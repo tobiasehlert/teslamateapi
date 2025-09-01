@@ -148,6 +148,9 @@ func main() {
 			v1.GET("/cars/:CarID/logging", TeslaMateAPICarsLoggingV1)
 			v1.PUT("/cars/:CarID/logging/:Command", TeslaMateAPICarsLoggingV1)
 
+			// v1 /api/v1/cars/:CarID/battery-health endpoints
+			v1.GET("/cars/:CarID/battery-health", TeslaMateAPICarsBatteryHealthV1)
+
 			// v1 /api/v1/cars/:CarID/status endpoints
 			v1.GET("/cars/:CarID/status", statusCache.TeslaMateAPICarsStatusV1)
 
