@@ -113,7 +113,7 @@ Basically the same environment variables for the database, mqqt and timezone nee
 | **API_TOKEN_DISABLE** | string  | _false_                       |
 | **DATABASE_PORT**     | integer | _5432_                        |
 | **DATABASE_TIMEOUT**  | integer | _60000_                       |
-| **DATABASE_SSL**      | boolean | _true_                        |
+| **DATABASE_SSL**      | string  | _disable_                     |
 | **DEBUG_MODE**        | boolean | _false_                       |
 | **DISABLE_MQTT**      | boolean | _false_                       |
 | **MQTT_TLS**          | boolean | _false_                       |
