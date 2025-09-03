@@ -16,6 +16,13 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 		CarsDrivesDetailsError2 = "Unable to load drive details."
 	)
 
+	// authentication for the endpoint
+	validToken, errorMessage := validateAuthToken(c)
+	if !validToken {
+		TeslaMateAPIHandleOtherResponse(c, "TeslaMateAPICarsDrivesDetailsV1", CarsDrivesDetailsError1, gin.H{"error": errorMessage})
+		return
+	}
+
 	// getting CarID and DriveID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))
 	DriveID := convertStringToInteger(c.Param("DriveID"))

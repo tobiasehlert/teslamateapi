@@ -21,6 +21,13 @@ func TeslaMateAPICarsLoggingV1(c *gin.Context) {
 		err      error
 	)
 
+	// authentication for the endpoint
+	validToken, errorMessage := validateAuthToken(c)
+	if !validToken {
+		TeslaMateAPIHandleOtherResponse(c, http.StatusUnauthorized, "TeslaMateAPICarsLoggingV1", gin.H{"error": errorMessage})
+		return
+	}
+
 	// check if commands are enabled.. if not we need to abort
 	if !getEnvAsBool("ENABLE_COMMANDS", false) {
 		log.Println("[warning] TeslaMateAPICarsLoggingV1 ENABLE_COMMANDS is not true.. returning 403 forbidden.")

@@ -14,6 +14,13 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 	var CarsDrivesError1 = "Unable to load drives."
 	var CarsDrivesError2 = "Invalid date format."
 
+	// authentication for the endpoint
+	validToken, errorMessage := validateAuthToken(c)
+	if !validToken {
+		TeslaMateAPIHandleOtherResponse(c, "TeslaMateAPICarsDrivesV1", CarsDrivesError2, gin.H{"error": errorMessage})
+		return
+	}
+
 	// getting CarID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))
 	// query options to modify query when collecting data

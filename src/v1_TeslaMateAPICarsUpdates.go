@@ -11,6 +11,13 @@ func TeslaMateAPICarsUpdatesV1(c *gin.Context) {
 	// define error messages
 	var CarsUpdatesError1 = "Unable to load updates."
 
+	// authentication for the endpoint
+	validToken, errorMessage := validateAuthToken(c)
+	if !validToken {
+		TeslaMateAPIHandleOtherResponse(c, "TeslaMateAPICarsUpdatesV1", CarsUpdatesError1, gin.H{"error": errorMessage})
+		return
+	}
+
 	// getting CarID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))
 	// query options to modify query when collecting data
