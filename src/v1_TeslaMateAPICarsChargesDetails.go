@@ -19,7 +19,7 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 	// authentication for the endpoint
 	validToken, errorMessage := validateAuthToken(c)
 	if !validToken {
-		TeslaMateAPIHandleOtherResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError1, gin.H{"error": errorMessage})
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesDetailsV1", CarsChargesDetailsError1, errorMessage)
 		return
 	}
 

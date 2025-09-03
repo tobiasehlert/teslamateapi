@@ -42,7 +42,7 @@ func TeslaMateAPICarsLoggingV1(c *gin.Context) {
 	}
 
 	// authentication for the endpoint
-	validToken, errorMessage := validateAuthToken(c)
+	validToken, errorMessage = validateAuthToken(c)
 	if !validToken {
 		TeslaMateAPIHandleOtherResponse(c, http.StatusUnauthorized, "TeslaMateAPICarsLoggingV1", gin.H{"error": errorMessage})
 		return

@@ -57,7 +57,7 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 	// authentication for the endpoint
 	validToken, errorMessage := validateAuthToken(c)
 	if !validToken {
-		TeslaMateAPIHandleOtherResponse(c, "TeslaMateAPIGlobalsettingsV1", CarsGlobalsettingsError1, gin.H{"error": errorMessage})
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPIGlobalsettingsV1", CarsGlobalsettingsError1, errorMessage)
 		return
 	}
 
