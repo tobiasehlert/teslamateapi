@@ -176,6 +176,7 @@ More detailed documentation of every endpoint will come..
 - GET `/api/v1/cars/:CarID/logging`
 - GET `/api/v1/cars/:CarID/status`
 - GET `/api/v1/cars/:CarID/updates`
+- GET `/api/v1/cars/:CarID/battery-health`
 - POST `/api/v1/cars/:CarID/wake_up`
 - GET `/api/v1/globalsettings`
 - GET `/api/healthz`
