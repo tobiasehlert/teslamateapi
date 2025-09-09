@@ -35,7 +35,7 @@ RUN apk --no-cache add ca-certificates tzdata && \
 USER nonroot:nonroot
 
 # copy binary from builder
-COPY --from=builder --chown=nonroot:nonroot --chmod=755 /go/src/app .
+COPY --from=builder --chown=nonroot:nonroot --chmod=555 /go/src/app .
 
 # expose port 8080
 EXPOSE 8080
