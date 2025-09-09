@@ -1,5 +1,5 @@
 # get golang container
-FROM golang:1.24.6 AS builder
+FROM golang:1.25.1 AS builder
 
 # get args
 ARG apiVersion=unknown
@@ -35,7 +35,7 @@ RUN apk --no-cache add ca-certificates tzdata && \
 USER nonroot:nonroot
 
 # copy binary from builder
-COPY --from=builder --chown=nonroot:nonroot --chmod=544 /go/src/app .
+COPY --from=builder --chown=nonroot:nonroot --chmod=555 /go/src/app .
 
 # expose port 8080
 EXPOSE 8080
