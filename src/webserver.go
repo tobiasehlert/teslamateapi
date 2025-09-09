@@ -232,6 +232,14 @@ func initDBconnection() {
 	dbssl := getEnv("DATABASE_SSL", "disable")
 	// dbipv6 := getEnvAsBool("DATABASE_IPV6", false)
 
+	// convert boolean-like SSL mode for backwards compatibility
+	switch dbssl {
+	case "true":
+		dbssl = "require"
+	case "false":
+		dbssl = "disable"
+	}
+
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s connect_timeout=%d", dbhost, dbport, dbuser, dbpass, dbname, dbssl, dbtimeout)
 
 	// opening connection to postgres
