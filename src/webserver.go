@@ -29,12 +29,6 @@ var (
 	// defining db var
 	db *sql.DB
 
-	// defining envToken that contains API_TOKEN value
-	envToken string
-
-	// list of allowed commands
-	allowList []string
-
 	// app-settings
 	appUsersTimezone *time.Location
 )
