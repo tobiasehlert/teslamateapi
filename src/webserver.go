@@ -220,18 +220,18 @@ func initDBconnection() {
 	dbpass := getEnv("DATABASE_PASS", "secret")
 	dbname := getEnv("DATABASE_NAME", "teslamate")
 	dbtimeout := (getEnvAsInt("DATABASE_TIMEOUT", 60000) / 1000)
-	dbssl := getEnv("DATABASE_SSL", "disable")
+	dbsslmode := getEnv("DATABASE_SSL", "disable")
 
 	// convert boolean-like SSL mode for backwards compatibility
-	switch dbssl {
-	case "true":
-		dbssl = "require"
+	switch dbsslmode {
+	case "true", "noverify":
+		dbsslmode = "require"
 	case "false":
-		dbssl = "disable"
+		dbsslmode = "disable"
 	}
 
 	// construct connection string
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s connect_timeout=%d", dbhost, dbport, dbuser, dbpass, dbname, dbssl, dbtimeout)
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s connect_timeout=%d", dbhost, dbport, dbuser, dbpass, dbname, dbsslmode, dbtimeout)
 
 	// open database connection
 	db, err = sql.Open("postgres", psqlInfo)
