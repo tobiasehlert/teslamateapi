@@ -125,6 +125,9 @@ func main() {
 			v1.GET("/cars", TeslaMateAPICarsV1)
 			v1.GET("/cars/:CarID", TeslaMateAPICarsV1)
 
+			// v1 /api/v1/cars/:CarID/battery-health endpoints
+			v1.GET("/cars/:CarID/battery-health", TeslaMateAPICarsBatteryHealthV1)
+
 			// v1 /api/v1/cars/:CarID/charges endpoints
 			v1.GET("/cars/:CarID/charges", TeslaMateAPICarsChargesV1)
 			v1.GET("/cars/:CarID/charges/:ChargeID", TeslaMateAPICarsChargesDetailsV1)
