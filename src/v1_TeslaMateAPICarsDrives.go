@@ -143,9 +143,6 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 			COALESCE( NULLIF ( GREATEST ( start_rated_range_km - end_rated_range_km, 0 ), 0 ),0 ) as range_diff_rated_km,
 			outside_temp_avg,
 			inside_temp_avg,
-			(SELECT unit_of_length FROM settings LIMIT 1) as unit_of_length,
-			(SELECT unit_of_temperature FROM settings LIMIT 1) as unit_of_temperature,
-			cars.name,
 			CASE 
 				WHEN (start_rated_range_km - end_rated_range_km) > 0 
 				THEN (start_rated_range_km - end_rated_range_km) * cars.efficiency 
@@ -155,7 +152,10 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 				WHEN (duration_min > 1 AND distance > 1 AND ( start_position.usable_battery_level IS NULL OR end_position.usable_battery_level IS NULL OR ( end_position.battery_level - end_position.usable_battery_level ) = 0 )) AND NULLIF(distance, 0) IS NOT NULL
 				THEN (start_rated_range_km - end_rated_range_km) * cars.efficiency / NULLIF(distance, 0) * 1000
 				ELSE NULL 
-			END as consumption_net
+			END as consumption_net,
+			(SELECT unit_of_length FROM settings LIMIT 1) as unit_of_length,
+			(SELECT unit_of_temperature FROM settings LIMIT 1) as unit_of_temperature,
+			cars.name
 		FROM drives
 		LEFT JOIN cars ON car_id = cars.id
 		LEFT JOIN addresses start_address ON start_address_id = start_address.id
@@ -236,11 +236,11 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 			&drive.RangeRated.RangeDiff,
 			&drive.OutsideTempAvg,
 			&drive.InsideTempAvg,
+			&drive.EnergyConsumedNet,
+			&drive.ConsumptionNet,
 			&UnitsLength,
 			&UnitsTemperature,
 			&CarName,
-			&drive.EnergyConsumedNet,
-			&drive.ConsumptionNet,
 		)
 
 		// converting values based of settings UnitsLength
