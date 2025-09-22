@@ -300,7 +300,7 @@ func TeslaMateAPICarsBatteryHealthV1(c *gin.Context) {
 		BatteryHealthPercentage: batteryHealthPercentage,
 	}
 
-	// converting values based of settings UnitsLength
+	// converting values based on settings UnitsLength
 	if UnitsLength == "mi" {
 		batteryHealth.MaxRange = kilometersToMiles(batteryHealth.MaxRange)
 		batteryHealth.CurrentRange = kilometersToMiles(batteryHealth.CurrentRange)
