@@ -84,24 +84,26 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 	}
 	// Drive struct - child of Data
 	type Drive struct {
-		DriveID         int             `json:"drive_id"`         // int
-		StartDate       string          `json:"start_date"`       // string
-		EndDate         string          `json:"end_date"`         // string
-		StartAddress    string          `json:"start_address"`    // string
-		EndAddress      string          `json:"end_address"`      // string
-		OdometerDetails OdometerDetails `json:"odometer_details"` // OdometerDetails
-		DurationMin     int             `json:"duration_min"`     // int
-		DurationStr     string          `json:"duration_str"`     // string
-		SpeedMax        int             `json:"speed_max"`        // int
-		SpeedAvg        float64         `json:"speed_avg"`        // float64
-		PowerMax        int             `json:"power_max"`        // int
-		PowerMin        int             `json:"power_min"`        // int
-		BatteryDetails  BatteryDetails  `json:"battery_details"`  // BatteryDetails
-		RangeIdeal      PreferredRange  `json:"range_ideal"`      // PreferredRange
-		RangeRated      PreferredRange  `json:"range_rated"`      // PreferredRange
-		OutsideTempAvg  float64         `json:"outside_temp_avg"` // float64
-		InsideTempAvg   float64         `json:"inside_temp_avg"`  // float64
-		DriveDetails    []DriveDetails  `json:"drive_details"`    // struct
+		DriveID           int             `json:"drive_id"`            // int
+		StartDate         string          `json:"start_date"`          // string
+		EndDate           string          `json:"end_date"`            // string
+		StartAddress      string          `json:"start_address"`       // string
+		EndAddress        string          `json:"end_address"`         // string
+		OdometerDetails   OdometerDetails `json:"odometer_details"`    // OdometerDetails
+		DurationMin       int             `json:"duration_min"`        // int
+		DurationStr       string          `json:"duration_str"`        // string
+		SpeedMax          int             `json:"speed_max"`           // int
+		SpeedAvg          float64         `json:"speed_avg"`           // float64
+		PowerMax          int             `json:"power_max"`           // int
+		PowerMin          int             `json:"power_min"`           // int
+		BatteryDetails    BatteryDetails  `json:"battery_details"`     // BatteryDetails
+		RangeIdeal        PreferredRange  `json:"range_ideal"`         // PreferredRange
+		RangeRated        PreferredRange  `json:"range_rated"`         // PreferredRange
+		OutsideTempAvg    float64         `json:"outside_temp_avg"`    // float64
+		InsideTempAvg     float64         `json:"inside_temp_avg"`     // float64
+		EnergyConsumedNet *float64        `json:"energy_consumed_net"` // Energy consumed (net) in kWh
+		ConsumptionNet    *float64        `json:"consumption_net"`     // Ø Consumption (net) per distance unit
+		DriveDetails      []DriveDetails  `json:"drive_details"`       // struct
 	}
 	// TeslaMateUnits struct - child of Data
 	type TeslaMateUnits struct {
@@ -158,6 +160,16 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 			COALESCE( NULLIF ( GREATEST ( start_rated_range_km - end_rated_range_km, 0 ), 0 ),0 ) as range_diff_rated_km,
 			outside_temp_avg,
 			inside_temp_avg,
+			CASE 
+				WHEN (start_rated_range_km - end_rated_range_km) > 0 
+				THEN (start_rated_range_km - end_rated_range_km) * cars.efficiency 
+				ELSE NULL 
+			END as energy_consumed_net,
+			CASE 
+				WHEN (duration_min > 1 AND distance > 1 AND ( start_position.usable_battery_level IS NULL OR end_position.usable_battery_level IS NULL OR ( end_position.battery_level - end_position.usable_battery_level ) = 0 )) AND NULLIF(distance, 0) IS NOT NULL
+				THEN (start_rated_range_km - end_rated_range_km) * cars.efficiency / NULLIF(distance, 0) * 1000
+				ELSE NULL 
+			END as consumption_net,
 			(SELECT unit_of_length FROM settings LIMIT 1) as unit_of_length,
 			(SELECT unit_of_temperature FROM settings LIMIT 1) as unit_of_temperature,
 			cars.name
@@ -202,6 +214,8 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 		&drive.RangeRated.RangeDiff,
 		&drive.OutsideTempAvg,
 		&drive.InsideTempAvg,
+		&drive.EnergyConsumedNet,
+		&drive.ConsumptionNet,
 		&UnitsLength,
 		&UnitsTemperature,
 		&CarName,
@@ -232,6 +246,9 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 		drive.RangeRated.StartRange = kilometersToMiles(drive.RangeRated.StartRange)
 		drive.RangeRated.EndRange = kilometersToMiles(drive.RangeRated.EndRange)
 		drive.RangeRated.RangeDiff = kilometersToMiles(drive.RangeRated.RangeDiff)
+		if drive.ConsumptionNet != nil {
+			*drive.ConsumptionNet = kilometersToMiles(*drive.ConsumptionNet)
+		}
 	}
 	// converting values based of settings UnitsTemperature
 	if UnitsTemperature == "F" {

@@ -29,12 +29,6 @@ var (
 	// defining db var
 	db *sql.DB
 
-	// defining envToken that contains API_TOKEN value
-	envToken string
-
-	// list of allowed commands
-	allowList []string
-
 	// app-settings
 	appUsersTimezone *time.Location
 )
@@ -220,41 +214,48 @@ func main() {
 
 // initDBconnection func
 func initDBconnection() {
-
-	// declare error var for use insite initAPI
 	var err error
-	dbsslmode := "disable"
 
-	// creating connection string towards postgres
+	// read environment variables with defaults for connection string
 	dbhost := getEnv("DATABASE_HOST", "database")
 	dbport := getEnvAsInt("DATABASE_PORT", 5432)
 	dbuser := getEnv("DATABASE_USER", "teslamate")
 	dbpass := getEnv("DATABASE_PASS", "secret")
 	dbname := getEnv("DATABASE_NAME", "teslamate")
-	// dbpool := getEnvAsInt("DATABASE_POOL_SIZE", 10)
 	dbtimeout := (getEnvAsInt("DATABASE_TIMEOUT", 60000) / 1000)
-	dbssl := getEnvAsBool("DATABASE_SSL", false)
-	// dbipv6 := getEnvAsBool("DATABASE_IPV6", false)
-	if dbssl {
-		dbsslmode = "prefer"
+	dbsslmode := getEnv("DATABASE_SSL", "disable")
+	dbsslrootcert := getEnv("DATABASE_SSL_CA_CERT_FILE", "")
+
+	// convert boolean-like SSL mode for backwards compatibility
+	switch dbsslmode {
+	case "true", "noverify":
+		dbsslmode = "require"
+	case "false":
+		dbsslmode = "disable"
 	}
+
+	// construct connection string
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s connect_timeout=%d", dbhost, dbport, dbuser, dbpass, dbname, dbsslmode, dbtimeout)
 
-	// opening connection to postgres
-	db, err = sql.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Panic(err)
+	// add SSL certificate configuration if provided
+	if dbsslrootcert != "" {
+		psqlInfo += " sslrootcert=" + dbsslrootcert
 	}
 
-	// doing ping to database to test connection
-	err = db.Ping()
+	// open database connection
+	db, err = sql.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Panic(err)
+		log.Fatalf("[error] initDBconnection - database connection error: %v", err)
+	}
+
+	// test database connection
+	if err = db.Ping(); err != nil {
+		log.Fatalf("[error] initDBconnection - database ping error: %v", err)
 	}
 
 	// showing database successfully connected
 	if gin.IsDebugging() {
-		log.Println("[debug] initDBconnection - successfully completed (connected to postgres).")
+		log.Println("[debug] initDBconnection - database connection established successfully.")
 	}
 }
 

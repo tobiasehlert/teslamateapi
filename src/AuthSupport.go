@@ -7,6 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var (
+	// defining envToken that contains API_TOKEN value
+	envToken string
+)
+
 // initAuthToken func
 func initAuthToken() {
 	// get token from environment variable API_TOKEN

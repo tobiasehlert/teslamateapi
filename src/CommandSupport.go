@@ -10,6 +10,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var (
+	// list of allowed commands
+	allowList []string
+)
+
 // initCommandAllowList func
 func initCommandAllowList() {
 
