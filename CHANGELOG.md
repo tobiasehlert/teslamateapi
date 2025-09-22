@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.22.0] - 2025-09-22
+
+### Added
+
+- add energy consumption to drives and drive details ([#349](https://github.com/tobiasehlert/teslamateapi/pull/349) by [LukStankovic](https://github.com/LukStankovic))
+
+### Changed
+
+- use multiple runners for build ([#362](https://github.com/tobiasehlert/teslamateapi/pull/362) by [tobiasehlert](https://github.com/tobiasehlert))
+- bump github.com/eclipse/paho.mqtt.golang from 1.5.0 to 1.5.1 ([#361](https://github.com/tobiasehlert/teslamateapi/pull/361) by [dependabot](https://github.com/dependabot))
+- reordering sql query slightly on drives ([#364](https://github.com/tobiasehlert/teslamateapi/pull/364) by [tobiasehlert](https://github.com/tobiasehlert))
+
+### Fixed
+
+- Postgres SSL connection ([#348](https://github.com/tobiasehlert/teslamateapi/pull/348) by [chkpwd](https://github.com/chkpwd))
+- use dockerhub variable instead ([#363](https://github.com/tobiasehlert/teslamateapi/pull/363) by [tobiasehlert](https://github.com/tobiasehlert))
+
 ## [1.21.1] - 2025-09-09
 
 ### Changed
@@ -599,6 +616,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.22.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.21.1...v1.22.0
 [1.21.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.21.0...v1.21.1
 [1.21.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.20.2...v1.21.0
 [1.20.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.20.1...v1.20.2
