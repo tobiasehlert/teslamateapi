@@ -272,32 +272,27 @@ func TeslaMateAPICarsBatteryHealthV1(c *gin.Context) {
 		return
 	}
 
+	// Create battery health object
+	batteryHealth := BatteryHealth{
+		CurrentCapacity: CurrentCapacity,
+		MaxCapacity:     MaxCapacity,
+		RatedEfficiency: Efficiency,
+	}
+
 	// Select the correct range based on preferred_range setting
-	var MaxRange, CurrentRange float64
 	if PreferredRange == "ideal" {
-		MaxRange = MaxRangeIdeal
-		CurrentRange = CurrentRangeIdeal
+		batteryHealth.MaxRange = MaxRangeIdeal
+		batteryHealth.CurrentRange = CurrentRangeIdeal
 	} else {
-		MaxRange = MaxRangeRated
-		CurrentRange = CurrentRangeRated
+		batteryHealth.MaxRange = MaxRangeRated
+		batteryHealth.CurrentRange = CurrentRangeRated
 	}
 
 	// Calculate battery health percentage
-	var batteryHealthPercentage float64
 	if MaxCapacity > 0 {
-		batteryHealthPercentage = (CurrentCapacity / MaxCapacity) * 100
+		batteryHealth.BatteryHealthPercentage = (CurrentCapacity / MaxCapacity) * 100
 	} else {
-		batteryHealthPercentage = 100
-	}
-
-	// Create battery health object
-	batteryHealth := BatteryHealth{
-		MaxRange:                MaxRange,
-		CurrentRange:            CurrentRange,
-		MaxCapacity:             MaxCapacity,
-		CurrentCapacity:         CurrentCapacity,
-		RatedEfficiency:         Efficiency,
-		BatteryHealthPercentage: batteryHealthPercentage,
+		batteryHealth.BatteryHealthPercentage = 100
 	}
 
 	// converting values based on settings UnitsLength
