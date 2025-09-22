@@ -237,10 +237,10 @@ func TeslaMateAPICarsBatteryHealthV1(c *gin.Context) {
 		COALESCE(MaxCapacity.Capacity, 0) as max_capacity,
 		COALESCE(CurrentCapacity.Capacity, 0) as current_capacity,
 		COALESCE(aux.efficiency, 0) as efficiency,
-		cars.name,
 		(SELECT preferred_range FROM settings LIMIT 1) as preferred_range,
 		(SELECT unit_of_length FROM settings LIMIT 1) as unit_of_length,
-		(SELECT unit_of_temperature FROM settings LIMIT 1) as unit_of_temperature
+		(SELECT unit_of_temperature FROM settings LIMIT 1) as unit_of_temperature,
+		cars.name
 	FROM cars
 		LEFT JOIN MaxRangeRated ON true
 		LEFT JOIN MaxRangeIdeal ON true
@@ -260,10 +260,10 @@ func TeslaMateAPICarsBatteryHealthV1(c *gin.Context) {
 		&MaxCapacity,
 		&CurrentCapacity,
 		&Efficiency,
-		&CarName,
 		&PreferredRange,
 		&UnitsLength,
 		&UnitsTemperature,
+		&CarName,
 	)
 
 	// checking for errors in query

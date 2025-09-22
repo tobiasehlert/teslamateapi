@@ -160,6 +160,7 @@ More detailed documentation of every endpoint will come..
 - GET `/api/v1`
 - GET `/api/v1/cars`
 - GET `/api/v1/cars/:CarID`
+- GET `/api/v1/cars/:CarID/battery-health`
 - GET `/api/v1/cars/:CarID/charges`
   - Supported parameters:
     - `startDate` (optional, use canonical UTC format in RFC3339)
@@ -176,7 +177,6 @@ More detailed documentation of every endpoint will come..
 - GET `/api/v1/cars/:CarID/logging`
 - GET `/api/v1/cars/:CarID/status`
 - GET `/api/v1/cars/:CarID/updates`
-- GET `/api/v1/cars/:CarID/battery-health`
 - POST `/api/v1/cars/:CarID/wake_up`
 - GET `/api/v1/globalsettings`
 - GET `/api/healthz`
