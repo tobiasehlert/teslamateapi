@@ -203,7 +203,7 @@ func TeslaMateAPICarsBatteryHealthV1(c *gin.Context) {
 				p.car_id = $1
 				AND usable_battery_level IS NOT NULL
 		) AS data
-		GROUP BY floor(extract(epoch from date)/86400)*86400
+		GROUP BY date_trunc('day', date)
 		ORDER BY range DESC
 		LIMIT 1
 	),
@@ -225,7 +225,7 @@ func TeslaMateAPICarsBatteryHealthV1(c *gin.Context) {
 				p.car_id = $1
 				AND usable_battery_level IS NOT NULL
 		) AS data
-		GROUP BY floor(extract(epoch from date)/86400)*86400
+		GROUP BY date_trunc('day', date)
 		ORDER BY range DESC
 		LIMIT 1
 	)
@@ -274,9 +274,10 @@ func TeslaMateAPICarsBatteryHealthV1(c *gin.Context) {
 
 	// Create battery health object
 	batteryHealth := BatteryHealth{
-		CurrentCapacity: CurrentCapacity,
-		MaxCapacity:     MaxCapacity,
-		RatedEfficiency: Efficiency,
+		CurrentCapacity:         CurrentCapacity,
+		MaxCapacity:             MaxCapacity,
+		RatedEfficiency:         Efficiency,
+		BatteryHealthPercentage: 0,
 	}
 
 	// Select the correct range based on preferred_range setting
@@ -291,8 +292,6 @@ func TeslaMateAPICarsBatteryHealthV1(c *gin.Context) {
 	// Calculate battery health percentage
 	if MaxCapacity > 0 {
 		batteryHealth.BatteryHealthPercentage = (CurrentCapacity / MaxCapacity) * 100
-	} else {
-		batteryHealth.BatteryHealthPercentage = 100
 	}
 
 	// converting values based on settings UnitsLength
