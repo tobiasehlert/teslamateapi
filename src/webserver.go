@@ -374,34 +374,40 @@ func getEnvAsInt(name string, defaultVal int) int {
 	return defaultVal
 }
 
-// convertStringToBool func
+// convertStringToBool func - converts a string to boolean, returning false on failure
 func convertStringToBool(data string) bool {
 	value, err := strconv.ParseBool(data)
-	if err == nil {
-		return value
+	if err != nil {
+		if gin.IsDebugging() {
+			log.Printf("[warning] convertStringToBool: failed to parse '%s' as boolean - returning false", data)
+		}
+		return false
 	}
-	log.Printf("[warning] convertStringToBool error when converting value correctly.. returning false. Error: %s", err)
-	return false
+	return value
 }
 
-// convertStringToFloat func
+// convertStringToFloat func - converts a string to float64, returning 0.0 on failure
 func convertStringToFloat(data string) float64 {
 	value, err := strconv.ParseFloat(data, 64)
-	if err == nil {
-		return value
+	if err != nil {
+		if gin.IsDebugging() {
+			log.Printf("[warning] convertStringToFloat: failed to parse '%s' as float64 - returning 0.0", data)
+		}
+		return 0.0
 	}
-	log.Printf("[warning] convertStringToFloat error when converting value correctly.. returning 0.0. Error: %s", err)
-	return 0.0
+	return value
 }
 
-// convertStringToInteger func
+// convertStringToInteger func - converts a string to int, returning 0 on failure
 func convertStringToInteger(data string) int {
 	value, err := strconv.Atoi(data)
-	if err == nil {
-		return value
+	if err != nil {
+		if gin.IsDebugging() {
+			log.Printf("[warning] convertStringToInteger: failed to parse '%s' as integer - returning 0", data)
+		}
+		return 0
 	}
-	log.Printf("[warning] convertStringToInteger error when converting value correctly.. returning 0. Error: %s", err)
-	return 0
+	return value
 }
 
 // kilometersToMiles func
