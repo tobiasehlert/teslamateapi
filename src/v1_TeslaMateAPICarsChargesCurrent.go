@@ -2,9 +2,14 @@ package main
 
 import (
 	"database/sql"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
-	"time"
+)
+
+const (
+	maxChargeInactivityThresholdMinutes = 15
 )
 
 // TeslaMateAPICarsChargesCurrentV1 func
@@ -382,11 +387,7 @@ func TeslaMateAPICarsChargesCurrentV1(c *gin.Context) {
 		// Adjusting to timezone differences from UTC to be user-specific
 		chargedetails.Date = getTimeInTimeZone(chargedetails.Date)
 
-		if chargedetails.ChargerDetails.ChargerPhases == 2 {
-			chargedetails.ChargerDetails.ChargerPhases = 3
-		} else {
-			chargedetails.ChargerDetails.ChargerPhases = 1
-		}
+		chargedetails.ChargerDetails.ChargerPhases = normalizeChargerPhases(chargedetails.ChargerDetails.ChargerPhases)
 
 		// Checking for errors after scanning
 		if err != nil {
@@ -418,7 +419,7 @@ func TeslaMateAPICarsChargesCurrentV1(c *gin.Context) {
 		timeElapsed := time.Since(latestDetailDate)
 
 		// If the most recent detail is more than 15 minutes old, consider it incomplete/not current
-		if timeElapsed.Minutes() > 15 {
+		if timeElapsed.Minutes() > maxChargeInactivityThresholdMinutes {
 			TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesCurrentV1", CarsChargesCurrentError3, "No active charging in progress. There are incomplete charges but last update was more than 15 minutes ago.")
 			return
 		}
@@ -428,11 +429,13 @@ func TeslaMateAPICarsChargesCurrentV1(c *gin.Context) {
 	charge.ChargeDetails = ChargeDetailsData
 
 	if charge.RatedRange.StartRange == 0 && len(ChargeDetailsData) > 0 {
-		charge.RatedRange.StartRange = ChargeDetailsData[0].BatteryInfo.RatedBatteryRange
+		charge.RatedRange.StartRange = ChargeDetailsData[len(ChargeDetailsData)-1].BatteryInfo.RatedBatteryRange
 	}
 
-	if charge.RatedRange.AddedRange == 0 {
-		charge.RatedRange.AddedRange = charge.RatedRange.CurrentRange - charge.RatedRange.StartRange
+	if addedRange := charge.RatedRange.CurrentRange - charge.RatedRange.StartRange; addedRange > 0 {
+		charge.RatedRange.AddedRange = addedRange
+	} else {
+		charge.RatedRange.AddedRange = 0
 	}
 
 	// Build the data-blob
@@ -452,4 +455,16 @@ func TeslaMateAPICarsChargesCurrentV1(c *gin.Context) {
 
 	// Return jsonData
 	TeslaMateAPIHandleSuccessResponse(c, "TeslaMateAPICarsChargesCurrentV1", jsonData)
+}
+
+// normalizeChargerPhases converts phase values to valid configurations.
+// Both phase 2 and 3 are normalized to 3.
+// All other values default to 1 (single-phase).
+func normalizeChargerPhases(phases int) int {
+	switch phases {
+	case 2, 3:
+		return 3
+	default:
+		return 1
+	}
 }
