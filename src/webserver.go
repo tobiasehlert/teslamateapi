@@ -318,25 +318,6 @@ func parseDateParam(datestring string) (string, error) {
 	return "", fmt.Errorf("invalid date format: %s, please use RFC3339 format", sanitizedInput)
 }
 
-/*
-func isNil(i interface{}) bool {
-	if i == nil {
-		return true
-	}
-	switch reflect.TypeOf(i).Kind() {
-	case reflect.Ptr, reflect.Map, reflect.Array, reflect.Chan, reflect.Slice:
-		return reflect.ValueOf(i).IsNil()
-	}
-	return false
-}
-
-// isEnvExist func - check if environment var is set
-func isEnvExist(key string) (ok bool) {
-	_, ok = os.LookupEnv(key)
-	return
-}
-*/
-
 // getEnv func - read an environment or return a default value
 func getEnv(key string, defaultVal string) string {
 	if value, exists := os.LookupEnv(key); exists && value != "" {
@@ -353,17 +334,6 @@ func getEnvAsBool(name string, defaultVal bool) bool {
 	}
 	return defaultVal
 }
-
-/*
-// getEnvAsFloat func - read an environment variable into a float64 or return default value
-func getEnvAsFloat(name string, defaultVal float64) float64 {
-	valStr := getEnv(name, "")
-	if val, err := strconv.ParseFloat(valStr, 64); err == nil {
-		return val
-	}
-	return defaultVal
-}
-*/
 
 // getEnvAsInt func - read an environment variable into integer or return a default value
 func getEnvAsInt(name string, defaultVal int) int {
@@ -426,14 +396,6 @@ func milesToKilometers(mi float64) float64 {
 	return (mi * 1.609344)
 }
 
-/*
-// milesToKilometersNilSupport func
-func milesToKilometersNilSupport(mi NullFloat64) NullFloat64 {
-	mi.Float64 = (mi.Float64 * 1.609344)
-	return (mi)
-}
-*/
-
 // kilometersToMilesInteger func
 func kilometersToMilesInteger(km int) int {
 	return int(float64(km) * 0.62137119223733)
@@ -443,13 +405,6 @@ func kilometersToMilesInteger(km int) int {
 func barToPsi(bar float64) float64 {
 	return (bar * 14.503773800722)
 }
-
-/*
-// psiToBar func
-func psiToBar(psi float64) float64 {
-	return (psi * 0.068947572932)
-}
-*/
 
 // celsiusToFahrenheit func
 func celsiusToFahrenheit(c float64) float64 {
@@ -461,19 +416,6 @@ func celsiusToFahrenheitNilSupport(c NullFloat64) NullFloat64 {
 	c.Float64 = (c.Float64*9/5 + 32)
 	return (c)
 }
-
-/*
-// fahrenheitToCelsius func
-func fahrenheitToCelsius(f float64) float64 {
-	return ((f - 32) * 5 / 9)
-}
-
-// fahrenheitToCelsiusNilSupport func
-func fahrenheitToCelsiusNilSupport(f NullFloat64) NullFloat64 {
-	f.Float64 = ((f.Float64 - 32) * 5 / 9)
-	return (f)
-}
-*/
 
 // checkArrayContainsString func - check if string is inside stringarray
 func checkArrayContainsString(s []string, e string) bool {
