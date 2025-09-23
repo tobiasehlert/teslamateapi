@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"slices"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -419,12 +420,7 @@ func celsiusToFahrenheitNilSupport(c NullFloat64) NullFloat64 {
 
 // checkArrayContainsString func - check if string is inside stringarray
 func checkArrayContainsString(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(s, e)
 }
 
 // healthz is a liveness probe.
