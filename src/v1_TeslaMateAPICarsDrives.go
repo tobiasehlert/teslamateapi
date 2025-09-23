@@ -167,7 +167,7 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 		WHERE drives.car_id=$1 AND end_date IS NOT NULL`
 
 	// Parameters to be passed to the query
-	var queryParams []interface{}
+	var queryParams []any
 	queryParams = append(queryParams, CarID)
 	paramIndex := 2
 

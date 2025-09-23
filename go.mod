@@ -1,6 +1,6 @@
 module github.com/tobiasehlert/teslamateapi
 
-go 1.25.0
+go 1.25.1
 
 require (
 	github.com/eclipse/paho.mqtt.golang v1.5.1
@@ -22,11 +22,11 @@ require (
 	github.com/quic-go/qpack v0.5.1 // indirect
 	github.com/quic-go/quic-go v0.54.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
-	go.uber.org/mock v0.5.0 // indirect
-	golang.org/x/arch v0.20.0 // indirect
-	golang.org/x/mod v0.27.0 // indirect
+	go.uber.org/mock v0.6.0 // indirect
+	golang.org/x/arch v0.21.0 // indirect
+	golang.org/x/mod v0.28.0 // indirect
 	golang.org/x/sync v0.17.0 // indirect
-	golang.org/x/tools v0.36.0 // indirect
+	golang.org/x/tools v0.37.0 // indirect
 )
 
 require (
