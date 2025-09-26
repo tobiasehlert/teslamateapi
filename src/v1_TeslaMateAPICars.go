@@ -75,6 +75,13 @@ func TeslaMateAPICarsV1(c *gin.Context) {
 	// creating required vars
 	var CarsData []Cars
 
+	// authentication for the endpoint
+	validToken, errorMessage := validateAuthToken(c)
+	if !validToken {
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsV1", CarsError1, errorMessage)
+		return
+	}
+
 	// getting data from database
 	query := `
 		SELECT
