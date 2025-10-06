@@ -3,9 +3,7 @@ name: build
 on:
   push:
     branches:
-      - "main"
-      - "feature-*"
-      - "bug-*"
+      - main
     paths:
       - "src/**"
       - "Dockerfile"
@@ -16,13 +14,31 @@ on:
   workflow_dispatch:
 
 permissions:
+  attestations: write
   contents: read
   id-token: write
   packages: write
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: build (${{ matrix.platform }})
+    runs-on: ${{ matrix.runner }}
+    if: github.event_name != 'pull_request'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            platform: linux/amd64
+            arch: x86_64
+          - runner: ubuntu-24.04-arm
+            platform: linux/arm64
+            arch: aarch64
+          - runner: ubuntu-24.04-arm
+            platform: linux/arm/v7
+            arch: armv7
+
     steps:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
@@ -32,99 +48,209 @@ jobs:
         uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f #v5.8.0
         with:
           images: |
-            tobiasehlert/teslamateapi
-            ghcr.io/tobiasehlert/teslamateapi
+            ${{ github.repository }}
+            ghcr.io/${{ github.repository }}
           tags: |
             type=edge
-            type=ref,event=branch,enable=${{ (github.ref != 'refs/heads/main') }}
+            type=ref,event=branch,enable={{is_not_default_branch}}
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}
             type=semver,pattern={{major}}.{{minor}}
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
 
-      - name: Install Cosign
-        if: github.ref == 'refs/heads/main' || github.event_name == 'release'
-        uses: sigstore/cosign-installer@d58896d6a1865668819e1d91763c7751a165e159 #v3.9.2
-
-      - name: Set up QEMU
+      - name: Set up QEMU (${{ matrix.platform }})
+        if: matrix.platform == 'linux/arm/v7'
         uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 #v3.6.0
+        with:
+          platforms: ${{ matrix.platform }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 #v3.11.1
 
       - name: Login to DockerHub
-        uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 #v3.5.0
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef #v3.6.0
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 #v3.5.0
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef #v3.6.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push
+      - name: Build and push (${{ matrix.platform }})
         id: docker_build
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 #v6.18.0
         with:
           context: .
-          platforms: linux/amd64,linux/arm/v7,linux/arm64
-          push: true
+          platforms: ${{ matrix.platform }}
+          outputs: type=image,push-by-digest=true,name-canonical=true,push=true
           annotations: ${{ steps.docker_meta.outputs.annotations }}
           labels: ${{ steps.docker_meta.outputs.labels }}
-          tags: ${{ steps.docker_meta.outputs.tags }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          tags: |
+            ${{ github.repository }}
+            ghcr.io/${{ github.repository }}
+          cache-from: type=gha,scope=${{ matrix.platform }}
+          cache-to: type=gha,scope=${{ matrix.platform }},mode=max
           sbom: true
           build-args: |
             apiVersion=${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.version'] }}
 
-      - name: Sign the images (with GitHub OIDC Token)
-        if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+      - name: Export digest
         run: |
-          cosign sign --yes --recursive \
-            tobiasehlert/teslamateapi@${{ steps.docker_build.outputs.digest }}
+          mkdir -p ${{ runner.temp }}/digests
+          digest="${{ steps.docker_build.outputs.digest }}"
+          touch "${{ runner.temp }}/digests/${digest#sha256:}"
 
-          cosign sign --yes --recursive \
-            ghcr.io/tobiasehlert/teslamateapi@${{ steps.docker_build.outputs.digest }}
+      - name: Upload digest
+        id: upload_digests
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 #v4.6.2
+        with:
+          name: digests-${{ matrix.arch }}
+          path: ${{ runner.temp }}/digests/*
+          if-no-files-found: error
+          retention-days: 1
 
-      - name: Inspect image
-        if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+      - name: Attest digest (per-arch)
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a #v3.0.0
+        with:
+          subject-name: digests-${{ matrix.arch }}
+          subject-digest: sha256:${{ steps.upload_digests.outputs.artifact-digest }}
+
+  manifest:
+    name: build (multi-arch)
+    runs-on: ubuntu-latest
+    needs:
+      - build
+
+    outputs:
+      docker_build_digest: ${{ steps.docker_build.outputs.digest }}
+      docker_meta_version: ${{ steps.docker_meta.outputs.version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
+
+      - name: Docker meta
+        id: docker_meta
+        uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f #v5.8.0
+        with:
+          images: |
+            ${{ github.repository }}
+            ghcr.io/${{ github.repository }}
+          tags: |
+            type=edge
+            type=ref,event=branch,enable={{is_not_default_branch}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}
+            type=semver,pattern={{major}}.{{minor}}
+        env:
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+
+      - name: Download digests
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 #v5.0.0
+        with:
+          path: ${{ runner.temp }}/digests
+          pattern: digests-*
+          merge-multiple: true
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@d7543c93d881b35a8faa02e8e3605f69b7a1ce62 #v3.10.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 #v3.11.1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef #v3.6.0
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef #v3.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create manifest list and push
+        id: docker_build
+        working-directory: ${{ runner.temp }}/digests
         run: |
-          echo "::group::Inspecting Manifest"
-          docker buildx imagetools inspect ${{ fromJson(steps.docker_meta.outputs.json).tags[0] }}@${{ steps.docker_build.outputs.digest }} --format '{{ json .Manifest }}'
+          # Create the manifest list and push to both registries
+          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            --annotation "index:org.opencontainers.image.created=${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.created'] }}" \
+            --annotation "index:org.opencontainers.image.description=${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.description'] }}" \
+            --annotation "index:org.opencontainers.image.licenses=${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.licenses'] }}" \
+            --annotation "index:org.opencontainers.image.revision=${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.revision'] }}" \
+            --annotation "index:org.opencontainers.image.source=${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.source'] }}" \
+            --annotation "index:org.opencontainers.image.version=${{ fromJSON(steps.docker_meta.outputs.json).labels['org.opencontainers.image.version'] }}" \
+            $(printf '${{ github.repository }}@sha256:%s ' *) \
+            $(printf 'ghcr.io/${{ github.repository }}@sha256:%s ' *)
+
+          # Get the digest of the created manifest list
+          DIGEST=$(docker buildx imagetools inspect ghcr.io/${{ github.repository }}:${{ steps.docker_meta.outputs.version }} --format '{{ json .Manifest.Digest }}' | jq -r .)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Attest docker build (DockerHub)
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a #v3.0.0
+        with:
+          subject-name: index.docker.io/${{ github.repository }}
+          subject-digest: ${{ steps.docker_build.outputs.digest }}
+          push-to-registry: true
+
+      - name: Attest docker build (GitHub Container Registry)
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a #v3.0.0
+        with:
+          subject-name: ghcr.io/${{ github.repository }}
+          subject-digest: ${{ steps.docker_build.outputs.digest }}
+          push-to-registry: true
+
+      - name: Cosign sign images (GitHub OIDC)
+        run: |
+          cosign sign --yes \
+            ${{ github.repository }}@${{ steps.docker_build.outputs.digest }}
+
+          cosign sign --yes \
+            ghcr.io/${{ github.repository }}@${{ steps.docker_build.outputs.digest }}
+
+      - name: Inspect images (GitHub Container Registry)
+        run: |
+          docker buildx imagetools inspect ghcr.io/${{ github.repository }}:${{ steps.docker_meta.outputs.version }}
+
+          echo "::group::Manifest"
+          docker buildx imagetools inspect ghcr.io/${{ github.repository }}:${{ steps.docker_meta.outputs.version }} --format '{{ json .Manifest }}'
           echo "::endgroup::"
 
-          echo "::group::Inspecting (linux/amd64) Image"
-          docker buildx imagetools inspect ${{ fromJson(steps.docker_meta.outputs.json).tags[0] }}@${{ steps.docker_build.outputs.digest }} --format '{{ json (index .Image "linux/amd64") }}'
+          echo "::group::Image (linux/amd64)"
+          docker buildx imagetools inspect ghcr.io/${{ github.repository }}:${{ steps.docker_meta.outputs.version }} --format '{{ json (index .Image "linux/amd64") }}'
           echo "::endgroup::"
 
-          echo "::group::Inspecting (linux/amd64) Provenance"
-          docker buildx imagetools inspect ${{ fromJson(steps.docker_meta.outputs.json).tags[0] }}@${{ steps.docker_build.outputs.digest }} --format '{{ json (index .Provenance "linux/amd64") }}'
+          echo "::group::Provenance (linux/amd64)"
+          docker buildx imagetools inspect ghcr.io/${{ github.repository }}:${{ steps.docker_meta.outputs.version }} --format '{{ json (index .Provenance "linux/amd64") }}'
           echo "::endgroup::"
 
-          echo "::group::Inspecting (linux/amd64) SBOM"
-          docker buildx imagetools inspect ${{ fromJson(steps.docker_meta.outputs.json).tags[0] }}@${{ steps.docker_build.outputs.digest }} --format '{{ json (index .SBOM "linux/amd64") }}'
+          echo "::group::SBOM (linux/amd64)"
+          docker buildx imagetools inspect ghcr.io/${{ github.repository }}:${{ steps.docker_meta.outputs.version }} --format '{{ json (index .SBOM "linux/amd64") }}'
           echo "::endgroup::"
 
       - name: Verify cosign signatures
-        if: github.ref == 'refs/heads/main' || github.event_name == 'release'
         run: |
           echo "::group::Verify signature (DockerHub)"
           cosign verify --rekor-url https://rekor.sigstore.dev \
             --certificate-identity "https://github.com/${{ github.workflow_ref }}" \
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-            tobiasehlert/teslamateapi@${{ steps.docker_build.outputs.digest }}
+            ${{ github.repository }}@${{ steps.docker_build.outputs.digest }}
           echo "::endgroup::"
 
           echo "::group::Verify signature (GitHub Container Registry)"
           cosign verify --rekor-url https://rekor.sigstore.dev \
             --certificate-identity "https://github.com/${{ github.workflow_ref }}" \
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-            ghcr.io/tobiasehlert/teslamateapi@${{ steps.docker_build.outputs.digest }}
+            ghcr.io/${{ github.repository }}@${{ steps.docker_build.outputs.digest }}
           echo "::endgroup::"
 
   dockerhub:
@@ -132,6 +258,8 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build
+      - manifest
+
     steps:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
@@ -139,6 +267,6 @@ jobs:
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@432a30c9e07499fd01da9f8a49f0faf9e0ca5b77 #v4.0.2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           short-description: ${{ github.event.repository.description }}

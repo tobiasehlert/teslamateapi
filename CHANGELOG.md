@@ -1,5 +1,36 @@
 # Changelog
 
+## [1.22.0] - 2025-09-22
+
+### Added
+
+- add energy consumption to drives and drive details ([#349](https://github.com/tobiasehlert/teslamateapi/pull/349) by [LukStankovic](https://github.com/LukStankovic))
+
+### Changed
+
+- use multiple runners for build ([#362](https://github.com/tobiasehlert/teslamateapi/pull/362) by [tobiasehlert](https://github.com/tobiasehlert))
+- bump github.com/eclipse/paho.mqtt.golang from 1.5.0 to 1.5.1 ([#361](https://github.com/tobiasehlert/teslamateapi/pull/361) by [dependabot](https://github.com/dependabot))
+- reordering sql query slightly on drives ([#364](https://github.com/tobiasehlert/teslamateapi/pull/364) by [tobiasehlert](https://github.com/tobiasehlert))
+
+### Fixed
+
+- Postgres SSL connection ([#348](https://github.com/tobiasehlert/teslamateapi/pull/348) by [chkpwd](https://github.com/chkpwd))
+- use dockerhub variable instead ([#363](https://github.com/tobiasehlert/teslamateapi/pull/363) by [tobiasehlert](https://github.com/tobiasehlert))
+
+## [1.21.1] - 2025-09-09
+
+### Changed
+
+- use sha instead of tag on steps ([#351](https://github.com/tobiasehlert/teslamateapi/pull/351) by [tobiasehlert](https://github.com/tobiasehlert))
+- bump actions/checkout from 4 to 5 ([#345](https://github.com/tobiasehlert/teslamateapi/pull/345) by [dependabot](https://github.com/dependabot))
+- bump actions/setup-go from 5.5.0 to 6.0.0 ([#353](https://github.com/tobiasehlert/teslamateapi/pull/353) by [dependabot](https://github.com/dependabot))
+- bump github/codeql-action from 3.30.0 to 3.30.2 ([#356](https://github.com/tobiasehlert/teslamateapi/pull/356), [#358](https://github.com/tobiasehlert/teslamateapi/pull/358) by [dependabot](https://github.com/dependabot))
+- bump golang from 1.24.5 to 1.25.1 ([#344](https://github.com/tobiasehlert/teslamateapi/pull/344), [#350](https://github.com/tobiasehlert/teslamateapi/pull/350), [#357](https://github.com/tobiasehlert/teslamateapi/pull/357) by [dependabot](https://github.com/dependabot))
+
+### Fixed
+
+- adjust chmod permissions on binary ([#354](https://github.com/tobiasehlert/teslamateapi/pull/354) by [denysvitali](https://github.com/denysvitali))
+
 ## [1.21.0] - 2025-07-24
 
 ### Added
@@ -585,6 +616,8 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.22.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.21.1...v1.22.0
+[1.21.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.21.0...v1.21.1
 [1.21.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.20.2...v1.21.0
 [1.20.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.20.1...v1.20.2
 [1.20.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.20.0...v1.20.1

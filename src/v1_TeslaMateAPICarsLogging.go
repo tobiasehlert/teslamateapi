@@ -17,7 +17,7 @@ func TeslaMateAPICarsLoggingV1(c *gin.Context) {
 
 	// creating required vars
 	var (
-		jsonData map[string]interface{}
+		jsonData map[string]any
 		err      error
 	)
 

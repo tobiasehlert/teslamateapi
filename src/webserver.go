@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"slices"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -28,12 +29,6 @@ var (
 
 	// defining db var
 	db *sql.DB
-
-	// defining envToken that contains API_TOKEN value
-	envToken string
-
-	// list of allowed commands
-	allowList []string
 
 	// app-settings
 	appUsersTimezone *time.Location
@@ -131,6 +126,9 @@ func main() {
 			v1.GET("/cars", TeslaMateAPICarsV1)
 			v1.GET("/cars/:CarID", TeslaMateAPICarsV1)
 
+			// v1 /api/v1/cars/:CarID/battery-health endpoints
+			v1.GET("/cars/:CarID/battery-health", TeslaMateAPICarsBatteryHealthV1)
+
 			// v1 /api/v1/cars/:CarID/charges endpoints
 			v1.GET("/cars/:CarID/charges", TeslaMateAPICarsChargesV1)
 			v1.GET("/cars/:CarID/charges/:ChargeID", TeslaMateAPICarsChargesDetailsV1)
@@ -217,41 +215,48 @@ func main() {
 
 // initDBconnection func
 func initDBconnection() {
-
-	// declare error var for use insite initAPI
 	var err error
-	dbsslmode := "disable"
 
-	// creating connection string towards postgres
+	// read environment variables with defaults for connection string
 	dbhost := getEnv("DATABASE_HOST", "database")
 	dbport := getEnvAsInt("DATABASE_PORT", 5432)
 	dbuser := getEnv("DATABASE_USER", "teslamate")
 	dbpass := getEnv("DATABASE_PASS", "secret")
 	dbname := getEnv("DATABASE_NAME", "teslamate")
-	// dbpool := getEnvAsInt("DATABASE_POOL_SIZE", 10)
 	dbtimeout := (getEnvAsInt("DATABASE_TIMEOUT", 60000) / 1000)
-	dbssl := getEnvAsBool("DATABASE_SSL", false)
-	// dbipv6 := getEnvAsBool("DATABASE_IPV6", false)
-	if dbssl {
-		dbsslmode = "prefer"
+	dbsslmode := getEnv("DATABASE_SSL", "disable")
+	dbsslrootcert := getEnv("DATABASE_SSL_CA_CERT_FILE", "")
+
+	// convert boolean-like SSL mode for backwards compatibility
+	switch dbsslmode {
+	case "true", "noverify":
+		dbsslmode = "require"
+	case "false":
+		dbsslmode = "disable"
 	}
+
+	// construct connection string
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s connect_timeout=%d", dbhost, dbport, dbuser, dbpass, dbname, dbsslmode, dbtimeout)
 
-	// opening connection to postgres
-	db, err = sql.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Panic(err)
+	// add SSL certificate configuration if provided
+	if dbsslrootcert != "" {
+		psqlInfo += " sslrootcert=" + dbsslrootcert
 	}
 
-	// doing ping to database to test connection
-	err = db.Ping()
+	// open database connection
+	db, err = sql.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Panic(err)
+		log.Fatalf("[error] initDBconnection - database connection error: %v", err)
+	}
+
+	// test database connection
+	if err = db.Ping(); err != nil {
+		log.Fatalf("[error] initDBconnection - database ping error: %v", err)
 	}
 
 	// showing database successfully connected
 	if gin.IsDebugging() {
-		log.Println("[debug] initDBconnection - successfully completed (connected to postgres).")
+		log.Println("[debug] initDBconnection - database connection established successfully.")
 	}
 }
 
@@ -314,25 +319,6 @@ func parseDateParam(datestring string) (string, error) {
 	return "", fmt.Errorf("invalid date format: %s, please use RFC3339 format", sanitizedInput)
 }
 
-/*
-func isNil(i interface{}) bool {
-	if i == nil {
-		return true
-	}
-	switch reflect.TypeOf(i).Kind() {
-	case reflect.Ptr, reflect.Map, reflect.Array, reflect.Chan, reflect.Slice:
-		return reflect.ValueOf(i).IsNil()
-	}
-	return false
-}
-
-// isEnvExist func - check if environment var is set
-func isEnvExist(key string) (ok bool) {
-	_, ok = os.LookupEnv(key)
-	return
-}
-*/
-
 // getEnv func - read an environment or return a default value
 func getEnv(key string, defaultVal string) string {
 	if value, exists := os.LookupEnv(key); exists && value != "" {
@@ -350,17 +336,6 @@ func getEnvAsBool(name string, defaultVal bool) bool {
 	return defaultVal
 }
 
-/*
-// getEnvAsFloat func - read an environment variable into a float64 or return default value
-func getEnvAsFloat(name string, defaultVal float64) float64 {
-	valStr := getEnv(name, "")
-	if val, err := strconv.ParseFloat(valStr, 64); err == nil {
-		return val
-	}
-	return defaultVal
-}
-*/
-
 // getEnvAsInt func - read an environment variable into integer or return a default value
 func getEnvAsInt(name string, defaultVal int) int {
 	valueStr := getEnv(name, "")
@@ -370,34 +345,40 @@ func getEnvAsInt(name string, defaultVal int) int {
 	return defaultVal
 }
 
-// convertStringToBool func
+// convertStringToBool func - converts a string to boolean, returning false on failure
 func convertStringToBool(data string) bool {
 	value, err := strconv.ParseBool(data)
-	if err == nil {
-		return value
+	if err != nil {
+		if gin.IsDebugging() {
+			log.Printf("[warning] convertStringToBool: failed to parse '%s' as boolean - returning false", data)
+		}
+		return false
 	}
-	log.Printf("[warning] convertStringToBool error when converting value correctly.. returning false. Error: %s", err)
-	return false
+	return value
 }
 
-// convertStringToFloat func
+// convertStringToFloat func - converts a string to float64, returning 0.0 on failure
 func convertStringToFloat(data string) float64 {
 	value, err := strconv.ParseFloat(data, 64)
-	if err == nil {
-		return value
+	if err != nil {
+		if gin.IsDebugging() {
+			log.Printf("[warning] convertStringToFloat: failed to parse '%s' as float64 - returning 0.0", data)
+		}
+		return 0.0
 	}
-	log.Printf("[warning] convertStringToFloat error when converting value correctly.. returning 0.0. Error: %s", err)
-	return 0.0
+	return value
 }
 
-// convertStringToInteger func
+// convertStringToInteger func - converts a string to int, returning 0 on failure
 func convertStringToInteger(data string) int {
 	value, err := strconv.Atoi(data)
-	if err == nil {
-		return value
+	if err != nil {
+		if gin.IsDebugging() {
+			log.Printf("[warning] convertStringToInteger: failed to parse '%s' as integer - returning 0", data)
+		}
+		return 0
 	}
-	log.Printf("[warning] convertStringToInteger error when converting value correctly.. returning 0. Error: %s", err)
-	return 0
+	return value
 }
 
 // kilometersToMiles func
@@ -416,14 +397,6 @@ func milesToKilometers(mi float64) float64 {
 	return (mi * 1.609344)
 }
 
-/*
-// milesToKilometersNilSupport func
-func milesToKilometersNilSupport(mi NullFloat64) NullFloat64 {
-	mi.Float64 = (mi.Float64 * 1.609344)
-	return (mi)
-}
-*/
-
 // kilometersToMilesInteger func
 func kilometersToMilesInteger(km int) int {
 	return int(float64(km) * 0.62137119223733)
@@ -433,13 +406,6 @@ func kilometersToMilesInteger(km int) int {
 func barToPsi(bar float64) float64 {
 	return (bar * 14.503773800722)
 }
-
-/*
-// psiToBar func
-func psiToBar(psi float64) float64 {
-	return (psi * 0.068947572932)
-}
-*/
 
 // celsiusToFahrenheit func
 func celsiusToFahrenheit(c float64) float64 {
@@ -452,27 +418,9 @@ func celsiusToFahrenheitNilSupport(c NullFloat64) NullFloat64 {
 	return (c)
 }
 
-/*
-// fahrenheitToCelsius func
-func fahrenheitToCelsius(f float64) float64 {
-	return ((f - 32) * 5 / 9)
-}
-
-// fahrenheitToCelsiusNilSupport func
-func fahrenheitToCelsiusNilSupport(f NullFloat64) NullFloat64 {
-	f.Float64 = ((f.Float64 - 32) * 5 / 9)
-	return (f)
-}
-*/
-
 // checkArrayContainsString func - check if string is inside stringarray
 func checkArrayContainsString(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(s, e)
 }
 
 // healthz is a liveness probe.

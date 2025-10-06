@@ -113,7 +113,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 			end_date,
 			COALESCE(geofence.name, CONCAT_WS(', ', COALESCE(address.name, nullif(CONCAT_WS(' ', address.road, address.house_number), '')), address.city)) AS address,
 			COALESCE(charge_energy_added, 0) AS charge_energy_added,
-			COALESCE(charge_energy_used, 0) AS charge_energy_used,
+			COALESCE(GREATEST(charge_energy_used, charge_energy_added), 0) AS charge_energy_used,
 			COALESCE(cost, 0) AS cost,
 			start_ideal_range_km AS start_ideal_range,
 			end_ideal_range_km AS end_ideal_range,
@@ -138,7 +138,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		WHERE charging_processes.car_id=$1 AND charging_processes.end_date IS NOT NULL`
 
 	// Parameters to be passed to the query
-	var queryParams []interface{}
+	var queryParams []any
 	queryParams = append(queryParams, CarID)
 	paramIndex := 2
 
