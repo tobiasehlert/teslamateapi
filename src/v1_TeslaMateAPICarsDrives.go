@@ -31,6 +31,23 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesV1", CarsDrivesError2, err.Error())
 		return
 	}
+	// get optional minDistance and maxDistance filters from query parameters
+	minDistanceParam := c.Query("minDistance")
+	minDistance := 0.0
+	if minDistanceParam != "" {
+		minDistance = convertStringToFloat(minDistanceParam)
+		if minDistance < 0 {
+			minDistance = 0
+		}
+	}
+	maxDistanceParam := c.Query("maxDistance")
+	maxDistance := 0.0
+	if maxDistanceParam != "" {
+		maxDistance = convertStringToFloat(maxDistanceParam)
+		if maxDistance < 0 {
+			maxDistance = 0
+		}
+	}
 
 	// creating structs for /cars/<CarID>/drives
 	// Car struct - child of Data
@@ -181,6 +198,31 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 		query += fmt.Sprintf(" AND drives.end_date <= $%d", paramIndex)
 		queryParams = append(queryParams, parsedEndDate)
 		paramIndex++
+	}
+
+	// Add minimum/maximum distance filtering if provided
+	if minDistance > 0 || maxDistance > 0 {
+		var unitsLength string
+		_ = db.QueryRow("SELECT unit_of_length FROM settings LIMIT 1").Scan(&unitsLength)
+		if unitsLength == "mi" {
+			if minDistance > 0 {
+				minDistance = milesToKilometers(minDistance)
+			}
+			if maxDistance > 0 {
+				maxDistance = milesToKilometers(maxDistance)
+			}
+		}
+
+		if minDistance > 0 {
+			query += fmt.Sprintf(" AND distance >= $%d", paramIndex)
+			queryParams = append(queryParams, minDistance)
+			paramIndex++
+		}
+		if maxDistance > 0 {
+			query += fmt.Sprintf(" AND distance <= $%d", paramIndex)
+			queryParams = append(queryParams, maxDistance)
+			paramIndex++
+		}
 	}
 
 	query += fmt.Sprintf(`

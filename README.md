@@ -173,6 +173,8 @@ More detailed documentation of every endpoint will come..
   - Supported parameters:
     - `startDate` (optional, use canonical UTC format in RFC3339)
     - `endDate` (optional, use canonical UTC format in RFC3339)
+    - `minDistance` (optional, filter by minimum trip distance)
+    - `maxDistance` (optional, filter by maximum trip distance)
 - GET `/api/v1/cars/:CarID/drives/:DriveID`
 - PUT `/api/v1/cars/:CarID/logging/:Command`
 - GET `/api/v1/cars/:CarID/logging`
