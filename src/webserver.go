@@ -19,6 +19,10 @@ import (
 	_ "github.com/lib/pq"
 )
 
+const (
+	headerAPIVersion = "Api-Version"
+)
+
 var (
 	// application readyz endpoint value for k8s
 	isReady *atomic.Value
@@ -92,6 +96,11 @@ func main() {
 
 	// gin middleware to enable GZIP support
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
+
+	r.Use(func(c *gin.Context) {
+		c.Writer.Header().Set(headerAPIVersion, apiVersion)
+		c.Next()
+	})
 
 	// set 404 not found page
 	r.NoRoute(func(c *gin.Context) {
