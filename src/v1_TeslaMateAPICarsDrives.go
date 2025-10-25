@@ -203,7 +203,16 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 	// Add minimum/maximum distance filtering if provided
 	if minDistance > 0 || maxDistance > 0 {
 		var unitsLength string
-		_ = db.QueryRow("SELECT unit_of_length FROM settings LIMIT 1").Scan(&unitsLength)
+		err = db.QueryRow("SELECT unit_of_length FROM settings LIMIT 1").Scan(&unitsLength)
+		if err != nil {
+			TeslaMateAPIHandleErrorResponse(
+				c,
+				"TeslaMateAPICarsDrivesV1",
+				CarsDrivesError1,
+				fmt.Sprintf("unable to retrieve unit_of_length from settings table: %v", err),
+			)
+			return
+		}
 		if unitsLength == "mi" {
 			if minDistance > 0 {
 				minDistance = milesToKilometers(minDistance)
