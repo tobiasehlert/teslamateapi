@@ -29,7 +29,7 @@ require (
 )
 
 require (
-	github.com/gin-contrib/gzip v1.2.4
+	github.com/gin-contrib/gzip v1.2.5
 	github.com/gin-contrib/sse v1.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
