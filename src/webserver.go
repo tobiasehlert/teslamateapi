@@ -19,13 +19,17 @@ import (
 	_ "github.com/lib/pq"
 )
 
+const (
+	headerAPIVersion  = "API-Version"
+	dbTimestampFormat = "2006-01-02T15:04:05Z" // format used in postgres for dates
+)
+
 var (
 	// application readyz endpoint value for k8s
 	isReady *atomic.Value
 
 	// setting TeslaMateApi parameters
-	apiVersion        = "unspecified"
-	dbTimestampFormat = "2006-01-02T15:04:05Z" // format used in postgres for dates
+	apiVersion = "unspecified"
 
 	// defining db var
 	db *sql.DB
@@ -36,7 +40,7 @@ var (
 
 // main function
 func main() {
-	// setup of readyness endpoint code
+	// setup of readiness endpoint code
 	isReady = &atomic.Value{}
 	isReady.Store(false)
 
@@ -93,6 +97,11 @@ func main() {
 	// gin middleware to enable GZIP support
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 
+	r.Use(func(c *gin.Context) {
+		c.Header(headerAPIVersion, apiVersion)
+		c.Next()
+	})
+
 	// set 404 not found page
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"code": "PAGE_NOT_FOUND", "message": "Page not found"})
@@ -103,7 +112,7 @@ func main() {
 
 	// root endpoint telling API is running
 	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi container runnnig..", "path": r.BasePath()})
+		c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi container running..", "path": r.BasePath()})
 	})
 
 	// TeslaMateApi /api endpoints
@@ -111,7 +120,7 @@ func main() {
 	{
 		// TeslaMateApi /api root
 		api.GET("/", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi container runnnig..", "path": api.BasePath()})
+			c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi container running..", "path": api.BasePath()})
 		})
 
 		// TeslaMateApi /api/v1 endpoints
@@ -119,7 +128,7 @@ func main() {
 		{
 			// TeslaMateApi /api/v1 root
 			v1.GET("/", func(c *gin.Context) {
-				c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi v1 runnnig..", "path": v1.BasePath()})
+				c.JSON(http.StatusOK, gin.H{"message": "TeslaMateApi v1 running..", "path": v1.BasePath()})
 			})
 
 			// v1 /api/v1/cars endpoints
