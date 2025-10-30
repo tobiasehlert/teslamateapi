@@ -98,7 +98,7 @@ func main() {
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	r.Use(func(c *gin.Context) {
-		c.Writer.Header().Set(headerAPIVersion, apiVersion)
+		c.Header(headerAPIVersion, apiVersion)
 		c.Next()
 	})
 
