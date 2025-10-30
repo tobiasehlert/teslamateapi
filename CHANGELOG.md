@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.23.0] - 2025-10-30
+
+### Added
+
+- feat: add api-version header into responses ([#385](https://github.com/tobiasehlert/teslamateapi/pull/385) by [LukStankovic](https://github.com/LukStankovic))
+- feat: add battery health endpoint for cars ([#355](https://github.com/tobiasehlert/teslamateapi/pull/355) by [LukStankovic](https://github.com/LukStankovic))
+- feat: add distance filtering for drives ([#383](https://github.com/tobiasehlert/teslamateapi/pull/383) by [LukStankovic](https://github.com/LukStankovic))
+
+### Changed
+
+- chore: bump go mods and refactor a little ([#368](https://github.com/tobiasehlert/teslamateapi/pull/368) by [tobiasehlert](https://github.com/tobiasehlert))
+- chore: rewrite logic of convertStringTo-functions ([#367](https://github.com/tobiasehlert/teslamateapi/pull/367) by [tobiasehlert](https://github.com/tobiasehlert))
+- deps(ci): bump actions/download-artifact from 5.0.0 to 6.0.0 ([#387](https://github.com/tobiasehlert/teslamateapi/pull/387) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump actions/upload-artifact from 4.6.2 to 5.0.0 ([#389](https://github.com/tobiasehlert/teslamateapi/pull/389) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump docker/login-action from 3.5.0 to 3.6.0 ([#370](https://github.com/tobiasehlert/teslamateapi/pull/370) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump github/codeql-action from 3.30.3 to 4.31.0 ([#369](https://github.com/tobiasehlert/teslamateapi/pull/369), [#371](https://github.com/tobiasehlert/teslamateapi/pull/371), [#376](https://github.com/tobiasehlert/teslamateapi/pull/376), [#382](https://github.com/tobiasehlert/teslamateapi/pull/382), [#388](https://github.com/tobiasehlert/teslamateapi/pull/388) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump peter-evans/dockerhub-description from 4.0.2 to 5.0.0 ([#372](https://github.com/tobiasehlert/teslamateapi/pull/372) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump sigstore/cosign-installer from 3.10.0 to 4.0.0 ([#380](https://github.com/tobiasehlert/teslamateapi/pull/380) by [dependabot](https://github.com/dependabot))
+- deps(docker): bump alpine from 3.22.1 to 3.22.2 ([#378](https://github.com/tobiasehlert/teslamateapi/pull/378) by [dependabot](https://github.com/dependabot))
+- deps(docker): bump golang from 1.25.1 to 1.25.3 ([#377](https://github.com/tobiasehlert/teslamateapi/pull/377), [#381](https://github.com/tobiasehlert/teslamateapi/pull/381) by [dependabot](https://github.com/dependabot))
+- deps(go): bump github.com/gin-contrib/gzip from 1.2.3 to 1.2.5 ([#379](https://github.com/tobiasehlert/teslamateapi/pull/379), [#386](https://github.com/tobiasehlert/teslamateapi/pull/386) by [dependabot](https://github.com/dependabot))
+- deps(go): bump github.com/gin-gonic/gin from 1.10.1 to 1.11.0 ([#365](https://github.com/tobiasehlert/teslamateapi/pull/365) by [dependabot](https://github.com/dependabot))
+- deps(go): bump github.com/quic-go/quic-go from 0.54.0 to 0.54.1 ([#375](https://github.com/tobiasehlert/teslamateapi/pull/375) by [dependabot](https://github.com/dependabot))
+
+### Fixed
+
+- fix: incorrect 0 values from charge_energy_used charges queries ([#366](https://github.com/tobiasehlert/teslamateapi/pull/366) by [LukStankovic](https://github.com/LukStankovic))
+
 ## [1.22.0] - 2025-09-22
 
 ### Added
@@ -616,6 +644,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.23.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.22.0...v1.23.0
 [1.22.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.21.1...v1.22.0
 [1.21.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.21.0...v1.21.1
 [1.21.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.20.2...v1.21.0
