@@ -67,6 +67,13 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		Latitude          float64        `json:"latitude"`            // float64
 		Longitude         float64        `json:"longitude"`           // float64
 	}
+	// ChargesSummary struct - child of Data
+	type ChargesSummary struct {
+		Charges     int     `json:"charges"`      // int - count of charges
+		EnergyUsed  float64 `json:"energy_used"`  // float64 - total energy used
+		Cost        float64 `json:"cost"`         // float64 - total cost
+		DurationMin int     `json:"duration_min"` // int - total duration in minutes
+	}
 	// TeslaMateUnits struct - child of Data
 	type TeslaMateUnits struct {
 		UnitsLength      string `json:"unit_of_length"`      // string
@@ -74,9 +81,10 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	}
 	// Data struct - child of JSONData
 	type Data struct {
-		Car            Car            `json:"car"`
-		Charges        []Charges      `json:"charges"`
-		TeslaMateUnits TeslaMateUnits `json:"units"`
+		Car            Car             `json:"car"`
+		Summary        ChargesSummary  `json:"summary"`
+		Charges        []Charges       `json:"charges"`
+		TeslaMateUnits TeslaMateUnits  `json:"units"`
 	}
 	// JSONData struct - main
 	type JSONData struct {
@@ -88,6 +96,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		CarName                       NullString
 		ChargesData                   []Charges
 		UnitsLength, UnitsTemperature string
+		SummaryData                   ChargesSummary
 	)
 
 	// calculate offset based on page (page 0 is not possible, since first page is minimum 1)
@@ -145,6 +154,46 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		query += fmt.Sprintf(" AND charging_processes.end_date <= $%d", paramIndex)
 		queryParams = append(queryParams, parsedEndDate)
 		paramIndex++
+	}
+
+	// Build summary query with the same filters (but without pagination)
+	summaryQuery := `
+		SELECT
+			COUNT(charging_processes.id) as total_charges,
+			COALESCE(SUM(GREATEST(charge_energy_used, charge_energy_added)), 0) as total_energy_used,
+			COALESCE(SUM(cost), 0) as total_cost,
+			COALESCE(SUM(duration_min), 0) as total_duration_min
+		FROM charging_processes
+		WHERE charging_processes.car_id=$1 AND charging_processes.end_date IS NOT NULL`
+
+	// Build summary query params (same as main query params, but without pagination)
+	summaryParams := []any{CarID}
+	summaryParamIndex := 2
+
+	if parsedStartDate != "" {
+		summaryQuery += fmt.Sprintf(" AND charging_processes.start_date >= $%d", summaryParamIndex)
+		summaryParams = append(summaryParams, parsedStartDate)
+		summaryParamIndex++
+	}
+	if parsedEndDate != "" {
+		summaryQuery += fmt.Sprintf(" AND charging_processes.end_date <= $%d", summaryParamIndex)
+		summaryParams = append(summaryParams, parsedEndDate)
+		summaryParamIndex++
+	}
+
+	summaryQuery += ";"
+
+	// Execute summary query
+	err = db.QueryRow(summaryQuery, summaryParams...).Scan(
+		&SummaryData.Charges,
+		&SummaryData.EnergyUsed,
+		&SummaryData.Cost,
+		&SummaryData.DurationMin,
+	)
+
+	if err != nil {
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", CarsChargesError1, err.Error())
+		return
 	}
 
 	query += fmt.Sprintf(`
@@ -238,6 +287,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 				CarID:   CarID,
 				CarName: CarName,
 			},
+			Summary: SummaryData,
 			Charges: ChargesData,
 			TeslaMateUnits: TeslaMateUnits{
 				UnitsLength:      UnitsLength,
