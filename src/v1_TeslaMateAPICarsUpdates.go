@@ -64,7 +64,7 @@ func TeslaMateAPICarsUpdatesV1(c *gin.Context) {
 			version
 		FROM updates
 		LEFT JOIN cars ON car_id = cars.id
-		WHERE car_id = $1
+		WHERE car_id = $1 AND end_date IS NOT NULL AND version IS NOT NULL
 		ORDER BY start_date DESC
 		LIMIT $2 OFFSET $3;`
 	rows, err := db.Query(query, CarID, ResultShow, ResultPage)
