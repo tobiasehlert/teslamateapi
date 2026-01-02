@@ -36,6 +36,10 @@ var (
 
 	// app-settings
 	appUsersTimezone *time.Location
+
+	// battery health configuration maps
+	batteryMaxCapacityNewMap map[int]float64
+	maxRangeNewMap           map[int]float64
 )
 
 // main function
@@ -72,6 +76,8 @@ func main() {
 	initAuthToken()
 	// initialize allowList stored for /command section
 	initCommandAllowList()
+	// initialize battery health maps from environment variables
+	initBatteryHealthMaps()
 
 	// Connect to the MQTT broker
 	statusCache, err := startMQTT()
@@ -269,6 +275,17 @@ func initDBconnection() {
 	}
 }
 
+// initBatteryHealthMaps initializes the cached maps for battery capacity and range
+func initBatteryHealthMaps() {
+	batteryMaxCapacityNewMap = parseCarFloatMap(getEnv("BATTERY_MAX_CAPACITY_NEW", ""))
+	maxRangeNewMap = parseCarFloatMap(getEnv("MAX_RANGE_NEW", ""))
+
+	if gin.IsDebugging() {
+		log.Printf("[debug] initBatteryHealthMaps - BatteryMaxCapacityNewMap: %v", batteryMaxCapacityNewMap)
+		log.Printf("[debug] initBatteryHealthMaps - MaxRangeNewMap: %v", maxRangeNewMap)
+	}
+}
+
 func TeslaMateAPIHandleErrorResponse(c *gin.Context, s1 string, s2 string, s3 string) {
 	log.Println("[error] " + s1 + " - (" + c.Request.RequestURI + "). " + s2 + "; " + s3)
 	c.JSON(http.StatusOK, gin.H{"error": s2})
@@ -352,6 +369,45 @@ func getEnvAsInt(name string, defaultVal int) int {
 		return value
 	}
 	return defaultVal
+}
+
+// getEnvAsFloat func - read an environment variable into float or return a default value
+func getEnvAsFloat(name string, defaultVal float64) float64 {
+	valueStr := getEnv(name, "")
+	if value, err := strconv.ParseFloat(valueStr, 64); err == nil {
+		return value
+	}
+	return defaultVal
+}
+
+// parseCarFloatMap parses environment variable in format "carId:value,carId2:value" into a map
+func parseCarFloatMap(envValue string) map[int]float64 {
+	result := make(map[int]float64)
+	if envValue == "" {
+		return result
+	}
+
+	pairs := strings.Split(envValue, ",")
+	for _, pair := range pairs {
+		parts := strings.Split(strings.TrimSpace(pair), ":")
+		if len(parts) != 2 {
+			continue
+		}
+
+		carID, err := strconv.Atoi(strings.TrimSpace(parts[0]))
+		if err != nil {
+			continue
+		}
+
+		value, err := strconv.ParseFloat(strings.TrimSpace(parts[1]), 64)
+		if err != nil {
+			continue
+		}
+
+		result[carID] = value
+	}
+
+	return result
 }
 
 // convertStringToBool func - converts a string to boolean, returning false on failure
