@@ -98,6 +98,13 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 		EnergyConsumedNet *float64        `json:"energy_consumed_net"` // Energy consumed (net) in kWh
 		ConsumptionNet    *float64        `json:"consumption_net"`     // Ø Consumption (net) per distance unit
 	}
+	// DrivesSummary struct - child of Data
+	type DrivesSummary struct {
+		Drives       int      `json:"drives"`        // int - count of drives
+		Distance     float64  `json:"distance"`      // float64 - total distance
+		DurationMin  int      `json:"duration_min"`  // int - total duration in minutes
+		ConsumedNet  *float64 `json:"consumed_net"`  // float64 - total energy consumed (nullable)
+	}
 	// TeslaMateUnits struct - child of Data
 	type TeslaMateUnits struct {
 		UnitsLength      string `json:"unit_of_length"`      // string
@@ -106,6 +113,7 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 	// Data struct - child of JSONData
 	type Data struct {
 		Car            Car            `json:"car"`
+		Summary        DrivesSummary  `json:"summary"`
 		Drives         []Drives       `json:"drives"`
 		TeslaMateUnits TeslaMateUnits `json:"units"`
 	}
@@ -119,6 +127,10 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 		CarName                       NullString
 		DrivesData                    []Drives
 		UnitsLength, UnitsTemperature string
+		SummaryData                   DrivesSummary
+		totalDistanceKm               float64
+		totalDurationMin              int
+		totalEnergyConsumed           *float64
 	)
 
 	// calculate offset based on page (page 0 is not possible, since first page is minimum 1)
@@ -234,6 +246,80 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 		}
 	}
 
+	// Build summary query with the same filters (but without pagination)
+	summaryQuery := `
+		SELECT
+			COUNT(drives.id) as total_drives,
+			COALESCE(SUM(drives.distance), 0) as total_distance_km,
+			COALESCE(SUM(drives.duration_min), 0) as total_duration_min,
+			SUM(
+				CASE
+					WHEN (start_rated_range_km - end_rated_range_km) > 0
+					THEN (start_rated_range_km - end_rated_range_km) * cars.efficiency
+					ELSE NULL
+				END
+			) as total_energy_consumed
+		FROM drives
+		LEFT JOIN cars ON car_id = cars.id
+		LEFT JOIN positions start_position ON start_position_id = start_position.id
+		LEFT JOIN positions end_position ON end_position_id = end_position.id
+		WHERE drives.car_id=$1 AND end_date IS NOT NULL`
+
+	// Build summary query params (same as main query params, but without pagination)
+	summaryParams := []any{CarID}
+	summaryParamIndex := 2
+
+	if parsedStartDate != "" {
+		summaryQuery += fmt.Sprintf(" AND drives.start_date >= $%d", summaryParamIndex)
+		summaryParams = append(summaryParams, parsedStartDate)
+		summaryParamIndex++
+	}
+	if parsedEndDate != "" {
+		summaryQuery += fmt.Sprintf(" AND drives.end_date <= $%d", summaryParamIndex)
+		summaryParams = append(summaryParams, parsedEndDate)
+		summaryParamIndex++
+	}
+
+	// Add distance filtering to summary query if provided
+	if minDistance > 0 || maxDistance > 0 {
+		// minDistance and maxDistance are already converted to km above
+		if minDistance > 0 {
+			summaryQuery += fmt.Sprintf(" AND distance >= $%d", summaryParamIndex)
+			summaryParams = append(summaryParams, minDistance)
+			summaryParamIndex++
+		}
+		if maxDistance > 0 {
+			summaryQuery += fmt.Sprintf(" AND distance <= $%d", summaryParamIndex)
+			summaryParams = append(summaryParams, maxDistance)
+			summaryParamIndex++
+		}
+	}
+
+	summaryQuery += ";"
+
+	// Execute summary query
+	err = db.QueryRow(summaryQuery, summaryParams...).Scan(
+		&SummaryData.Drives,
+		&totalDistanceKm,
+		&totalDurationMin,
+		&totalEnergyConsumed,
+	)
+
+	if err != nil {
+		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesV1", CarsDrivesError1, err.Error())
+		return
+	}
+
+	// Convert distance based on unit settings
+	if UnitsLength == "mi" {
+		SummaryData.Distance = kilometersToMiles(totalDistanceKm)
+	} else {
+		SummaryData.Distance = totalDistanceKm
+	}
+
+	SummaryData.DurationMin = totalDurationMin
+	SummaryData.ConsumedNet = totalEnergyConsumed
+
 	query += fmt.Sprintf(`
         ORDER BY start_date DESC
         LIMIT $%d OFFSET $%d;`, paramIndex, paramIndex+1)
@@ -346,7 +432,8 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 				CarID:   CarID,
 				CarName: CarName,
 			},
-			Drives: DrivesData,
+			Summary: SummaryData,
+			Drives:  DrivesData,
 			TeslaMateUnits: TeslaMateUnits{
 				UnitsLength:      UnitsLength,
 				UnitsTemperature: UnitsTemperature,
