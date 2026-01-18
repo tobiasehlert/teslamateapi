@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -17,7 +18,7 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 	// authentication for the endpoint
 	validToken, errorMessage := validateAuthToken(c)
 	if !validToken {
-		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsDrivesV1", CarsDrivesError2, errorMessage)
+		TeslaMateAPIHandleOtherResponse(c, http.StatusUnauthorized, "TeslaMateAPICarsDrivesV1", gin.H{"error": errorMessage})
 		return
 	}
 
