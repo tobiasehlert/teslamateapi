@@ -102,8 +102,8 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	query := `
 		SELECT
 			charging_processes.id AS charge_id,
-			start_date,
-			end_date,
+			charging_processes.start_date,
+			charging_processes.end_date,
 			COALESCE(geofence.name, CONCAT_WS(', ', COALESCE(address.name, nullif(CONCAT_WS(' ', address.road, address.house_number), '')), address.city)) AS address,
 			COALESCE(charge_energy_added, 0) AS charge_energy_added,
 			COALESCE(GREATEST(charge_energy_used, charge_energy_added), 0) AS charge_energy_used,
