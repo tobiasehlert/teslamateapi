@@ -216,10 +216,6 @@ func TeslaMateAPICarsChargesCurrentV1(c *gin.Context) {
 		charge.RatedRange.CurrentRange = currentRatedRange.Float64
 	}
 
-	if addedRange := charge.RatedRange.CurrentRange - charge.RatedRange.StartRange; addedRange > 0 {
-		charge.RatedRange.AddedRange = addedRange
-	}
-
 	if startBatteryLevel.Valid {
 		charge.BatteryDetails.StartBatteryLevel = int(startBatteryLevel.Int64)
 	}
