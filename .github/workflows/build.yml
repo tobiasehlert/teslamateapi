@@ -19,6 +19,9 @@ permissions:
   id-token: write
   packages: write
 
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+
 jobs:
   build:
     name: build (${{ matrix.platform }})
