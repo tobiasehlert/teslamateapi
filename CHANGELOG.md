@@ -644,6 +644,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.24.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.23.0...v1.24.0
 [1.23.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.22.0...v1.23.0
 [1.22.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.21.1...v1.22.0
 [1.21.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.21.0...v1.21.1
