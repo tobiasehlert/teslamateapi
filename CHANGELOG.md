@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.24.1] - 2026-02-6
+
+### Changed
+
+- deps(ci): bump github/codeql-action from 4.32.0 to 4.32.2 ([#445](https://github.com/tobiasehlert/teslamateapi/pull/445) by [dependabot](https://github.com/dependabot))
+
+### Fixed
+
+- fix: TeslaMate token is in private schema since release 2.2.0 ([#444](https://github.com/tobiasehlert/teslamateapi/pull/444) by [ToniA](https://github.com/ToniA))
+
 ## [1.24.0] - 2026-02-03
 
 ### Added
@@ -675,6 +685,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.24.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.24.0...v1.24.1
 [1.24.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.23.0...v1.24.0
 [1.23.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.22.0...v1.23.0
 [1.22.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.21.1...v1.22.0
