@@ -130,7 +130,6 @@ func startMQTT() (*statusCache, error) {
 
 	// default values that get might get overwritten..
 	MQTTPort := 0
-	MQTTUserstring := ""
 	MQTTProtocol := "tcp"
 
 	// creating connection string towards mqtt
@@ -148,18 +147,8 @@ func startMQTT() (*statusCache, error) {
 	// MQTTInvCert := getEnvAsBool("MQTT_TLS_ACCEPT_INVALID_CERTS", false)
 
 	// creating mqttURL to connect with
-	// mqtt[s]://[username][:password]@host.domain[:port]
-	if len(MQTTUser) > 0 {
-		MQTTUserstring = MQTTUser
-	}
-	if len(MQTTPass) > 0 {
-		MQTTUserstring = (MQTTUserstring + ":" + MQTTPass)
-	}
-	if len(MQTTUserstring) > 0 {
-		MQTTUserstring = (MQTTUserstring + "@")
-	}
-
-	mqttURL := fmt.Sprintf("%s://%s%s:%d", MQTTProtocol, MQTTUserstring, MQTTHost, MQTTPort)
+	// mqtt[s]://@host.domain[:port]
+	mqttURL := fmt.Sprintf("%s://%s:%d", MQTTProtocol, MQTTHost, MQTTPort)
 
 	// create options for the MQTT client connection
 	opts := mqtt.NewClientOptions().AddBroker(mqttURL)
@@ -176,6 +165,13 @@ func startMQTT() (*statusCache, error) {
 	opts.SetOrderMatters(false)                      // don't care about order (removes need for callbacks to return immediately)
 	opts.SetAutoReconnect(true)                      // if connection drops automatically re-establish it
 	opts.AutoReconnect = true
+	// setting authentication if provided
+	if len(MQTTUser) > 0 {
+		opts.SetUsername(MQTTUser)
+	}
+	if len(MQTTPass) > 0 {
+		opts.SetPassword(MQTTPass)
+	}
 
 	// creating MQTT connection with options
 	m := mqtt.NewClient(opts)
