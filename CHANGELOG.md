@@ -1,6 +1,19 @@
 # Changelog
 
-## [1.24.1] - 2026-02-6
+## [1.24.2] - 2026-02-25
+
+### Changed
+
+- deps(ci): bump docker/build-push-action from 6.18.0 to 6.19.2 ([#450](https://github.com/tobiasehlert/teslamateapi/pull/450) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump github/codeql-action from 4.32.2 to 4.32.4 ([#452](https://github.com/tobiasehlert/teslamateapi/pull/452), [#455](https://github.com/tobiasehlert/teslamateapi/pull/455) by [dependabot](https://github.com/dependabot))
+- deps(docker): bump golang from 1.25.6 to 1.26.0 ([#447](https://github.com/tobiasehlert/teslamateapi/pull/447), [#451](https://github.com/tobiasehlert/teslamateapi/pull/451) by [dependabot](https://github.com/dependabot))
+- deps(go): bump github.com/lib/pq from 1.11.1 to 1.11.2 ([#449](https://github.com/tobiasehlert/teslamateapi/pull/449) by [dependabot](https://github.com/dependabot))
+
+### Fixed
+
+- fix: support at-sign in password on mqtt ([#454](https://github.com/tobiasehlert/teslamateapi/pull/454) by [tobiasehlert](https://github.com/tobiasehlert))
+
+## [1.24.1] - 2026-02-06
 
 ### Changed
 
@@ -685,6 +698,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.24.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.24.1...v1.24.2
 [1.24.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.24.0...v1.24.1
 [1.24.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.23.0...v1.24.0
 [1.23.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.22.0...v1.23.0
