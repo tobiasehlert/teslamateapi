@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -13,6 +14,13 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	// define error messages
 	var CarsChargesError1 = "Unable to load charges."
 	var CarsChargesError2 = "Invalid date format."
+
+	// authentication for the endpoint
+	validToken, errorMessage := validateAuthToken(c)
+	if !validToken {
+		TeslaMateAPIHandleOtherResponse(c, http.StatusUnauthorized, "TeslaMateAPICarsChargesV1", gin.H{"error": errorMessage})
+		return
+	}
 
 	// getting CarID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))

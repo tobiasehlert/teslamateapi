@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -8,6 +10,14 @@ import (
 // TeslaMateAPICarsBatteryHealthV1 func
 func TeslaMateAPICarsBatteryHealthV1(c *gin.Context) {
 	var CarsBatteryHealthError1 = "Unable to load battery health data."
+
+	// authentication for the endpoint
+	validToken, errorMessage := validateAuthToken(c)
+	if !validToken {
+		TeslaMateAPIHandleOtherResponse(c, http.StatusUnauthorized, "TeslaMateAPICarsBatteryHealthV1", gin.H{"error": errorMessage})
+		return
+	}
+
 	CarID := convertStringToInteger(c.Param("CarID"))
 
 	// creating structs for /cars/<CarID>/battery-health

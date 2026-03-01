@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -53,6 +54,13 @@ func TeslaMateAPIGlobalsettingsV1(c *gin.Context) {
 
 	// creating required vars
 	var globalSetting GlobalSettings
+
+	// authentication for the endpoint
+	validToken, errorMessage := validateAuthToken(c)
+	if !validToken {
+		TeslaMateAPIHandleOtherResponse(c, http.StatusUnauthorized, "TeslaMateAPIGlobalsettingsV1", gin.H{"error": errorMessage})
+		return
+	}
 
 	// getting data from database
 	query := `
