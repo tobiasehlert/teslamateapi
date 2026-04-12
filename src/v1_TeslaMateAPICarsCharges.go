@@ -62,7 +62,7 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		BatteryDetails    BatteryDetails `json:"battery_details"`     // BatteryDetails
 		RangeIdeal        PreferredRange `json:"range_ideal"`         // PreferredRange
 		RangeRated        PreferredRange `json:"range_rated"`         // PreferredRange
-		OutsideTempAvg    float64        `json:"outside_temp_avg"`    // float64
+		OutsideTempAvg    *float64       `json:"outside_temp_avg"`    // float64
 		Odometer          float64        `json:"odometer"`            // float64
 		Latitude          float64        `json:"latitude"`            // float64
 		Longitude         float64        `json:"longitude"`           // float64
@@ -206,7 +206,10 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		}
 		// converting values based of settings UnitsTemperature
 		if UnitsTemperature == "F" {
-			charge.OutsideTempAvg = celsiusToFahrenheit(charge.OutsideTempAvg)
+			if charge.OutsideTempAvg != nil {
+				val := celsiusToFahrenheit(*charge.OutsideTempAvg)
+				charge.OutsideTempAvg = &val
+			}
 		}
 
 		// adjusting to timezone differences from UTC to be userspecific
