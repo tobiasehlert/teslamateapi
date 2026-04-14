@@ -48,6 +48,8 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 			maxDistance = 0
 		}
 	}
+	// get optional location filter from query parameters
+	locationParam := c.Query("location")
 
 	// creating structs for /cars/<CarID>/drives
 	// Car struct - child of Data
@@ -129,14 +131,17 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 	}
 	ResultPage = (ResultPage * ResultShow)
 
+	startAddressExpr := "COALESCE(start_geofence.name, CONCAT_WS(', ', COALESCE(start_address.name, nullif(CONCAT_WS(' ', start_address.road, start_address.house_number), '')), start_address.city))"
+	endAddressExpr := "COALESCE(end_geofence.name, CONCAT_WS(', ', COALESCE(end_address.name, nullif(CONCAT_WS(' ', end_address.road, end_address.house_number), '')), end_address.city))"
+
 	// getting data from database
-	query := `
+	query := fmt.Sprintf(`
 		SELECT
 			drives.id AS drive_id,
 			start_date,
 			end_date,
-			COALESCE(start_geofence.name, CONCAT_WS(', ', COALESCE(start_address.name, nullif(CONCAT_WS(' ', start_address.road, start_address.house_number), '')), start_address.city)) AS start_address,
-			COALESCE(end_geofence.name, CONCAT_WS(', ', COALESCE(end_address.name, nullif(CONCAT_WS(' ', end_address.road, end_address.house_number), '')), end_address.city)) AS end_address,
+			%s AS start_address,
+			%s AS end_address,
 			start_km,
 			end_km,
 			distance,
@@ -181,7 +186,7 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 		LEFT JOIN positions end_position ON end_position_id = end_position.id
 		LEFT JOIN geofences start_geofence ON start_geofence_id = start_geofence.id
 		LEFT JOIN geofences end_geofence ON end_geofence_id = end_geofence.id
-		WHERE drives.car_id=$1 AND end_date IS NOT NULL`
+		WHERE drives.car_id=$1 AND end_date IS NOT NULL`, startAddressExpr, endAddressExpr)
 
 	// Parameters to be passed to the query
 	var queryParams []any
@@ -232,6 +237,19 @@ func TeslaMateAPICarsDrivesV1(c *gin.Context) {
 			queryParams = append(queryParams, maxDistance)
 			paramIndex++
 		}
+	}
+
+	// Add location filtering if provided
+	if locationParam != "" {
+		query += fmt.Sprintf(
+			" AND (%s ILIKE $%d OR %s ILIKE $%d)",
+			startAddressExpr,
+			paramIndex,
+			endAddressExpr,
+			paramIndex,
+		)
+		queryParams = append(queryParams, "%"+locationParam+"%")
+		paramIndex++
 	}
 
 	query += fmt.Sprintf(`
