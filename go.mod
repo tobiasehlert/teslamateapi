@@ -1,11 +1,11 @@
 module github.com/tobiasehlert/teslamateapi
 
-go 1.25.1
+go 1.26.0
 
 require (
 	github.com/eclipse/paho.mqtt.golang v1.5.1
 	github.com/gin-gonic/gin v1.11.0
-	github.com/lib/pq v1.10.9
+	github.com/lib/pq v1.11.2
 	github.com/thanhpk/randstr v1.0.6
 )
 
