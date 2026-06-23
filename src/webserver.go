@@ -360,7 +360,7 @@ func convertStringToBool(data string) bool {
 	value, err := strconv.ParseBool(data)
 	if err != nil {
 		if gin.IsDebugging() {
-			log.Printf("[warning] convertStringToBool: failed to parse '%s' as boolean - returning false", data)
+			log.Printf("[warning] convertStringToBool: failed to parse %q as boolean - returning false", sanitizeLogInput(data))
 		}
 		return false
 	}
@@ -372,7 +372,7 @@ func convertStringToFloat(data string) float64 {
 	value, err := strconv.ParseFloat(data, 64)
 	if err != nil {
 		if gin.IsDebugging() {
-			log.Printf("[warning] convertStringToFloat: failed to parse '%s' as float64 - returning 0.0", data)
+			log.Printf("[warning] convertStringToFloat: failed to parse %q as float64 - returning 0.0", sanitizeLogInput(data))
 		}
 		return 0.0
 	}
@@ -384,11 +384,15 @@ func convertStringToInteger(data string) int {
 	value, err := strconv.Atoi(data)
 	if err != nil {
 		if gin.IsDebugging() {
-			log.Printf("[warning] convertStringToInteger: failed to parse '%s' as integer - returning 0", data)
+			log.Printf("[warning] convertStringToInteger: failed to parse %q as integer - returning 0", sanitizeLogInput(data))
 		}
 		return 0
 	}
 	return value
+}
+
+func sanitizeLogInput(data string) string {
+	return strings.ReplaceAll(strings.ReplaceAll(data, "\n", "_"), "\r", "_")
 }
 
 // kilometersToMiles func
