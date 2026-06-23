@@ -266,6 +266,8 @@ jobs:
     needs:
       - build
       - manifest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout
