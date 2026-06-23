@@ -21,7 +21,7 @@ const (
 )
 
 // decryptAccessToken funct to decrypt tokens from database
-func decryptAccessToken(data string, encryptionKey string) string {
+func decryptAccessToken(data, encryptionKey string) string {
 
 	/*
 	   From Adrian....

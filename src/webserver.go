@@ -330,7 +330,7 @@ func parseDateParam(datestring string) (string, error) {
 }
 
 // getEnv func - read an environment or return a default value
-func getEnv(key string, defaultVal string) string {
+func getEnv(key, defaultVal string) string {
 	if value, exists := os.LookupEnv(key); exists && value != "" {
 		return value
 	}
