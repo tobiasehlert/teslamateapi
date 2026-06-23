@@ -31,6 +31,8 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsChargesV1", CarsChargesError2, err.Error())
 		return
 	}
+	// get optional location filter from query parameters
+	locationParam := c.Query("location")
 
 	// creating structs for /cars/<CarID>/charges
 	// Car struct - child of Data
@@ -98,13 +100,16 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	}
 	ResultPage = (ResultPage * ResultShow)
 
+	addressExpr := "COALESCE(geofence.name, CONCAT_WS(', ', COALESCE(address.name, nullif(CONCAT_WS(' ', address.road, address.house_number), '')), address.city))"
+
 	// getting data from database
-	query := `
+	query := fmt.Sprintf(
+		`
 		SELECT
 			charging_processes.id AS charge_id,
 			charging_processes.start_date,
 			charging_processes.end_date,
-			COALESCE(geofence.name, CONCAT_WS(', ', COALESCE(address.name, nullif(CONCAT_WS(' ', address.road, address.house_number), '')), address.city)) AS address,
+			%s AS address,
 			COALESCE(charge_energy_added, 0) AS charge_energy_added,
 			COALESCE(GREATEST(charge_energy_used, charge_energy_added), 0) AS charge_energy_used,
 			COALESCE(cost, 0) AS cost,
@@ -128,7 +133,9 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 		LEFT JOIN addresses address ON address_id = address.id
 		LEFT JOIN positions position ON position_id = position.id
 		LEFT JOIN geofences geofence ON geofence_id = geofence.id
-		WHERE charging_processes.car_id=$1 AND charging_processes.end_date IS NOT NULL`
+		WHERE charging_processes.car_id=$1 AND charging_processes.end_date IS NOT NULL`,
+		addressExpr,
+	)
 
 	// Parameters to be passed to the query
 	var queryParams []any
@@ -144,6 +151,13 @@ func TeslaMateAPICarsChargesV1(c *gin.Context) {
 	if parsedEndDate != "" {
 		query += fmt.Sprintf(" AND charging_processes.end_date <= $%d", paramIndex)
 		queryParams = append(queryParams, parsedEndDate)
+		paramIndex++
+	}
+
+	// Add location filtering if provided
+	if locationParam != "" {
+		query += fmt.Sprintf(" AND %s ILIKE $%d", addressExpr, paramIndex)
+		queryParams = append(queryParams, "%"+locationParam+"%")
 		paramIndex++
 	}
 
