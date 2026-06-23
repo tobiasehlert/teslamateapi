@@ -44,18 +44,13 @@ func validateAuthToken(c *gin.Context) (bool, string) {
 		return true, ""
 	}
 
-	headersName := apiTokenHeaderName
-	if headersName == "" {
-		headersName = "Authorization"
-	}
-
 	// trying with configured http header
-	reqHeaderToken := c.Request.Header.Get(headersName)
+	reqHeaderToken := c.Request.Header.Get(apiTokenHeaderName)
 
 	// if header provided
 	if len(reqHeaderToken) > 0 {
 
-		if strings.EqualFold(headersName, "Authorization") {
+		if strings.EqualFold(apiTokenHeaderName, "Authorization") {
 			// expecting format: Authorization: Bearer <token>
 			splitToken := strings.Split(reqHeaderToken, "Bearer")
 
