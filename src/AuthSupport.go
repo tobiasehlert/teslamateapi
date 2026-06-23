@@ -10,12 +10,20 @@ import (
 var (
 	// defining envToken that contains API_TOKEN value
 	envToken string
+	// header name to read API token from (default "Authorization")
+	apiTokenHeaderName string
 )
 
 // initAuthToken func
 func initAuthToken() {
 	// get token from environment variable API_TOKEN
 	envToken = getEnv("API_TOKEN", "")
+	// get header name from environment variable API_TOKEN_HEADER (default: Authorization)
+	apiTokenHeaderName = getEnv("API_TOKEN_HEADER", "Authorization")
+	if apiTokenHeaderName == "" {
+		apiTokenHeaderName = "Authorization"
+	}
+
 	if envToken == "" {
 		log.Println("[warning] initAuthToken - environment variable API_TOKEN not set or is empty.")
 	} else if len(envToken) < 32 {
@@ -23,61 +31,70 @@ func initAuthToken() {
 	} else {
 		log.Println("[info] initAuthToken - environment variable API_TOKEN is set and good.")
 	}
+
+	log.Printf("[info] initAuthToken - using header for API token: %s", apiTokenHeaderName)
+}
+
+// helper to extract token from configured header
+func extractTokenFromHeader(headerName, headerValue string) (string, string) {
+	if strings.EqualFold(headerName, "Authorization") {
+		// expecting format: Authorization: Bearer <token>
+		splitToken := strings.Split(headerValue, "Bearer")
+		// bearer token is not proper formatted.. returning bad request
+		if len(splitToken) != 2 {
+			return "", "header authorization bearer token is not proper formatted"
+		}
+		trimmed := strings.TrimSpace(splitToken[1])
+		if trimmed == "" {
+			return "", "header authorization bearer token is empty"
+		}
+		return trimmed, ""
+	}
+
+	// custom header - treat value as raw token (no Bearer prefix)
+	trimmed := strings.TrimSpace(headerValue)
+	if trimmed == "" {
+		return "", "header token empty"
+	}
+	return trimmed, ""
 }
 
 // validateAuthToken func
 func validateAuthToken(c *gin.Context) (bool, string) {
-
 	// if API_TOKEN_DISABLE is true, skip token validation.
 	if getEnvAsBool("API_TOKEN_DISABLE", false) {
 		log.Println("[debug] validateAuthToken - header authorization bearer token disabled.")
 		return true, ""
 	}
 
-	// trying with http header - Authorization: Bearer <token>
-	reqHeaderToken := c.Request.Header.Get("Authorization")
-
-	// if length of reqHeaderToken is more than zero
-	if len(reqHeaderToken) > 0 {
-
-		// removing Bearer part from header to get token out of header
-		splitToken := strings.Split(reqHeaderToken, "Bearer")
-
-		if len(splitToken) != 2 {
-			// bearer token is not proper formatted.. returning bad request
-			log.Println("[info] validateAuthToken - header authorization bearer token is not proper formatted.. returning 401")
-			return false, "header authorization bearer token is not proper formatted"
-
-		} else if strings.TrimSpace(splitToken[1]) == "" {
-			// bearer token is empty string.. we'll return unauthorized
-			log.Println("[info] validateAuthToken - header authorization bearer token is empty.. returning 401")
-			return false, "header authorization bearer token is empty"
-
-		} else if checkAuthToken(strings.TrimSpace(splitToken[1])) {
-			// the bearer token is valid!
-			log.Println("[debug] validateAuthToken - header authorization bearer token valid.")
-			return true, ""
-
+	// try configured header first
+	headerVal := c.Request.Header.Get(apiTokenHeaderName)
+	if headerVal != "" {
+		token, errMsg := extractTokenFromHeader(apiTokenHeaderName, headerVal)
+		if errMsg != "" {
+			log.Println("[info] validateAuthToken -", errMsg+".. returning 401")
+			return false, errMsg
 		}
-		// the check did fail.. bearer token is invalid
-		log.Println("[info] validateAuthToken - header authorization bearer token invalid.. returning 401")
-		return false, "header authorization bearer token invalid"
+		if checkAuthToken(token) {
+			log.Println("[debug] validateAuthToken - token from header valid.")
+			return true, ""
+		}
+		// invalid token from header
+		if strings.EqualFold(apiTokenHeaderName, "Authorization") {
+			log.Println("[info] validateAuthToken - header authorization bearer token invalid.. returning 401")
+			return false, "header authorization bearer token invalid"
+		}
+		log.Println("[info] validateAuthToken - header token invalid.. returning 401")
+		return false, "header token invalid"
 	}
 
-	// trying with http parameter - ?token=<token>
+	// fallback to query parameter ?token=<token>
 	tokenParamsValue := c.DefaultQuery("token", "")
-
-	// if validTokenParams is longer than zero
-	if len(tokenParamsValue) > 0 {
-
-		// checking if token is valid (since it's over zero length)
+	if tokenParamsValue != "" {
 		if checkAuthToken(tokenParamsValue) {
-			// the token is valid!
 			log.Println("[debug] validateAuthToken - param token valid.")
 			return true, ""
-
 		}
-		// the token is invalid.
 		log.Println("[info] validateAuthToken - param token invalid.. returning 401")
 		return false, "param token invalid"
 	}

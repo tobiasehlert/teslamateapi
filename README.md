@@ -110,6 +110,7 @@ Basically the same environment variables for the database, mqqt and timezone nee
 | **TESLAMATE_HOST**            | string  | _teslamate_                   |
 | **TESLAMATE_PORT**            | string  | _4000_                        |
 | **API_TOKEN**                 | string  |                               |
+| **API_TOKEN_HEADER**          | string  | _Authorization_               |
 | **API_TOKEN_DISABLE**         | string  | _false_                       |
 | **DATABASE_PORT**             | integer | _5432_                        |
 | **DATABASE_TIMEOUT**          | integer | _60000_                       |
@@ -196,9 +197,10 @@ If you want to use command or logging endpoints such as `/api/v1/cars/:CarID/com
 
 You need to specify a token yourself (called **API_TOKEN**) in the environment variables file, to set it. The token has the requirement to be a minimum of 32 characters long.
 
-There are two options available for authentication to be done.
+There are two main options available for authentication:
 
 1. Adding extra header `Authorization: Bearer <token>` to your request. (recommended option)
+   - Alternatively set `API_TOKEN_HEADER` to a custom header name (for example `X-API-Token`) and send the raw token in that header: `X-API-Token: <token>` (no "Bearer" prefix).
 
 2. Adding URI parameter `?token=<token>` to the endpoint you try to reach. (not a good option)
 
