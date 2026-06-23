@@ -124,6 +124,8 @@ Basically the same environment variables for the database, mqqt and timezone nee
 | **MQTT_NAMESPACE**            | string  |                               |
 | **MQTT_CLIENTID**             | string  | _4 char random string_        |
 | **TESLA_API_HOST**            | string  | _retrieved by access token_   |
+| **BATTERY_MAX_CAPACITY_NEW**  | string  | Max battery capacity when new (format: `carId:value,carId2:value`) |
+| **MAX_RANGE_NEW**  | string  | Max range when new (format: `carId:value,carId2:value`) |
 
 **Commands** environment variables
 

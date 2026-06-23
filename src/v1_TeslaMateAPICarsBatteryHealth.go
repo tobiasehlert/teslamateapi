@@ -47,8 +47,11 @@ func TeslaMateAPICarsBatteryHealthV1(c *gin.Context) {
 		Efficiency                    float64
 		MaxRangeRated                 float64
 		MaxRangeIdeal                 float64
+		MaxRangeRatedDB               float64
+		MaxRangeIdealDB               float64
 		CurrentRangeRated             float64
 		CurrentRangeIdeal             float64
+		MaxCapacityDB                 float64
 		MaxCapacity                   float64
 		CurrentCapacity               float64
 		PreferredRange                string
@@ -253,11 +256,11 @@ func TeslaMateAPICarsBatteryHealthV1(c *gin.Context) {
 
 	// execute query
 	err := db.QueryRow(query, CarID).Scan(
-		&MaxRangeRated,
-		&MaxRangeIdeal,
+		&MaxRangeRatedDB,
+		&MaxRangeIdealDB,
 		&CurrentRangeRated,
 		&CurrentRangeIdeal,
-		&MaxCapacity,
+		&MaxCapacityDB,
 		&CurrentCapacity,
 		&Efficiency,
 		&PreferredRange,
@@ -270,6 +273,22 @@ func TeslaMateAPICarsBatteryHealthV1(c *gin.Context) {
 	if err != nil {
 		TeslaMateAPIHandleErrorResponse(c, "TeslaMateAPICarsBatteryHealthV1", CarsBatteryHealthError1, err.Error())
 		return
+	}
+
+	// Check if there's a specific max capacity configured for this car
+	if maxCapacityNew, exists := batteryMaxCapacityNewMap[CarID]; exists {
+		MaxCapacity = maxCapacityNew
+	} else {
+		MaxCapacity = MaxCapacityDB
+	}
+
+	// Check if there's a specific max range configured for this car
+	if maxRangeNew, exists := maxRangeNewMap[CarID]; exists {
+		MaxRangeRated = maxRangeNew
+		MaxRangeIdeal = maxRangeNew
+	} else {
+		MaxRangeRated = MaxRangeRatedDB
+		MaxRangeIdeal = MaxRangeIdealDB
 	}
 
 	// Create battery health object
