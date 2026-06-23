@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.24.3] - 2026-06-23
+
+### Changed
+
+- deps(ci): bump actions/attest-build-provenance from 3.2.0 to 4.1.0 ([#460](https://github.com/tobiasehlert/teslamateapi/pull/460) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump actions/checkout from 6.0.2 to 7.0.0 ([#486](https://github.com/tobiasehlert/teslamateapi/pull/486) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump actions/download-artifact from 7.0.0 to 8.0.1 ([#459](https://github.com/tobiasehlert/teslamateapi/pull/459), [#495](https://github.com/tobiasehlert/teslamateapi/pull/495) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump actions/setup-go from 6.2.0 to 6.4.0 ([#457](https://github.com/tobiasehlert/teslamateapi/pull/457), [#489](https://github.com/tobiasehlert/teslamateapi/pull/489) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump actions/upload-artifact from 6.0.0 to 7.0.1 ([#458](https://github.com/tobiasehlert/teslamateapi/pull/458), [#494](https://github.com/tobiasehlert/teslamateapi/pull/494) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump docker/build-push-action from 6.19.2 to 7.2.0 ([#488](https://github.com/tobiasehlert/teslamateapi/pull/488) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump docker/login-action from 3.7.0 to 4.2.0 ([#464](https://github.com/tobiasehlert/teslamateapi/pull/464), [#485](https://github.com/tobiasehlert/teslamateapi/pull/485) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump docker/metadata-action from 5.10.0 to 6.1.0 ([#483](https://github.com/tobiasehlert/teslamateapi/pull/483) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump docker/setup-buildx-action from 3.12.0 to 4.1.0 ([#466](https://github.com/tobiasehlert/teslamateapi/pull/466), [#491](https://github.com/tobiasehlert/teslamateapi/pull/491) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump docker/setup-qemu-action from 3.7.0 to 4.1.0 ([#465](https://github.com/tobiasehlert/teslamateapi/pull/465), [#492](https://github.com/tobiasehlert/teslamateapi/pull/492) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump github/codeql-action from 4.32.4 to 4.36.2 ([#461](https://github.com/tobiasehlert/teslamateapi/pull/461), [#490](https://github.com/tobiasehlert/teslamateapi/pull/490) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump sigstore/cosign-installer from 4.0.0 to 4.1.2 ([#493](https://github.com/tobiasehlert/teslamateapi/pull/493) by [dependabot](https://github.com/dependabot))
+- deps(docker): bump alpine from 3.23.3 to 3.24.1 ([#478](https://github.com/tobiasehlert/teslamateapi/pull/478), [#487](https://github.com/tobiasehlert/teslamateapi/pull/487) by [dependabot](https://github.com/dependabot))
+- deps(docker): bump golang from 1.26.0 to 1.26.4 ([#479](https://github.com/tobiasehlert/teslamateapi/pull/479), [#484](https://github.com/tobiasehlert/teslamateapi/pull/484) by [dependabot](https://github.com/dependabot))
+- deps(go): bump github.com/gin-contrib/gzip from 1.2.5 to 1.2.6 ([#469](https://github.com/tobiasehlert/teslamateapi/pull/469) by [dependabot](https://github.com/dependabot))
+- deps(go): bump github.com/gin-gonic/gin from 1.11.0 to 1.12.0 ([#462](https://github.com/tobiasehlert/teslamateapi/pull/462) by [dependabot](https://github.com/dependabot))
+- deps(go): bump github.com/lib/pq from 1.11.2 to 1.12.3 ([#473](https://github.com/tobiasehlert/teslamateapi/pull/473) by [dependabot](https://github.com/dependabot))
+- deps(go): bump github.com/quic-go/quic-go from 0.59.0 to 0.59.1 ([#482](https://github.com/tobiasehlert/teslamateapi/pull/482) by [dependabot](https://github.com/dependabot))
+
 ## [1.24.2] - 2026-02-25
 
 ### Changed
@@ -698,6 +721,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.24.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.24.2...v1.24.3
 [1.24.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.24.1...v1.24.2
 [1.24.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.24.0...v1.24.1
 [1.24.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.23.0...v1.24.0
