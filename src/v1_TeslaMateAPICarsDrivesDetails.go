@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -15,6 +16,13 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 		CarsDrivesDetailsError1 = "Unable to load drive."
 		CarsDrivesDetailsError2 = "Unable to load drive details."
 	)
+
+	// authentication for the endpoint
+	validToken, errorMessage := validateAuthToken(c)
+	if !validToken {
+		TeslaMateAPIHandleOtherResponse(c, http.StatusUnauthorized, "TeslaMateAPICarsDrivesDetailsV1", gin.H{"error": errorMessage})
+		return
+	}
 
 	// getting CarID and DriveID param from URL
 	CarID := convertStringToInteger(c.Param("CarID"))
