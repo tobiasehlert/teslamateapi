@@ -1,0 +1,67 @@
+<Container version="2">
+  <Name>teslamateapi</Name>
+  <Repository>tobiasehlert/teslamateapi:latest</Repository>
+  <Registry>https://hub.docker.com/r/tobiasehlert/teslamateapi</Registry>
+  <Network>bridge</Network>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <WebUI>http://[IP]:[PORT:8080]/api</WebUI>
+  <Overview>TeslaMateApi is a RESTful API to get data collected by the self-hosted Tesla data logger TeslaMate in JSON format. It connects to TeslaMate's PostgreSQL database and MQTT broker to expose vehicle data, trips, charges, battery health, and more through a clean REST interface.</Overview>
+  <Project>https://github.com/tobiasehlert/teslamateapi</Project>
+  <Support>https://github.com/tobiasehlert/teslamateapi/issues</Support>
+  <TemplateURL>https://raw.githubusercontent.com/tobiasehlert/teslamateapi/main/templates/teslamateapi.xml</TemplateURL>
+  <ReadMe>https://raw.githubusercontent.com/tobiasehlert/teslamateapi/main/README.md</ReadMe>
+  <Category>HomeAutomation: Tools:</Category>
+  <ExtraSearchTerms>tesla teslamate ev electric vehicle api car</ExtraSearchTerms>
+  <Requires>Requires a running TeslaMate instance with its PostgreSQL database and MQTT broker accessible from this container.</Requires>
+  <Date>2026-06-23</Date>
+  <License>MIT</License>
+  <MinVer>6.12</MinVer>
+
+  <!-- Required: API port -->
+  <Config Name="API Port" Target="8080" Default="8080" Mode="tcp" Description="HTTP port for the TeslaMateApi REST interface." Type="Port" Display="always" Required="true" Mask="false"/>
+
+  <!-- Required: Database connection -->
+  <Config Name="DATABASE_HOST" Target="DATABASE_HOST" Default="database" Description="Hostname or IP of the PostgreSQL server running TeslaMate's database." Type="Variable" Display="always" Required="true" Mask="false"/>
+  <Config Name="DATABASE_PORT" Target="DATABASE_PORT" Default="5432" Description="PostgreSQL port." Type="Variable" Display="always" Required="false" Mask="false"/>
+  <Config Name="DATABASE_USER" Target="DATABASE_USER" Default="teslamate" Description="PostgreSQL username." Type="Variable" Display="always" Required="true" Mask="false"/>
+  <Config Name="DATABASE_PASS" Target="DATABASE_PASS" Default="" Description="PostgreSQL password." Type="Variable" Display="always" Required="true" Mask="true"/>
+  <Config Name="DATABASE_NAME" Target="DATABASE_NAME" Default="teslamate" Description="PostgreSQL database name." Type="Variable" Display="always" Required="true" Mask="false"/>
+
+  <!-- Required: Encryption key -->
+  <Config Name="ENCRYPTION_KEY" Target="ENCRYPTION_KEY" Default="" Description="Encryption key used internally by the API. Must be set (no default)." Type="Variable" Display="always" Required="true" Mask="true"/>
+
+  <!-- Required: MQTT connection -->
+  <Config Name="MQTT_HOST" Target="MQTT_HOST" Default="mosquitto" Description="Hostname or IP of the MQTT broker used by TeslaMate." Type="Variable" Display="always" Required="true" Mask="false"/>
+  <Config Name="MQTT_PORT" Target="MQTT_PORT" Default="1883" Description="MQTT broker port (default 1883, or 8883 for TLS)." Type="Variable" Display="always" Required="false" Mask="false"/>
+
+  <!-- Required: Timezone -->
+  <Config Name="TZ" Target="TZ" Default="Europe/Berlin" Description="Timezone for the container." Type="Variable" Display="always" Required="true" Mask="false"/>
+
+  <!-- Optional: MQTT advanced -->
+  <Config Name="MQTT_TLS" Target="MQTT_TLS" Default="false" Description="Enable TLS for MQTT connection." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="MQTT_USERNAME" Target="MQTT_USERNAME" Default="" Description="MQTT broker username (if authentication is required)." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="MQTT_PASSWORD" Target="MQTT_PASSWORD" Default="" Description="MQTT broker password." Type="Variable" Display="advanced" Required="false" Mask="true"/>
+  <Config Name="MQTT_NAMESPACE" Target="MQTT_NAMESPACE" Default="" Description="MQTT namespace (if TeslaMate uses a custom namespace)." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="DISABLE_MQTT" Target="DISABLE_MQTT" Default="false" Description="Disable MQTT connection entirely (only database will be used)." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+
+  <!-- Optional: TeslaMate connection -->
+  <Config Name="TESLAMATE_HOST" Target="TESLAMATE_HOST" Default="teslamate" Description="Hostname or IP of the TeslaMate instance (needed for commands)." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="TESLAMATE_PORT" Target="TESLAMATE_PORT" Default="4000" Description="TeslaMate web interface port." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="TESLAMATE_SSL" Target="TESLAMATE_SSL" Default="false" Description="Use HTTPS for TeslaMate connection." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+
+  <!-- Optional: Database advanced -->
+  <Config Name="DATABASE_TIMEOUT" Target="DATABASE_TIMEOUT" Default="60000" Description="Database connection timeout in milliseconds." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="DATABASE_SSL" Target="DATABASE_SSL" Default="disable" Description="PostgreSQL SSL mode (disable, require, verify-ca, verify-full)." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+
+  <!-- Optional: API security -->
+  <Config Name="API_TOKEN" Target="API_TOKEN" Default="" Description="API token for protected endpoints (minimum 32 characters). Leave empty to disable." Type="Variable" Display="advanced" Required="false" Mask="true"/>
+  <Config Name="API_TOKEN_DISABLE" Target="API_TOKEN_DISABLE" Default="false" Description="Disable API token requirement for all endpoints." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+
+  <!-- Optional: Commands -->
+  <Config Name="ENABLE_COMMANDS" Target="ENABLE_COMMANDS" Default="false" Description="Enable vehicle command endpoints (wake, doors, climate, etc.)." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+  <Config Name="COMMANDS_ALL" Target="COMMANDS_ALL" Default="false" Description="Enable all command groups at once." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+
+  <!-- Optional: Debug -->
+  <Config Name="DEBUG_MODE" Target="DEBUG_MODE" Default="false" Description="Enable debug logging." Type="Variable" Display="advanced" Required="false" Mask="false"/>
+</Container>
