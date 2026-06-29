@@ -117,7 +117,7 @@ jobs:
           retention-days: 1
 
       - name: Attest digest (per-arch)
-        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 #v4.1.0
+        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 #v4.1.1
         with:
           subject-name: digests-${{ matrix.arch }}
           subject-digest: sha256:${{ steps.upload_digests.outputs.artifact-digest }}
@@ -203,14 +203,14 @@ jobs:
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       - name: Attest docker build (DockerHub)
-        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 #v4.1.0
+        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 #v4.1.1
         with:
           subject-name: index.docker.io/${{ github.repository }}
           subject-digest: ${{ steps.docker_build.outputs.digest }}
           push-to-registry: true
 
       - name: Attest docker build (GitHub Container Registry)
-        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 #v4.1.0
+        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 #v4.1.1
         with:
           subject-name: ghcr.io/${{ github.repository }}
           subject-digest: ${{ steps.docker_build.outputs.digest }}
