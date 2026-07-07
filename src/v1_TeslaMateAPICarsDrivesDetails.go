@@ -99,8 +99,8 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 		BatteryDetails    BatteryDetails  `json:"battery_details"`     // BatteryDetails
 		RangeIdeal        PreferredRange  `json:"range_ideal"`         // PreferredRange
 		RangeRated        PreferredRange  `json:"range_rated"`         // PreferredRange
-		OutsideTempAvg    float64         `json:"outside_temp_avg"`    // float64
-		InsideTempAvg     float64         `json:"inside_temp_avg"`     // float64
+		OutsideTempAvg    *float64        `json:"outside_temp_avg"`    // float64 (nullable)
+		InsideTempAvg     *float64        `json:"inside_temp_avg"`     // float64 (nullable)
 		EnergyConsumedNet *float64        `json:"energy_consumed_net"` // Energy consumed (net) in kWh
 		ConsumptionNet    *float64        `json:"consumption_net"`     // Ø Consumption (net) per distance unit
 		DriveDetails      []DriveDetails  `json:"drive_details"`       // struct
@@ -252,8 +252,12 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 	}
 	// converting values based of settings UnitsTemperature
 	if UnitsTemperature == "F" {
-		drive.OutsideTempAvg = celsiusToFahrenheit(drive.OutsideTempAvg)
-		drive.InsideTempAvg = celsiusToFahrenheit(drive.InsideTempAvg)
+		if drive.OutsideTempAvg != nil {
+			*drive.OutsideTempAvg = celsiusToFahrenheit(*drive.OutsideTempAvg)
+		}
+		if drive.InsideTempAvg != nil {
+			*drive.InsideTempAvg = celsiusToFahrenheit(*drive.InsideTempAvg)
+		}
 	}
 	// adjusting to timezone differences from UTC to be userspecific
 	drive.StartDate = getTimeInTimeZone(drive.StartDate)
