@@ -30,9 +30,9 @@ func TeslaMateAPICarsV1(c *gin.Context) {
 	}
 	// CarExterior struct - child of Cars
 	type CarExterior struct {
-		ExteriorColor string `json:"exterior_color"` // text
-		SpoilerType   string `json:"spoiler_type"`   // text
-		WheelType     string `json:"wheel_type"`     // text
+		ExteriorColor NullString `json:"exterior_color"` // text
+		SpoilerType   NullString `json:"spoiler_type"`   // text
+		WheelType     NullString `json:"wheel_type"`     // text
 	}
 	// CarSettings struct - child of Cars
 	type CarSettings struct {
