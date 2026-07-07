@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.25.0] - 2026-07-07
+
+### Added
+
+- feat: support configurable API token header ([#498](https://github.com/tobiasehlert/teslamateapi/pull/498) by [tobiasehlert](https://github.com/tobiasehlert))
+- feat: add location filtering for drives and charges ([#476](https://github.com/tobiasehlert/teslamateapi/pull/476) by [LukStankovic](https://github.com/LukStankovic))
+
+### Changed
+
+- deps(ci): bump actions/setup-go from 6.4.0 to 6.5.0 ([#501](https://github.com/tobiasehlert/teslamateapi/pull/501) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump actions/attest-build-provenance from 4.1.0 to 4.1.1 ([#503](https://github.com/tobiasehlert/teslamateapi/pull/503) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump github/codeql-action/init from 4.36.2 to 4.36.3 ([#504](https://github.com/tobiasehlert/teslamateapi/pull/504) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump docker/login-action from 4.2.0 to 4.3.0 ([#505](https://github.com/tobiasehlert/teslamateapi/pull/505) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump docker/setup-qemu-action from 4.1.0 to 4.2.0 ([#506](https://github.com/tobiasehlert/teslamateapi/pull/506) by [dependabot](https://github.com/dependabot))
+- deps(ci): bump docker/setup-buildx-action from 4.1.0 to 4.2.0 ([#507](https://github.com/tobiasehlert/teslamateapi/pull/507) by [dependabot](https://github.com/dependabot))
+- deps(go): bump golang.org/x/net ([#508](https://github.com/tobiasehlert/teslamateapi/pull/508) by [dependabot](https://github.com/dependabot))
+- deps(go): bump golang.org/x/crypto ([#510](https://github.com/tobiasehlert/teslamateapi/pull/510) by [dependabot](https://github.com/dependabot))
+
+### Fixed
+
+- fix(api): handle null car exterior fields ([#511](https://github.com/tobiasehlert/teslamateapi/pull/511) by [tobiasehlert](https://github.com/tobiasehlert))
+- fix(drives): handle nullable temperature fields for old drive records ([#509](https://github.com/tobiasehlert/teslamateapi/pull/509) by [tobiasehlert](https://github.com/tobiasehlert))
+- fix(sonar): group consecutive parameters of the same type (S8209) ([#499](https://github.com/tobiasehlert/teslamateapi/pull/499) by [tobiasehlert](https://github.com/tobiasehlert))
+- fix(ci): move workflow permissions to job level ([#497](https://github.com/tobiasehlert/teslamateapi/pull/497) by [tobiasehlert](https://github.com/tobiasehlert))
+- fix: sanitize log input for S5145 ([#496](https://github.com/tobiasehlert/teslamateapi/pull/496) by [tobiasehlert](https://github.com/tobiasehlert))
+
 ## [1.24.3] - 2026-06-23
 
 ### Changed
@@ -721,6 +747,7 @@ The `ENCRYPTION_KEY` needs to have the same value as the key in the environment 
 
 Initial commit
 
+[1.25.0]: https://github.com/tobiasehlert/teslamateapi/compare/v1.24.3...v1.25.0
 [1.24.3]: https://github.com/tobiasehlert/teslamateapi/compare/v1.24.2...v1.24.3
 [1.24.2]: https://github.com/tobiasehlert/teslamateapi/compare/v1.24.1...v1.24.2
 [1.24.1]: https://github.com/tobiasehlert/teslamateapi/compare/v1.24.0...v1.24.1
