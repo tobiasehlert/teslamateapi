@@ -1,0 +1,7 @@
+<CommunityApplications>
+  <Profile>
+    TeslaMateApi is a RESTful API to get data collected by the self-hosted Tesla data logger [TeslaMate](https://github.com/teslamate-org/teslamate) in JSON format. It connects to TeslaMate's PostgreSQL database and MQTT broker to expose vehicle data, trips, charges, and more through a clean REST interface.
+  </Profile>
+
+  <WebPage>https://github.com/tobiasehlert/teslamateapi</WebPage>
+</CommunityApplications>
