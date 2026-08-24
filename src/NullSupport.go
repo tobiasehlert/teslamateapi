@@ -16,7 +16,7 @@ type NullInt64 struct {
 }
 
 // MarshalJSON for NullInt64
-func (ni *NullInt64) MarshalJSON() ([]byte, error) {
+func (ni NullInt64) MarshalJSON() ([]byte, error) {
 	if !ni.Valid {
 		return []byte("null"), nil
 	}
@@ -29,7 +29,7 @@ type NullBool struct {
 }
 
 // MarshalJSON for NullBool
-func (nb *NullBool) MarshalJSON() ([]byte, error) {
+func (nb NullBool) MarshalJSON() ([]byte, error) {
 	if !nb.Valid {
 		return []byte("null"), nil
 	}
@@ -42,7 +42,7 @@ type NullFloat64 struct {
 }
 
 // MarshalJSON for NullFloat64
-func (nf *NullFloat64) MarshalJSON() ([]byte, error) {
+func (nf NullFloat64) MarshalJSON() ([]byte, error) {
 	if !nf.Valid {
 		return []byte("null"), nil
 	}
