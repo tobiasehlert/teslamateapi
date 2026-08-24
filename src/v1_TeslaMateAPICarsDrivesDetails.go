@@ -34,12 +34,12 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 	}
 	// BatteryDetails struct - child of Drives
 	type BatteryDetails struct {
-		StartUsableBatteryLevel int  `json:"start_usable_battery_level"` // int
-		StartBatteryLevel       int  `json:"start_battery_level"`        // int
-		EndUsableBatteryLevel   int  `json:"end_usable_battery_level"`   // int
-		EndBatteryLevel         int  `json:"end_battery_level"`          // int
-		ReducedRange            bool `json:"reduced_range"`              // bool
-		IsSufficientlyPrecise   bool `json:"is_sufficiently_precise"`    // bool
+		StartUsableBatteryLevel NullInt64 `json:"start_usable_battery_level"` // int (nullable)
+		StartBatteryLevel       NullInt64 `json:"start_battery_level"`        // int (nullable)
+		EndUsableBatteryLevel   NullInt64 `json:"end_usable_battery_level"`   // int (nullable)
+		EndBatteryLevel         NullInt64 `json:"end_battery_level"`          // int (nullable)
+		ReducedRange            bool      `json:"reduced_range"`              // bool
+		IsSufficientlyPrecise   bool      `json:"is_sufficiently_precise"`    // bool
 	}
 	// PreferredRange struct - child of Drives
 	type PreferredRange struct {
