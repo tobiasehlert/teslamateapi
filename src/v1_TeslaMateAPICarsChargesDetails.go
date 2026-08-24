@@ -46,32 +46,32 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 	}
 	// FastChargerInfo struct - child of ChargeDetails
 	type FastChargerInfo struct {
-		FastChargerPresent bool       `json:"fast_charger_present"` // bool
+		FastChargerPresent NullBool   `json:"fast_charger_present"` // bool (nullable)
 		FastChargerBrand   NullString `json:"fast_charger_brand"`   // string
-		FastChargerType    string     `json:"fast_charger_type"`    // string
+		FastChargerType    NullString `json:"fast_charger_type"`    // string (nullable)
 
 	}
 	// BatteryInfo struct - child of ChargeDetails
 	type BatteryInfo struct {
-		IdealBatteryRange    float64  `json:"ideal_battery_range"`     // float64
-		RatedBatteryRange    float64  `json:"rated_battery_range"`     // float64
-		BatteryHeater        bool     `json:"battery_heater"`          // bool
-		BatteryHeaterOn      bool     `json:"battery_heater_on"`       // bool
-		BatteryHeaterNoPower NullBool `json:"battery_heater_no_power"` // bool
+		IdealBatteryRange    NullFloat64 `json:"ideal_battery_range"`     // float64 (nullable)
+		RatedBatteryRange    NullFloat64 `json:"rated_battery_range"`     // float64 (nullable)
+		BatteryHeater        NullBool    `json:"battery_heater"`          // bool (nullable)
+		BatteryHeaterOn      NullBool    `json:"battery_heater_on"`       // bool (nullable)
+		BatteryHeaterNoPower NullBool    `json:"battery_heater_no_power"` // bool
 	}
 	// ChargeDetails struct - child of Charge
 	type ChargeDetails struct {
 		DetailID             int             `json:"detail_id"`                // integer
 		Date                 string          `json:"date"`                     // string
-		BatteryLevel         int             `json:"battery_level"`            // int
-		UsableBatteryLevel   int             `json:"usable_battery_level"`     // int
-		ChargeEnergyAdded    float64         `json:"charge_energy_added"`      // float64
+		BatteryLevel         NullInt64       `json:"battery_level"`            // int (nullable)
+		UsableBatteryLevel   NullInt64       `json:"usable_battery_level"`     // int (nullable)
+		ChargeEnergyAdded    NullFloat64     `json:"charge_energy_added"`      // float64 (nullable)
 		NotEnoughPowerToHeat NullBool        `json:"not_enough_power_to_heat"` // bool
 		ChargerDetails       ChargerDetails  `json:"charger_details"`          // struct
 		BatteryInfo          BatteryInfo     `json:"battery_info"`             // struct
-		ConnChargeCable      string          `json:"conn_charge_cable"`        // string
+		ConnChargeCable      NullString      `json:"conn_charge_cable"`        // string (nullable)
 		FastChargerInfo      FastChargerInfo `json:"fast_charger_info"`        // struct
-		OutsideTemp          float64         `json:"outside_temp"`             // float64
+		OutsideTemp          NullFloat64     `json:"outside_temp"`             // float64 (nullable)
 	}
 	// Charge struct - child of Data
 	type Charge struct {
@@ -278,13 +278,19 @@ func TeslaMateAPICarsChargesDetailsV1(c *gin.Context) {
 
 		// converting values based of settings UnitsLength
 		if UnitsLength == "mi" {
-			chargedetails.BatteryInfo.IdealBatteryRange = kilometersToMiles(chargedetails.BatteryInfo.IdealBatteryRange)
-			chargedetails.BatteryInfo.RatedBatteryRange = kilometersToMiles(chargedetails.BatteryInfo.RatedBatteryRange)
+			if chargedetails.BatteryInfo.IdealBatteryRange.Valid {
+				chargedetails.BatteryInfo.IdealBatteryRange.Float64 = kilometersToMiles(chargedetails.BatteryInfo.IdealBatteryRange.Float64)
+			}
+			if chargedetails.BatteryInfo.RatedBatteryRange.Valid {
+				chargedetails.BatteryInfo.RatedBatteryRange.Float64 = kilometersToMiles(chargedetails.BatteryInfo.RatedBatteryRange.Float64)
+			}
 
 		}
 		// converting values based of settings UnitsTemperature
 		if UnitsTemperature == "F" {
-			chargedetails.OutsideTemp = celsiusToFahrenheit(chargedetails.OutsideTemp)
+			if chargedetails.OutsideTemp.Valid {
+				chargedetails.OutsideTemp.Float64 = celsiusToFahrenheit(chargedetails.OutsideTemp.Float64)
+			}
 		}
 		// adjusting to timezone differences from UTC to be userspecific
 		chargedetails.Date = getTimeInTimeZone(chargedetails.Date)
