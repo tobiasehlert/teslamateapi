@@ -74,9 +74,9 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 		Latitude           float64     `json:"latitude"`             // numeric(8,6)
 		Longitude          float64     `json:"longitude"`            // numeric(9,6)
 		Speed              int         `json:"speed"`                // smallint
-		Power              int         `json:"power"`                // smallint
-		Odometer           float64     `json:"odometer"`             // double precision
-		BatteryLevel       int         `json:"battery_level"`        // smallint
+		Power              NullInt64   `json:"power"`                // smallint
+		Odometer           NullFloat64 `json:"odometer"`             // double precision
+		BatteryLevel       NullInt64   `json:"battery_level"`        // smallint
 		UsableBatteryLevel NullInt64   `json:"usable_battery_level"` // smallint
 		Elevation          NullInt64   `json:"elevation"`            // smallint
 		ClimateInfo        ClimateInfo `json:"climate_info"`         // struct
@@ -340,7 +340,7 @@ func TeslaMateAPICarsDrivesDetailsV1(c *gin.Context) {
 
 		// converting values based of settings UnitsLength
 		if UnitsLength == "mi" {
-			drivedetails.Odometer = kilometersToMiles(drivedetails.Odometer)
+			drivedetails.Odometer = kilometersToMilesNilSupport(drivedetails.Odometer)
 			drivedetails.Speed = int(kilometersToMiles(float64(drivedetails.Speed)))
 			drivedetails.BatteryInfo.EstBatteryRange = kilometersToMilesNilSupport(drivedetails.BatteryInfo.EstBatteryRange)
 			drivedetails.BatteryInfo.IdealBatteryRange = kilometersToMilesNilSupport(drivedetails.BatteryInfo.IdealBatteryRange)
