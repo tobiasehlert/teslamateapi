@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 	"os"
 	"os/signal"
@@ -370,7 +371,7 @@ func convertStringToBool(data string) bool {
 // convertStringToFloat func - converts a string to float64, returning 0.0 on failure
 func convertStringToFloat(data string) float64 {
 	value, err := strconv.ParseFloat(data, 64)
-	if err != nil {
+	if err != nil || math.IsNaN(value) || math.IsInf(value, 0) {
 		if gin.IsDebugging() {
 			log.Printf("[warning] convertStringToFloat: failed to parse %q as float64 - returning 0.0", sanitizeLogInput(data))
 		}
